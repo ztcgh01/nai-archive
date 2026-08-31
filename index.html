@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v0.9.9</title>
+  <title>NAI Archive v1.0.1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -171,6 +171,30 @@ body:not(.is-home) .menu-btn{display:grid}
   .add-new-actions{display:grid;grid-template-columns:1fr;max-width:260px;margin:14px auto 0}
   .add-new-actions .btn{width:100%}
 }
+</style>
+
+
+<style>
+.data-table th{white-space:nowrap;word-break:keep-all;overflow-wrap:normal}
+.data-table .field-image{min-width:86px;width:86px}
+.data-table .field-artists{min-width:220px}
+.data-table .field-memo{min-width:120px;width:160px}
+.data-table .field-prompt,.data-table .field-characters,.data-table .field-uc{min-width:220px}
+.data-table .field-model{min-width:140px}
+.data-table .field-created{min-width:150px}
+.data-table .field-select{min-width:54px;width:54px}
+@media(max-width:640px){
+  .data-table .field-artists{min-width:190px}
+  .data-table .field-memo{min-width:110px;width:140px}
+}
+</style>
+
+
+<style>
+.data-table th.sortable-head{cursor:pointer;user-select:none}
+.data-table th.sortable-head:hover{background:#f2f2f2}
+.data-table th.sortable-head>span:first-child{white-space:nowrap}
+.sort-arrow{display:inline-block;min-width:14px;margin-left:4px;font-size:9px;vertical-align:1px}
 </style>
 
 </head>
@@ -503,6 +527,8 @@ body:not(.is-home) .menu-btn{display:grid}
     tab: 'gallery',
     view: 'library',
     sort: 'newest',
+    listSortField: null,
+    listSortDir: 'desc',
     visibleFields: new Set(['image','artists','memo']),
     compareIds: [],
     comparePickerIds: [],
@@ -697,16 +723,23 @@ body:not(.is-home) .menu-btn{display:grid}
             const parsed=parseNovelAI(meta);
             const oldScore=metadataScore(existing);
             const newScore=metadataScore(parsed);
+            const now=Date.now();
+            // Re-importing an existing image should make it easy to find again.
+            // Keep the original createdAt intact, but bump lastImportAt so
+            // "최근 등록순" places this existing entry at the top.
+            existing.lastImportAt=now;
+            existing.updatedAt=now;
+            existing.imageBlob=file;
             if(newScore>oldScore){
               Object.assign(existing,parsed,{
                 rawMetadata:meta,
-                imageBlob:file,
-                fileName:existing.fileName||file.name,
-                updatedAt:Date.now()
+                fileName:existing.fileName||file.name
               });
-              await txPut(STORE_ENTRIES,existing);
               refreshed++;
-            }else skipped++;
+            }else{
+              skipped++;
+            }
+            await txPut(STORE_ENTRIES,existing);
           }else skipped++;
         }
         else{
@@ -714,7 +747,7 @@ body:not(.is-home) .menu-btn{display:grid}
           const parsed=parseNovelAI(meta);
           const id=crypto.randomUUID();
           const now=Date.now();
-          const entry={id,hash,fileName:file.name,imageBlob:file,createdAt:now,updatedAt:now,favorite:false,memo:'',title:'',...parsed,rawMetadata:meta};
+          const entry={id,hash,fileName:file.name,imageBlob:file,createdAt:now,updatedAt:now,lastImportAt:now,favorite:false,memo:'',title:'',...parsed,rawMetadata:meta};
           await txPut(STORE_ENTRIES,entry);state.entries.push(entry);knownHashes.add(hash);added++;
         }
       }catch(err){console.error(err);failed++;}
@@ -916,7 +949,7 @@ body:not(.is-home) .menu-btn{display:grid}
       }
       return true;
     });
-    arr.sort((a,b)=>state.sort==='oldest'?a.createdAt-b.createdAt:state.sort==='artist'?(a.artistsText||'').localeCompare(b.artistsText||''):state.sort==='favorite'?(Number(b.favorite)-Number(a.favorite)||b.createdAt-a.createdAt):b.createdAt-a.createdAt);
+    arr.sort((a,b)=>state.sort==='oldest'?a.createdAt-b.createdAt:state.sort==='artist'?(a.artistsText||'').localeCompare(b.artistsText||''):state.sort==='favorite'?(Number(b.favorite)-Number(a.favorite)||b.createdAt-a.createdAt):(b.lastImportAt||b.createdAt)-(a.lastImportAt||a.createdAt));
     return arr;
   }
 
@@ -1177,10 +1210,66 @@ body:not(.is-home) .menu-btn{display:grid}
 
   function renderList(arr){
     const defs={image:'이미지',artists:'작가태그',memo:'메모',prompt:'Prompt',characters:'Character Prompt',uc:'UC',model:'모델',created:'등록일'};
-    const fields=[...state.visibleFields]; els.listHead.innerHTML=`<tr>${state.selectMode?'<th>선택</th>':''}`+fields.map(f=>`<th>${defs[f]}</th>`).join('')+'</tr>';
+    const fields=[...state.visibleFields];
+    const sortMark=f=>state.listSortField===f?(state.listSortDir==='asc'?' ▲':' ▼'):'';
+    const sortTitle=f=>{
+      if(['artists','memo','prompt','characters','uc'].includes(f)){
+        return state.listSortField===f
+          ? (state.listSortDir==='asc'?'현재: 없음 우선 · 다시 누르면 있음 우선':'현재: 있음 우선 · 다시 누르면 없음 우선')
+          : '눌러서 값 있음/없음 기준 정렬';
+      }
+      return '눌러서 정렬 방향 전환';
+    };
+    els.listHead.innerHTML=`<tr>${state.selectMode?'<th class="field-select">선택</th>':''}`+
+      fields.map(f=>`<th class="field-${f} sortable-head" data-sort-field="${f}" title="${sortTitle(f)}"><span>${defs[f]}</span><span class="sort-arrow">${sortMark(f)}</span></th>`).join('')+'</tr>';
+
+    els.listHead.querySelectorAll('[data-sort-field]').forEach(th=>{
+      th.onclick=()=>{
+        const f=th.dataset.sortField;
+        if(state.listSortField===f) state.listSortDir=state.listSortDir==='asc'?'desc':'asc';
+        else{
+          state.listSortField=f;
+          // Content fields start with "값 있음 우선"; date/image start newest first.
+          state.listSortDir='desc';
+        }
+        renderList(filteredEntries());
+      };
+    });
+
+    const listArr=[...arr];
+    if(state.listSortField){
+      const field=state.listSortField, dir=state.listSortDir;
+      const sign=dir==='asc'?1:-1;
+      const textValue=(e,f)=>{
+        if(f==='artists') return e.artistsText||'';
+        if(f==='memo') return e.memo||'';
+        if(f==='prompt') return e.prompt||'';
+        if(f==='characters') return (e.characterPrompts||[]).join('\n');
+        if(f==='uc') return e.uc||'';
+        if(f==='model') return e.model||'';
+        return '';
+      };
+      listArr.sort((a,b)=>{
+        if(field==='image' || field==='created'){
+          const av=field==='image'?(a.lastImportAt||a.createdAt||0):(a.createdAt||0);
+          const bv=field==='image'?(b.lastImportAt||b.createdAt||0):(b.createdAt||0);
+          return (av-bv)*sign;
+        }
+        const av=textValue(a,field).trim(), bv=textValue(b,field).trim();
+        if(['artists','memo','prompt','characters','uc'].includes(field)){
+          const ah=!!av, bh=!!bv;
+          if(ah!==bh){
+            // desc = 값 있음 우선 / asc = 값 없음 우선
+            return dir==='desc' ? (ah?-1:1) : (ah?1:-1);
+          }
+        }
+        return av.localeCompare(bv,'ko',{numeric:true,sensitivity:'base'})*sign;
+      });
+    }
+
     revokeObjectUrls(els.listBody); els.listBody.innerHTML='';
-    arr.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;const checked=state.selectedIds.includes(e.id);let html=state.selectMode?`<td><input type="checkbox" class="row-check" ${checked?'checked':''}></td>`:'';
-      for(const f of fields){ if(f==='image'){const url=URL.createObjectURL(e.imageBlob);tr.dataset.url=(tr.dataset.url||'')+' '+url;html+=`<td><img class="table-thumb open" src="${url}"></td>`;} else if(f==='artists')html+=`<td><div class="clamp open">${esc(e.artistsText)}</div></td>`; else if(f==='memo')html+=`<td><div class="clamp open">${esc(e.memo||'')}</div></td>`; else if(f==='prompt')html+=`<td><div class="clamp open">${esc(e.prompt||'')}</div></td>`; else if(f==='characters')html+=`<td><div class="clamp open">${esc((e.characterPrompts||[]).join('\n---\n'))}</div></td>`; else if(f==='uc')html+=`<td><div class="clamp open">${esc(e.uc||'')}</div></td>`; else if(f==='model')html+=`<td>${esc(e.model||'')}</td>`; else if(f==='created')html+=`<td>${new Date(e.createdAt).toLocaleString()}</td>`; }
+    listArr.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;const checked=state.selectedIds.includes(e.id);let html=state.selectMode?`<td class="field-select"><input type="checkbox" class="row-check" ${checked?'checked':''}></td>`:'';
+      for(const f of fields){ if(f==='image'){const url=URL.createObjectURL(e.imageBlob);tr.dataset.url=(tr.dataset.url||'')+' '+url;html+=`<td class="field-image"><img class="table-thumb open" src="${url}"></td>`;} else if(f==='artists')html+=`<td class="field-artists"><div class="clamp open">${esc(e.artistsText)}</div></td>`; else if(f==='memo')html+=`<td class="field-memo"><div class="clamp open">${esc(e.memo||'')}</div></td>`; else if(f==='prompt')html+=`<td class="field-prompt"><div class="clamp open">${esc(e.prompt||'')}</div></td>`; else if(f==='characters')html+=`<td class="field-characters"><div class="clamp open">${esc((e.characterPrompts||[]).join('\n---\n'))}</div></td>`; else if(f==='uc')html+=`<td class="field-uc"><div class="clamp open">${esc(e.uc||'')}</div></td>`; else if(f==='model')html+=`<td class="field-model">${esc(e.model||'')}</td>`; else if(f==='created')html+=`<td class="field-created">${new Date(e.createdAt).toLocaleString()}</td>`; }
       tr.innerHTML=html; tr.querySelectorAll('.open').forEach(x=>x.onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id)); const cb=tr.querySelector('.row-check');if(cb)cb.onchange=ev=>toggleSelected(e.id,ev.target.checked); els.listBody.appendChild(tr);
     });
   }
