@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v0.9.6</title>
+  <title>NAI Archive v0.9.7</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -737,7 +737,81 @@ body:not(.is-home) .menu-btn{display:grid}
       }catch(err){console.warn('chunk parse failed',type,err)}
       if(type==='IEND') break;
     }
+
+    // NovelAI can also store generation metadata in the alpha-channel LSB
+    // ("stealth_pngcomp"). Only decode it when ordinary PNG text metadata
+    // does not already expose prompt data, avoiding extra work for normal files.
+    const ordinaryComment=out.Comment??out.comment;
+    const hasOrdinaryPrompt=!!(
+      (typeof ordinaryComment==='string' && ordinaryComment.trim()) ||
+      (ordinaryComment && typeof ordinaryComment==='object') ||
+      (typeof out.Description==='string' && out.Description.trim())
+    );
+    if(!hasOrdinaryPrompt){
+      try{
+        const stealth=await extractNovelAIStealthMetadata(file);
+        if(stealth && typeof stealth==='object'){
+          for(const [k,v] of Object.entries(stealth)){
+            if(out[k]===undefined || out[k]==='' || out[k]===null) out[k]=v;
+          }
+          out.__naiStealth=true;
+        }
+      }catch(err){
+        // Most PNGs do not contain NovelAI stealth metadata; silently fall back.
+        if(err?.message && !/magic|stealth|metadata/i.test(err.message)) console.warn('stealth metadata parse failed',err);
+      }
+    }
     return out;
+  }
+
+  async function extractNovelAIStealthMetadata(file){
+    if(!window.DecompressionStream) throw new Error('stealth gzip unsupported');
+    let bitmap=null;
+    try{
+      bitmap=await createImageBitmap(file);
+      const w=bitmap.width, h=bitmap.height;
+      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});
+      ctx.drawImage(bitmap,0,0);
+      const rgba=ctx.getImageData(0,0,w,h).data;
+
+      // NovelAI's official extractor transposes alpha before flattening:
+      // x first, then y. Pack each group of 8 LSBs MSB-first.
+      const totalBits=w*h;
+      const totalBytes=Math.floor(totalBits/8);
+      const packed=new Uint8Array(totalBytes);
+      let bitIndex=0;
+      for(let x=0;x<w && bitIndex<totalBytes*8;x++){
+        for(let y=0;y<h && bitIndex<totalBytes*8;y++){
+          const alpha=rgba[(y*w+x)*4+3];
+          if(alpha&1) packed[bitIndex>>3] |= 1 << (7-(bitIndex&7));
+          bitIndex++;
+        }
+      }
+
+      const magic='stealth_pngcomp';
+      if(packed.length < magic.length+4) throw new Error('stealth metadata absent');
+      for(let i=0;i<magic.length;i++){
+        if(packed[i]!==magic.charCodeAt(i)) throw new Error('stealth magic mismatch');
+      }
+
+      let p=magic.length;
+      const bitLen=((packed[p]<<24)>>>0)+(packed[p+1]<<16)+(packed[p+2]<<8)+packed[p+3];
+      p+=4;
+      const byteLen=Math.floor(bitLen/8);
+      if(!Number.isFinite(byteLen) || byteLen<=0 || p+byteLen>packed.length) throw new Error('stealth metadata length invalid');
+
+      const compressed=packed.slice(p,p+byteLen);
+      const ds=new DecompressionStream('gzip');
+      const decoded=await new Response(new Blob([compressed]).stream().pipeThrough(ds)).arrayBuffer();
+      const payload=JSON.parse(new TextDecoder('utf-8').decode(decoded));
+      if(payload && typeof payload.Comment==='string'){
+        try{ payload.Comment=JSON.parse(payload.Comment); }catch(_){}
+      }
+      return payload;
+    }finally{
+      try{bitmap?.close?.()}catch(_){}
+    }
   }
 
   function parseITXt(data){
@@ -749,7 +823,8 @@ body:not(.is-home) .menu-btn{display:grid}
 
   function parseNovelAI(meta){
     let comment=meta.Comment||meta.comment||''; let j={};
-    try{j=JSON.parse(comment)}catch(_){ }
+    if(comment && typeof comment==='object') j=comment;
+    else try{j=JSON.parse(comment)}catch(_){ }
     const base = j?.v4_prompt?.caption?.base_caption ?? j.prompt ?? meta.Description ?? '';
     const chars = (j?.v4_prompt?.caption?.char_captions||[]).map(x=>x?.char_caption||'').filter(Boolean);
     const uc = j?.v4_negative_prompt?.caption?.base_caption ?? j.uc ?? '';
