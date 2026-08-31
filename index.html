@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v0.9.3</title>
+  <title>NAI Archive v0.9.4</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -108,6 +108,61 @@ body:not(.is-home) .menu-btn{display:grid}
 .add-menu-card small{font-size:10px;color:#777;line-height:1.4}
 </style>
 
+
+<style>
+.gallery-subtoolbar{
+  align-items:flex-end;
+}
+.gallery-view-tabs{
+  flex:0 0 auto;
+  min-width:max-content;
+}
+.gallery-view-tabs .tab{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+  min-width:max-content;
+}
+.gallery-action-row{
+  margin-left:auto;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+@media(max-width:640px){
+  .gallery-subtoolbar{
+    display:grid !important;
+    grid-template-columns:1fr;
+    gap:12px;
+    align-items:stretch;
+  }
+  .gallery-view-tabs{
+    width:max-content;
+    max-width:100%;
+    margin:0;
+  }
+  .gallery-view-tabs .tab{
+    padding-left:12px;
+    padding-right:12px;
+  }
+  .gallery-action-row{
+    width:100%;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:7px;
+  }
+  .gallery-action-row .btn{
+    flex:0 0 auto;
+    white-space:nowrap;
+  }
+  .gallery-action-row #resultCount{
+    margin-left:auto;
+    white-space:nowrap;
+  }
+}
+</style>
+
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
@@ -158,11 +213,11 @@ body:not(.is-home) .menu-btn{display:grid}
     </div>
     <div class="add-menu-card">
       <button id="galleryPhotoPickBtn"><b>사진 선택</b><small>평소처럼 사진 선택기에서 이미지를 골라 추가</small></button>
-      <button id="galleryZipPickBtn"><b>ZIP 대량 등록</b><small>수백·수천 장은 ZIP 하나로 묶어서 한 번에 등록</small></button>
+      <button id="galleryZipPickBtn"><b>파일 · ZIP 대량 등록</b><small>ZIP을 포함한 여러 이미지 파일을 한 번에 등록</small></button>
     </div>
   </div>
 </dialog>
-<input id="galleryZipInput" type="file" accept=".zip,application/zip" hidden>
+<input id="galleryZipInput" type="file" multiple hidden>
 
 <dialog id="comparePickerDialog" class="modal compare-picker-dialog">
     <div class="modal-shell">
@@ -238,15 +293,14 @@ body:not(.is-home) .menu-btn{display:grid}
           </select>
         </div>
 
-        <div class="subtoolbar">
-          <div class="tabs" id="displayTabs">
+        <div class="subtoolbar gallery-subtoolbar">
+          <div class="tabs gallery-view-tabs" id="displayTabs">
             <button class="tab active" data-tab="gallery">갤러리</button>
             <button class="tab" data-tab="list">리스트</button>
           </div>
-          <div class="right-tools">
+          <div class="right-tools gallery-action-row">
             <button id="galleryAddMenuBtn" class="btn small primary">＋ 추가</button>
-            <button id="galleryFolderAddBtn" class="btn small">폴더 일괄 추가</button>
-            <button id="fieldBtn" class="btn small">표시 열</button>
+            <button id="fieldBtn" class="btn small hidden">표시 열</button>
             <button id="selectModeBtn" class="btn small">선택</button>
             <span id="resultCount" class="muted-note">0개</span>
           </div>
@@ -474,7 +528,7 @@ body:not(.is-home) .menu-btn{display:grid}
     els.closeGalleryAddDialogBtn.onclick=()=>els.galleryAddDialog.close();
     els.galleryPhotoPickBtn.onclick=()=>{els.galleryAddDialog.close(); els.fileInput.click();};
     els.galleryZipPickBtn.onclick=()=>{els.galleryAddDialog.close(); els.galleryZipInput.click();};
-    els.galleryZipInput.onchange=async e=>{const f=e.target.files?.[0]; if(f) await importImagesFromZip(f); e.target.value='';};
+    els.galleryZipInput.onchange=async e=>{const files=[...(e.target.files||[])]; if(files.length) await importMixedBulkFiles(files); e.target.value='';};
     els.dropzone.onclick = e => { if(e.target.closest('button')) return; els.fileInput.click(); };
     ['dragenter','dragover'].forEach(t=>els.dropzone.addEventListener(t,e=>{e.preventDefault();els.dropzone.classList.add('drag')}));
     ['dragleave','drop'].forEach(t=>els.dropzone.addEventListener(t,e=>{e.preventDefault();els.dropzone.classList.remove('drag')}));
@@ -599,14 +653,14 @@ body:not(.is-home) .menu-btn{display:grid}
   }
 
   async function importImages(fileList, options={}){
-    const files=[...(fileList||[])].filter(file=>/^image\/(png|jpeg)$/i.test(file.type)||/\.(png|jpe?g)$/i.test(file.name||''));
-    if(!files.length){toast('가져올 PNG/JPG 이미지가 없습니다.');return;}
+    const files=[...(fileList||[])].filter(file=>/^image\/(png|jpeg|webp)$/i.test(file.type)||/\.(png|jpe?g|webp)$/i.test(file.name||''));
+    if(!files.length){if(!options.quiet)toast('가져올 이미지가 없습니다.');return {added:0,skipped:0,failed:0};}
     let added=0, skipped=0, failed=0;
     const knownHashes=new Set(state.entries.map(e=>e.hash).filter(Boolean));
     const total=files.length;
     if(els.importProgress){
       els.importProgress.classList.remove('hidden');
-      els.importProgressText.textContent=options.source==='folder'?'폴더에서 이미지 가져오는 중…':'이미지 가져오는 중…';
+      els.importProgressText.textContent=options.source==='folder'?'폴더에서 이미지 가져오는 중…':options.source==='bulk'?'대량 파일 등록 중…':'이미지 가져오는 중…';
       els.importProgressCount.textContent=`0 / ${total}`;
       els.importProgressBar.style.width='0%';
     }
@@ -634,9 +688,14 @@ body:not(.is-home) .menu-btn{display:grid}
     els.fileInput.value=''; if(els.folderImportInput) els.folderImportInput.value='';
     render();
     const parts=[`${added}개 등록`]; if(skipped)parts.push(`중복 ${skipped}개 제외`); if(failed)parts.push(`실패 ${failed}개`);
-    const msg=parts.join(' · '); if(els.addStatus)els.addStatus.textContent=msg; toast(msg);
-    if(els.importProgress){els.importProgressText.textContent=msg;setTimeout(()=>els.importProgress.classList.add('hidden'),1800)}
+    const msg=parts.join(' · ');
+    if(!options.quiet){
+      if(els.addStatus)els.addStatus.textContent=msg;
+      toast(msg);
+      if(els.importProgress){els.importProgressText.textContent=msg;setTimeout(()=>els.importProgress.classList.add('hidden'),1800)}
+    }
     if(added && state.view==='add') setView('library');
+    return {added,skipped,failed};
   }
   async function extractImageMetadata(file){
     const buf=await file.arrayBuffer(); const u=new Uint8Array(buf);
@@ -950,6 +1009,9 @@ body:not(.is-home) .menu-btn{display:grid}
 
   function renderLibrary(){
     const arr=filteredEntries(); els.resultCount.textContent=`${arr.length}개`;
+    const isListView=state.tab==='list';
+    els.fieldBtn.classList.toggle('hidden',!isListView);
+    if(!isListView)els.fieldPanel.classList.add('hidden');
     els.selectModeBtn.classList.toggle('active',state.selectMode);
     els.selectModeBtn.textContent=state.selectMode?'선택 중':'선택';
     els.bulkBar.classList.toggle('hidden',!state.selectMode);
@@ -1634,14 +1696,15 @@ body:not(.is-home) .menu-btn{display:grid}
     toast('백업 ZIP을 만들었습니다.');
   }
 
-  async function importImagesFromZip(zipFile){
-    if(!window.JSZip){toast('ZIP 모듈을 불러오지 못했습니다.');return;}
+  async function importImagesFromZip(zipFile, options={}){
+    if(!window.JSZip){toast('ZIP 모듈을 불러오지 못했습니다.');return {added:0,skipped:0,failed:1,total:0};}
+    let stats={added:0,skipped:0,failed:0,total:0};
     try{
       const zip=await JSZip.loadAsync(zipFile);
       const names=Object.keys(zip.files).filter(n=>!zip.files[n].dir && /\.(png|jpe?g|webp)$/i.test(n));
-      if(!names.length){toast('ZIP 안에 등록할 이미지가 없습니다.');return;}
+      stats.total=names.length;
+      if(!names.length)return stats;
       const batchSize=60;
-      let done=0;
       for(let i=0;i<names.length;i+=batchSize){
         const slice=names.slice(i,i+batchSize);
         const files=[];
@@ -1652,20 +1715,52 @@ body:not(.is-home) .menu-btn{display:grid}
           const type=/\.png$/i.test(base)?'image/png':/\.webp$/i.test(base)?'image/webp':'image/jpeg';
           files.push(new File([blob],base,{type,lastModified:Date.now()}));
         }
-        const dt=new DataTransfer(); files.forEach(f=>dt.items.add(f));
-        const input=els.fileInput;
-        input.files=dt.files;
-        input.dispatchEvent(new Event('change',{bubbles:true}));
-        await new Promise(r=>setTimeout(r,120));
-        done+=files.length;
-        if(typeof showImportProgress==='function') showImportProgress(done,names.length);
-        else toast(`ZIP 등록 중 ${done} / ${names.length}`);
+        const r=await importImages(files,{source:'bulk',quiet:true});
+        if(r){stats.added+=r.added||0;stats.skipped+=r.skipped||0;stats.failed+=r.failed||0;}
         await new Promise(r=>setTimeout(r,0));
       }
-      els.fileInput.value='';
-      toast(`ZIP 이미지 ${names.length}장 등록 요청 완료`);
+      return stats;
     }catch(err){
-      console.error(err); toast('ZIP 등록 중 오류가 발생했습니다.');
+      console.error(err);
+      stats.failed++;
+      return stats;
+    }
+  }
+
+  async function importMixedBulkFiles(fileList){
+    const files=[...(fileList||[])];
+    if(!files.length)return;
+    const directImages=files.filter(f=>/^image\/(png|jpeg|webp)$/i.test(f.type)||/\.(png|jpe?g|webp)$/i.test(f.name||''));
+    const zips=files.filter(f=>/\.zip$/i.test(f.name||'')||/^(application\/zip|application\/x-zip-compressed)$/i.test(f.type||''));
+    const unsupported=files.length-directImages.length-zips.length;
+    let totals={added:0,skipped:0,failed:0,total:0};
+
+    if(directImages.length){
+      const r=await importImages(directImages,{source:'bulk',quiet:true});
+      if(r){totals.added+=r.added||0;totals.skipped+=r.skipped||0;totals.failed+=r.failed||0;totals.total+=directImages.length;}
+    }
+
+    for(let i=0;i<zips.length;i++){
+      if(els.importProgress){
+        els.importProgress.classList.remove('hidden');
+        els.importProgressText.textContent=`ZIP ${i+1} / ${zips.length} 푸는 중…`;
+      }
+      const r=await importImagesFromZip(zips[i],{quiet:true});
+      if(r){totals.added+=r.added||0;totals.skipped+=r.skipped||0;totals.failed+=r.failed||0;totals.total+=r.total||0;}
+      await new Promise(r=>setTimeout(r,0));
+    }
+
+    render();
+    const parts=[`${totals.added}개 등록`];
+    if(totals.skipped)parts.push(`중복 ${totals.skipped}개 제외`);
+    if(totals.failed)parts.push(`실패 ${totals.failed}개`);
+    if(unsupported)parts.push(`지원하지 않는 파일 ${unsupported}개 제외`);
+    const msg=parts.join(' · ');
+    if(els.addStatus)els.addStatus.textContent=msg;
+    toast(msg);
+    if(els.importProgress){
+      els.importProgressText.textContent=msg;
+      setTimeout(()=>els.importProgress.classList.add('hidden'),1800);
     }
   }
 
