@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v0.9.7</title>
+  <title>NAI Archive v0.9.8</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -674,7 +674,7 @@ body:not(.is-home) .menu-btn{display:grid}
   async function importImages(fileList, options={}){
     const files=[...(fileList||[])].filter(file=>/^image\/(png|jpeg|webp)$/i.test(file.type)||/\.(png|jpe?g|webp)$/i.test(file.name||''));
     if(!files.length){if(!options.quiet)toast('가져올 이미지가 없습니다.');return {added:0,skipped:0,failed:0};}
-    let added=0, skipped=0, failed=0;
+    let added=0, skipped=0, failed=0, refreshed=0;
     const knownHashes=new Set(state.entries.map(e=>e.hash).filter(Boolean));
     const total=files.length;
     if(els.importProgress){
@@ -688,7 +688,27 @@ body:not(.is-home) .menu-btn{display:grid}
       const file=files[i];
       try{
         const hash=await sha256(file);
-        if(knownHashes.has(hash)){skipped++;}
+        if(knownHashes.has(hash)){
+          const existing=state.entries.find(e=>e.hash===hash);
+          // Re-scan duplicates instead of blindly skipping them. This lets entries
+          // imported by older versions pick up newly supported NovelAI metadata.
+          if(existing){
+            const meta=await extractImageMetadata(file);
+            const parsed=parseNovelAI(meta);
+            const oldScore=metadataScore(existing);
+            const newScore=metadataScore(parsed);
+            if(newScore>oldScore){
+              Object.assign(existing,parsed,{
+                rawMetadata:meta,
+                imageBlob:file,
+                fileName:existing.fileName||file.name,
+                updatedAt:Date.now()
+              });
+              await txPut(STORE_ENTRIES,existing);
+              refreshed++;
+            }else skipped++;
+          }else skipped++;
+        }
         else{
           const meta=await extractImageMetadata(file);
           const parsed=parseNovelAI(meta);
@@ -706,7 +726,7 @@ body:not(.is-home) .menu-btn{display:grid}
     }
     els.fileInput.value=''; if(els.folderImportInput) els.folderImportInput.value='';
     render();
-    const parts=[`${added}개 등록`]; if(skipped)parts.push(`중복 ${skipped}개 제외`); if(failed)parts.push(`실패 ${failed}개`);
+    const parts=[`${added}개 등록`]; if(refreshed)parts.push(`메타데이터 갱신 ${refreshed}개`); if(skipped)parts.push(`중복 ${skipped}개 제외`); if(failed)parts.push(`실패 ${failed}개`);
     const msg=parts.join(' · ');
     if(!options.quiet){
       if(els.addStatus)els.addStatus.textContent=msg;
@@ -714,7 +734,7 @@ body:not(.is-home) .menu-btn{display:grid}
       if(els.importProgress){els.importProgressText.textContent=msg;setTimeout(()=>els.importProgress.classList.add('hidden'),1800)}
     }
     if(added && state.view==='add') setView('library');
-    return {added,skipped,failed};
+    return {added,skipped,failed,refreshed};
   }
   async function extractImageMetadata(file){
     const buf=await file.arrayBuffer(); const u=new Uint8Array(buf);
@@ -820,6 +840,22 @@ body:not(.is-home) .menu-btn{display:grid}
     if(compressed) return null; return {key,value:utf8(text)};
   }
   const ascii=u=>String.fromCharCode(...u); const latin1=u=>new TextDecoder('latin1').decode(u); const utf8=u=>new TextDecoder('utf-8').decode(u);
+
+  function metadataScore(x){
+    if(!x)return 0;
+    let score=0;
+    const artists=x.artistsText||'';
+    const prompt=x.prompt||x.originalPrompt||'';
+    const chars=x.characterPrompts||[];
+    const uc=x.uc||'';
+    if(artists.trim())score+=5;
+    if(prompt.trim())score+=5;
+    if(Array.isArray(chars)&&chars.some(v=>String(v||'').trim()))score+=3;
+    if(uc.trim())score+=2;
+    if(x.model)score+=1;
+    if(x.seed!==null&&x.seed!==undefined)score+=1;
+    return score;
+  }
 
   function parseNovelAI(meta){
     let comment=meta.Comment||meta.comment||''; let j={};
@@ -1792,7 +1828,7 @@ body:not(.is-home) .menu-btn{display:grid}
 
   async function importImagesFromZip(zipFile, options={}){
     if(!window.JSZip){toast('ZIP 모듈을 불러오지 못했습니다.');return {added:0,skipped:0,failed:1,total:0};}
-    let stats={added:0,skipped:0,failed:0,total:0};
+    let stats={added:0,skipped:0,failed:0,refreshed:0,total:0};
     try{
       const zip=await JSZip.loadAsync(zipFile);
       const names=Object.keys(zip.files).filter(n=>!zip.files[n].dir && /\.(png|jpe?g|webp)$/i.test(n));
@@ -1810,7 +1846,7 @@ body:not(.is-home) .menu-btn{display:grid}
           files.push(new File([blob],base,{type,lastModified:Date.now()}));
         }
         const r=await importImages(files,{source:'bulk',quiet:true});
-        if(r){stats.added+=r.added||0;stats.skipped+=r.skipped||0;stats.failed+=r.failed||0;}
+        if(r){stats.added+=r.added||0;stats.skipped+=r.skipped||0;stats.failed+=r.failed||0;stats.refreshed+=r.refreshed||0;}
         await new Promise(r=>setTimeout(r,0));
       }
       return stats;
@@ -1827,11 +1863,11 @@ body:not(.is-home) .menu-btn{display:grid}
     const directImages=files.filter(f=>/^image\/(png|jpeg|webp)$/i.test(f.type)||/\.(png|jpe?g|webp)$/i.test(f.name||''));
     const zips=files.filter(f=>/\.zip$/i.test(f.name||'')||/^(application\/zip|application\/x-zip-compressed)$/i.test(f.type||''));
     const unsupported=files.length-directImages.length-zips.length;
-    let totals={added:0,skipped:0,failed:0,total:0};
+    let totals={added:0,skipped:0,failed:0,refreshed:0,total:0};
 
     if(directImages.length){
       const r=await importImages(directImages,{source:'bulk',quiet:true});
-      if(r){totals.added+=r.added||0;totals.skipped+=r.skipped||0;totals.failed+=r.failed||0;totals.total+=directImages.length;}
+      if(r){totals.added+=r.added||0;totals.skipped+=r.skipped||0;totals.failed+=r.failed||0;totals.refreshed+=r.refreshed||0;totals.total+=directImages.length;}
     }
 
     for(let i=0;i<zips.length;i++){
@@ -1840,12 +1876,12 @@ body:not(.is-home) .menu-btn{display:grid}
         els.importProgressText.textContent=`ZIP ${i+1} / ${zips.length} 푸는 중…`;
       }
       const r=await importImagesFromZip(zips[i],{quiet:true});
-      if(r){totals.added+=r.added||0;totals.skipped+=r.skipped||0;totals.failed+=r.failed||0;totals.total+=r.total||0;}
+      if(r){totals.added+=r.added||0;totals.skipped+=r.skipped||0;totals.failed+=r.failed||0;totals.refreshed+=r.refreshed||0;totals.total+=r.total||0;}
       await new Promise(r=>setTimeout(r,0));
     }
 
     render();
-    const parts=[`${totals.added}개 등록`];
+    const parts=[`${totals.added}개 등록`]; if(totals.refreshed)parts.push(`메타데이터 갱신 ${totals.refreshed}개`);
     if(totals.skipped)parts.push(`중복 ${totals.skipped}개 제외`);
     if(totals.failed)parts.push(`실패 ${totals.failed}개`);
     if(unsupported)parts.push(`지원하지 않는 파일 ${unsupported}개 제외`);
