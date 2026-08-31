@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v0.9.8</title>
+  <title>NAI Archive v0.9.9</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -176,7 +176,7 @@ body:not(.is-home) .menu-btn{display:grid}
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
-  <input id="fileInput" type="file" accept="image/png,image/jpeg" multiple hidden />
+  <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden />
   <input id="folderImportInput" type="file" accept="image/png,image/jpeg" multiple webkitdirectory directory hidden />
   
   <dialog id="backupDialog" class="modal small-modal">
@@ -739,28 +739,32 @@ body:not(.is-home) .menu-btn{display:grid}
   async function extractImageMetadata(file){
     const buf=await file.arrayBuffer(); const u=new Uint8Array(buf);
     const isPng=u.length>8 && [137,80,78,71,13,10,26,10].every((v,i)=>u[i]===v);
-    if(!isPng) return {Format:file.type||'image', Comment:'', Description:''};
-    const dv=new DataView(buf); let pos=8; const out={};
-    while(pos+12<=u.length){
-      const len=dv.getUint32(pos); const type=ascii(u.slice(pos+4,pos+8)); const data=u.slice(pos+8,pos+8+len); pos += 12+len;
-      try{
-        if(type==='tEXt'){
-          const z=data.indexOf(0); const key=latin1(data.slice(0,z)); const val=latin1(data.slice(z+1)); out[key]=val;
-        }else if(type==='iTXt'){
-          const parsed=parseITXt(data); if(parsed) out[parsed.key]=parsed.value;
-        }else if(type==='zTXt'){
-          const z=data.indexOf(0); const key=latin1(data.slice(0,z)); const compressed=data.slice(z+2);
-          if(window.DecompressionStream){
-            try{ const ds=new DecompressionStream('deflate'); const ab=await new Response(new Blob([compressed]).stream().pipeThrough(ds)).arrayBuffer(); out[key]=latin1(new Uint8Array(ab)); }catch(_){ out[key]=''; }
+    const out={Format:file.type||'image'};
+
+    // PNG: read ordinary text chunks first.
+    if(isPng){
+      const dv=new DataView(buf); let pos=8;
+      while(pos+12<=u.length){
+        const len=dv.getUint32(pos); const type=ascii(u.slice(pos+4,pos+8)); const data=u.slice(pos+8,pos+8+len); pos += 12+len;
+        try{
+          if(type==='tEXt'){
+            const z=data.indexOf(0); const key=latin1(data.slice(0,z)); const val=latin1(data.slice(z+1)); out[key]=val;
+          }else if(type==='iTXt'){
+            const parsed=parseITXt(data); if(parsed) out[parsed.key]=parsed.value;
+          }else if(type==='zTXt'){
+            const z=data.indexOf(0); const key=latin1(data.slice(0,z)); const compressed=data.slice(z+2);
+            if(window.DecompressionStream){
+              try{ const ds=new DecompressionStream('deflate'); const ab=await new Response(new Blob([compressed]).stream().pipeThrough(ds)).arrayBuffer(); out[key]=latin1(new Uint8Array(ab)); }catch(_){ out[key]=''; }
+            }
           }
-        }
-      }catch(err){console.warn('chunk parse failed',type,err)}
-      if(type==='IEND') break;
+        }catch(err){console.warn('chunk parse failed',type,err)}
+        if(type==='IEND') break;
+      }
     }
 
-    // NovelAI can also store generation metadata in the alpha-channel LSB
-    // ("stealth_pngcomp"). Only decode it when ordinary PNG text metadata
-    // does not already expose prompt data, avoiding extra work for normal files.
+    // NovelAI stealth metadata is stored in decoded image alpha-channel LSBs.
+    // It is NOT PNG-only: NovelAI WebP files can carry the same stealth_pngcomp
+    // payload, so non-PNG images must not return before this check.
     const ordinaryComment=out.Comment??out.comment;
     const hasOrdinaryPrompt=!!(
       (typeof ordinaryComment==='string' && ordinaryComment.trim()) ||
@@ -777,8 +781,8 @@ body:not(.is-home) .menu-btn{display:grid}
           out.__naiStealth=true;
         }
       }catch(err){
-        // Most PNGs do not contain NovelAI stealth metadata; silently fall back.
-        if(err?.message && !/magic|stealth|metadata/i.test(err.message)) console.warn('stealth metadata parse failed',err);
+        // Ordinary JPGs and most non-NAI images have no usable alpha stealth data.
+        if(err?.message && !/magic|stealth|metadata|alpha/i.test(err.message)) console.warn('stealth metadata parse failed',err);
       }
     }
     return out;
