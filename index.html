@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v1.0.1</title>
+  <title>NAI Archive v1.1.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -195,6 +195,89 @@ body:not(.is-home) .menu-btn{display:grid}
 .data-table th.sortable-head:hover{background:#f2f2f2}
 .data-table th.sortable-head>span:first-child{white-space:nowrap}
 .sort-arrow{display:inline-block;min-width:14px;margin-left:4px;font-size:9px;vertical-align:1px}
+</style>
+
+
+<style>
+/* Detail view refresh */
+.detail-topbar{gap:10px}
+.detail-title-wrap{min-width:0;flex:1}
+.detail-back-btn,.detail-top-fav{
+  border:0;background:transparent;color:#111;padding:5px;line-height:1;cursor:pointer
+}
+.detail-back-btn{font-size:23px;width:34px;text-align:left}
+.detail-top-fav{font-size:21px;width:34px;text-align:right}
+.detail-actions .btn{font-size:10px;padding:7px 10px;min-height:32px;border-radius:7px}
+.detail-content .mini-btn{font-size:9px;padding:5px 7px}
+.detail-content .panel-head>div{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.detail-content .copy-strip{position:static;background:none;padding:2px 0 8px;flex-wrap:wrap}
+.detail-content .copy-strip .btn{font-size:10px;padding:8px 10px}
+@media(max-width:900px){
+  .detail-modal{margin:0;padding:0;width:100vw;height:100dvh;max-width:none;max-height:none}
+  .detail-modal .modal-shell{
+    width:100vw!important;
+    height:100dvh!important;
+    max-height:none!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    display:block!important;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  .detail-modal .detail-topbar{
+    position:sticky;top:0;z-index:20;
+    min-height:54px;padding:8px 14px;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(10px);
+  }
+  .detail-modal .eyebrow{display:none}
+  .detail-modal .title-input{
+    width:100%;margin:0;padding:4px 0;
+    font-size:15px;text-align:center;
+    background:transparent;
+  }
+  .detail-grid{display:block!important;min-height:0!important}
+  .detail-media{
+    padding:12px 14px 14px!important;
+    border:0!important;border-bottom:1px solid var(--line)!important;
+    overflow:visible!important;
+  }
+  .detail-media img{
+    display:block;
+    width:auto!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    margin:0 auto;
+    object-fit:contain!important;
+    background:#f7f7f7;
+    border-radius:8px;
+  }
+  .detail-meta{gap:5px;margin-top:9px}
+  .meta-pill{font-size:8.5px;padding:4px 7px}
+  .detail-actions{gap:6px;margin-top:10px}
+  .detail-actions .btn{font-size:9.5px;padding:6px 9px;min-height:30px}
+  .detail-content{
+    padding:15px 14px calc(28px + var(--safe-b))!important;
+    overflow:visible!important;
+  }
+  .detail-content .panel{padding-bottom:14px;margin-bottom:14px}
+  .detail-content .panel-head{margin-bottom:7px;gap:8px}
+  .detail-content .panel h3{font-size:11px}
+  .detail-content .panel textarea{
+    min-height:92px;
+    max-height:none;
+    font-size:10.5px;
+    line-height:1.55;
+    padding:9px;
+  }
+  .detail-content #detailPrompt{min-height:180px}
+  .detail-content #detailUc{min-height:130px}
+  .detail-content #detailMemo{min-height:100px}
+}
 </style>
 
 </head>
@@ -413,15 +496,16 @@ body:not(.is-home) .menu-btn{display:grid}
 
   <dialog id="detailDialog" class="modal detail-modal">
     <form method="dialog" class="modal-shell">
-      <div class="modal-head">
-        <div><span class="eyebrow">ENTRY</span><input id="detailTitle" class="title-input" placeholder="제목 없음" /></div>
-        <button class="icon-btn close-btn" value="cancel" aria-label="닫기">×</button>
+      <div class="modal-head detail-topbar">
+        <button type="button" id="detailBackBtn" class="detail-back-btn" aria-label="갤러리로 돌아가기">←</button>
+        <div class="detail-title-wrap"><span class="eyebrow">DETAIL</span><input id="detailTitle" class="title-input" placeholder="제목 없음" /></div>
+        <button type="button" id="detailTopFav" class="detail-top-fav" aria-label="이미지 즐겨찾기">☆</button>
       </div>
       <div class="detail-grid">
         <div class="detail-media">
           <img id="detailImage" alt="등록 이미지" />
           <div class="detail-meta" id="detailMeta"></div>
-          <div class="detail-actions"><button type="button" id="detailFav" class="btn">☆ 이미지 즐겨찾기</button><button type="button" id="detailToFolder" class="btn">폴더에 추가</button><button type="button" id="saveCleanImage" class="btn">메타데이터 제거 저장</button><button type="button" id="addCompare" class="btn">Compare에 추가</button><button type="button" id="deleteEntry" class="btn danger">삭제</button></div>
+          <div class="detail-actions"><button type="button" id="detailFav" class="btn">☆ 즐겨찾기</button><button type="button" id="detailToFolder" class="btn">＋ 폴더</button><button type="button" id="addCompare" class="btn">＋ 비교</button><button type="button" id="saveCleanImage" class="btn">↓ 메타 제거 저장</button><button type="button" id="deleteEntry" class="btn danger">삭제</button></div>
         </div>
         <div class="detail-content">
           <section class="panel"><div class="panel-head"><h3>작가태그</h3><div><button type="button" id="bookmarkArtistsBtn" class="mini-btn">☆ 북마크</button><button type="button" class="mini-btn save-folder-btn" data-folder-source="artists">폴더 저장</button><button type="button" class="mini-btn copy-btn" data-copy="artists">복사</button></div></div><textarea id="detailArtists" rows="5"></textarea><div id="artistTokens" class="chip-wrap"></div></section>
@@ -550,6 +634,8 @@ body:not(.is-home) .menu-btn{display:grid}
   const els = {};
   let db;
   let saveTimer;
+  let detailHistoryActive=false;
+  let closingDetailFromHistory=false;
 
   document.addEventListener('DOMContentLoaded', init);
 
@@ -557,12 +643,19 @@ body:not(.is-home) .menu-btn{display:grid}
     mapEls(); bind();
     db = await openDB();
     await loadAll();
+    window.addEventListener('popstate',()=>{
+      if(detailHistoryActive && els.detailDialog?.open){
+        detailHistoryActive=false;
+        closingDetailFromHistory=true;
+        els.detailDialog.close();
+      }
+    });
     document.body.classList.add('is-home');
     render();
   }
 
   function mapEls(){
-    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderItemText','addFolderItemBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','toast'].forEach(id=>els[id]=$(`#${id}`));
+    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderItemText','addFolderItemBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','toast'].forEach(id=>els[id]=$(`#${id}`));
   }
 
   function bind(){
@@ -617,6 +710,16 @@ body:not(.is-home) .menu-btn{display:grid}
     els.selectedToFolderBtn.onclick=()=>openFolderPicker(state.selectedIds.map(id=>({type:'image',entryId:id})));
     els.detailToFolder.onclick=()=>openFolderPicker([{type:'image',entryId:state.currentId}]);
     els.saveCleanImage.onclick=saveCurrentImageWithoutMetadata;
+    els.detailBackBtn.onclick=()=>closeDetailDialog();
+    els.detailTopFav.onclick=toggleCurrentFavorite;
+    els.detailDialog.addEventListener('cancel',e=>{e.preventDefault();closeDetailDialog();});
+    els.detailDialog.addEventListener('close',()=>{
+      if(detailHistoryActive && !closingDetailFromHistory){
+        detailHistoryActive=false;
+        history.back();
+      }
+      closingDetailFromHistory=false;
+    });
     $$('.save-folder-btn').forEach(b=>b.onclick=()=>saveCurrentFieldToFolder(b.dataset.folderSource));
     els.selectModeBtn.onclick = () => {state.selectMode=!state.selectMode;if(!state.selectMode)state.selectedIds=[];renderLibrary();};
     els.cancelSelectBtn.onclick = () => {state.selectMode=false;state.selectedIds=[];renderLibrary();};
@@ -1284,14 +1387,33 @@ body:not(.is-home) .menu-btn{display:grid}
     const e=state.entries.find(x=>x.id===id); if(!e)return; state.currentId=id;
     els.detailTitle.value=e.title||''; revokeDetailObjectUrl(); els.detailImage.src=URL.createObjectURL(e.imageBlob); els.detailImage.dataset.url=els.detailImage.src;
     els.detailArtists.value=e.artistsText||''; els.detailPrompt.value=e.prompt||''; els.detailUc.value=e.uc||''; els.detailMemo.value=e.memo||'';
-    els.detailFav.textContent=e.favorite?'★ 이미지 즐겨찾기':'☆ 이미지 즐겨찾기'; els.addCompare.textContent=state.compareIds.includes(id)?'비교에서 제거':'비교에 추가';
+    const favMark=e.favorite?'★':'☆';
+    els.detailFav.textContent=`${favMark} 즐겨찾기`;
+    els.detailTopFav.textContent=favMark;
+    els.addCompare.textContent=state.compareIds.includes(id)?'− 비교':'＋ 비교';
     els.detailMeta.innerHTML=[e.model,e.seed!=null?`seed ${e.seed}`:'',e.steps!=null?`${e.steps} steps`:'',e.width&&e.height?`${e.width}×${e.height}`:''].filter(Boolean).map(x=>`<span class="meta-pill">${esc(x)}</span>`).join('');
-    renderDetailArtists(e); renderCharacterInputs(e); els.detailDialog.showModal();
+    renderDetailArtists(e); renderCharacterInputs(e);
+    if(!els.detailDialog.open){
+      history.pushState({naiDetail:true},'');
+      detailHistoryActive=true;
+      els.detailDialog.showModal();
+    }
+    requestAnimationFrame(()=>{const shell=els.detailDialog.querySelector('.modal-shell'); if(shell) shell.scrollTop=0;});
+  }
+
+  function closeDetailDialog(){
+    if(!els.detailDialog?.open)return;
+    if(detailHistoryActive){
+      history.back();
+    }else{
+      closingDetailFromHistory=true;
+      els.detailDialog.close();
+    }
   }
 
   function renderDetailArtists(e){
     els.artistTokens.innerHTML=(e.artists||[]).map(a=>`<button type="button" class="chip" data-name="${escAttr(a.name)}">${esc(a.name)} · ${a.weight}</button>`).join('');
-    els.artistTokens.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(!state.artistFilters.includes(n))state.artistFilters.push(n);els.detailDialog.close();setView('library');render();});
+    els.artistTokens.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(!state.artistFilters.includes(n))state.artistFilters.push(n);closeDetailDialog();setView('library');render();});
   }
   function renderCharacterInputs(e){
     const cps=e.characterPrompts?.length?e.characterPrompts:['']; els.characterPrompts.innerHTML=cps.map((p,i)=>`<div class="char-block"><div class="char-label">Character ${i+1}</div><textarea rows="6" data-index="${i}">${esc(p)}</textarea></div>`).join('');
@@ -1303,9 +1425,15 @@ body:not(.is-home) .menu-btn{display:grid}
     const e=state.entries.find(x=>x.id===state.currentId); if(!e)return;
     e.title=els.detailTitle.value.trim(); e.artistsText=els.detailArtists.value; e.artists=splitArtistTags(els.detailArtists.value).artists; e.prompt=els.detailPrompt.value; e.uc=els.detailUc.value; e.memo=els.detailMemo.value; e.characterPrompts=[...els.characterPrompts.querySelectorAll('textarea')].map(x=>x.value).filter((x,i,a)=>x.trim()||a.length===1); e.updatedAt=Date.now(); await txPut(STORE_ENTRIES,e); renderDetailArtists(e); render();
   }
-  async function toggleCurrentFavorite(){await toggleFavorite(state.currentId);const e=state.entries.find(x=>x.id===state.currentId);els.detailFav.textContent=e.favorite?'★ 이미지 즐겨찾기':'☆ 이미지 즐겨찾기'}
+  async function toggleCurrentFavorite(){
+    await toggleFavorite(state.currentId);
+    const e=state.entries.find(x=>x.id===state.currentId); if(!e)return;
+    const mark=e.favorite?'★':'☆';
+    els.detailFav.textContent=`${mark} 즐겨찾기`;
+    els.detailTopFav.textContent=mark;
+  }
   async function toggleFavorite(id){const e=state.entries.find(x=>x.id===id);if(!e)return;e.favorite=!e.favorite;await txPut(STORE_ENTRIES,e);render();}
-  function toggleCompare(id,force){const has=state.compareIds.includes(id);const next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(id);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==id);render();if(state.currentId===id)els.addCompare.textContent=state.compareIds.includes(id)?'Compare에서 제거':'Compare에 추가';}
+  function toggleCompare(id,force){const has=state.compareIds.includes(id);const next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(id);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==id);render();if(state.currentId===id)els.addCompare.textContent=state.compareIds.includes(id)?'− 비교':'＋ 비교';}
 
   function toggleSelected(id,force){
     const has=state.selectedIds.includes(id); const next=force!==undefined?force:!has;
@@ -1358,7 +1486,7 @@ body:not(.is-home) .menu-btn{display:grid}
     state.selectedIds=[]; state.selectMode=false; render(); toast(`${ids.length}개 삭제했습니다.`);
   }
 
-  async function deleteCurrent(){const e=state.entries.find(x=>x.id===state.currentId);if(!e||!confirm('이 항목을 도감에서 삭제할까요?'))return;await txDel(STORE_ENTRIES,e.id);state.entries=state.entries.filter(x=>x.id!==e.id);state.compareIds=state.compareIds.filter(x=>x!==e.id);let folderChanged=false;state.folders.forEach(f=>{const before=(f.items||[]).length;f.items=(f.items||[]).filter(it=>!(it.type==='image'&&it.entryId===e.id));if(f.items.length!==before){f.updatedAt=Date.now();folderChanged=true;}});if(folderChanged)await persistFolders();els.detailDialog.close();render();toast('삭제했습니다.');}
+  async function deleteCurrent(){const e=state.entries.find(x=>x.id===state.currentId);if(!e||!confirm('이 항목을 도감에서 삭제할까요?'))return;await txDel(STORE_ENTRIES,e.id);state.entries=state.entries.filter(x=>x.id!==e.id);state.compareIds=state.compareIds.filter(x=>x!==e.id);let folderChanged=false;state.folders.forEach(f=>{const before=(f.items||[]).length;f.items=(f.items||[]).filter(it=>!(it.type==='image'&&it.entryId===e.id));if(f.items.length!==before){f.updatedAt=Date.now();folderChanged=true;}});if(folderChanged)await persistFolders();closeDetailDialog();render();toast('삭제했습니다.');}
 
   function copyCurrent(type){const e=state.entries.find(x=>x.id===state.currentId);if(!e)return;let text='';if(type==='artists')text=e.artistsText;if(type==='prompt')text=e.prompt;if(type==='characters')text=(e.characterPrompts||[]).join('\n\n');if(type==='uc')text=e.uc;if(type==='stylePrompt')text=[e.artistsText,e.prompt].filter(Boolean).join('\n\n');if(type==='all')text=[`[ARTISTS]\n${e.artistsText}`,`[PROMPT]\n${e.prompt}`,...(e.characterPrompts||[]).map((x,i)=>`[CHARACTER ${i+1}]\n${x}`),`[UC]\n${e.uc}`].join('\n\n');navigator.clipboard.writeText(text||'').then(()=>toast('복사했습니다.'));}
 
