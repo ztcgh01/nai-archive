@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v0.9.4</title>
+  <title>NAI Archive v0.9.6</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -160,6 +160,16 @@ body:not(.is-home) .menu-btn{display:grid}
     margin-left:auto;
     white-space:nowrap;
   }
+}
+</style>
+
+
+<style>
+.add-new-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.add-new-actions .btn{white-space:nowrap}
+@media(max-width:520px){
+  .add-new-actions{display:grid;grid-template-columns:1fr;max-width:260px;margin:14px auto 0}
+  .add-new-actions .btn{width:100%}
 }
 </style>
 
@@ -339,7 +349,15 @@ body:not(.is-home) .menu-btn{display:grid}
         <div class="add-shell">
           <div class="add-hero"><div class="portal-kicker">03 / IMPORT PNG</div><h1>Add New</h1><p>NovelAI 이미지의 메타데이터를 읽어 작가태그, Prompt, Character Prompt, UC를 자동으로 정리합니다.</p></div>
           <div id="dropzone" class="dropzone">
-            <div><div class="drop-plus">＋</div><strong>이미지를 놓거나 눌러서 선택</strong><p>PNG 다중 등록 지원 · 중복 이미지는 자동 제외</p><button id="addChooseBtn" class="btn primary" type="button">이미지 선택</button></div>
+            <div>
+              <div class="drop-plus">＋</div>
+              <strong>이미지를 놓거나 눌러서 선택</strong>
+              <p>사진 선택 또는 파일 · ZIP 대량 등록 · 중복 이미지는 자동 제외</p>
+              <div class="add-new-actions">
+                <button id="addChooseBtn" class="btn primary" type="button">사진 선택</button>
+                <button id="addBulkChooseBtn" class="btn" type="button">파일 · ZIP 대량 등록</button>
+              </div>
+            </div>
           </div>
           <div id="addStatus" class="add-status"></div>
         </div>
@@ -518,12 +536,13 @@ body:not(.is-home) .menu-btn{display:grid}
   }
 
   function mapEls(){
-    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderItemText','addFolderItemBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','toast'].forEach(id=>els[id]=$(`#${id}`));
+    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderItemText','addFolderItemBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','toast'].forEach(id=>els[id]=$(`#${id}`));
   }
 
   function bind(){
     els.emptyImportBtn.onclick = () => setView('add');
     els.addChooseBtn.onclick = () => els.fileInput.click();
+    els.addBulkChooseBtn.onclick = () => els.galleryZipInput.click();
     els.galleryAddMenuBtn.onclick=()=>els.galleryAddDialog.showModal();
     els.closeGalleryAddDialogBtn.onclick=()=>els.galleryAddDialog.close();
     els.galleryPhotoPickBtn.onclick=()=>{els.galleryAddDialog.close(); els.fileInput.click();};
@@ -532,7 +551,7 @@ body:not(.is-home) .menu-btn{display:grid}
     els.dropzone.onclick = e => { if(e.target.closest('button')) return; els.fileInput.click(); };
     ['dragenter','dragover'].forEach(t=>els.dropzone.addEventListener(t,e=>{e.preventDefault();els.dropzone.classList.add('drag')}));
     ['dragleave','drop'].forEach(t=>els.dropzone.addEventListener(t,e=>{e.preventDefault();els.dropzone.classList.remove('drag')}));
-    els.dropzone.addEventListener('drop',e=>importImages(e.dataTransfer.files));
+    els.dropzone.addEventListener('drop',e=>importMixedBulkFiles(e.dataTransfer.files));
     $$('.portal-card').forEach(b=>b.onclick=()=>setView(b.dataset.go));
     els.fileInput.onchange = e => importImages(e.target.files);
     els.folderImportInput.onchange = e => importImages(e.target.files, {source:'folder'});
@@ -1704,7 +1723,7 @@ body:not(.is-home) .menu-btn{display:grid}
       const names=Object.keys(zip.files).filter(n=>!zip.files[n].dir && /\.(png|jpe?g|webp)$/i.test(n));
       stats.total=names.length;
       if(!names.length)return stats;
-      const batchSize=60;
+      const batchSize=80;
       for(let i=0;i<names.length;i+=batchSize){
         const slice=names.slice(i,i+batchSize);
         const files=[];
