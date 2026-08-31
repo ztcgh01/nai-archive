@@ -1,0 +1,2118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>NAI Archive v0.9.2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#fff;--paper:#fff;--ink:#111;--muted:#737373;--line:#171717;--hair:#e8e8e8;--soft:#f2f2f2;--soft2:#fafafa;--danger:#111;--radius:10px;--shadow:0 18px 48px rgba(0,0,0,.08);--safe-b:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,"Noto Sans KR",sans-serif;background:#fff;color:var(--ink);letter-spacing:-.02em}button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}.hidden{display:none!important}
+.topbar{height:58px;position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 18px}.brand-wrap{justify-self:start}.brand{justify-self:center;font-size:12px;font-weight:900;letter-spacing:.16em}.top-actions{justify-self:end;display:flex;align-items:center;gap:7px}.count-pill,.mini-count{border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800;background:#fff}.menu-btn{width:36px;height:36px;border:1px solid var(--line);background:#fff;border-radius:7px;display:grid;place-items:center;padding:0}.menu-btn:before,.menu-btn:after,.menu-btn span{content:"";display:block;width:15px;height:1px;background:#111}.menu-btn span{margin:4px 0}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 58px)}.sidebar{border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:58px;height:calc(100vh - 58px);overflow:auto;background:#fff}.nav-group{display:grid;gap:2px}.nav-item{border:0;border-bottom:1px solid var(--hair);background:#fff;text-align:left;padding:12px 6px;font-weight:760;display:flex;justify-content:space-between}.nav-item:hover{background:#fafafa}.nav-item.active{background:#111;color:#fff;padding-left:11px;padding-right:11px;border-bottom-color:#111}.side-section{border-top:1px solid var(--line);margin-top:24px;padding-top:16px}.side-title{font-size:11px;font-weight:820;letter-spacing:.03em;margin-bottom:10px}.segmented{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}.segmented button{flex:1;border:0;border-right:1px solid var(--line);background:#fff;padding:7px}.segmented button:last-child{border-right:0}.segmented button.active{background:#111;color:#fff}.check-line{display:flex;gap:8px;align-items:center;font-size:12px;margin:9px 0}.main{padding:34px 30px calc(40px + var(--safe-b));min-width:0}.view{display:none}.view.active{display:block}
+.toolbar,.subtoolbar,.section-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.search-box{flex:1;max-width:800px;background:#fff;border:1px solid var(--line);border-radius:7px;display:flex;align-items:center}.search-box input{width:100%;border:0;background:transparent;outline:0;padding:12px 13px}.icon-btn{border:0;background:transparent;font-size:20px;line-height:1;padding:8px}.btn,.mini-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 12px;font-weight:720}.btn:hover,.mini-btn:hover{background:#f5f5f5}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.danger{color:#111;border-style:dashed}.btn.danger:hover{background:#111;color:#fff}.btn.small,.mini-btn{font-size:11px;padding:7px 9px}.btn.active{background:#111;color:#fff}.btn:disabled{opacity:.35;cursor:default}.text-btn{border:0;background:transparent;color:var(--muted);font-size:11px;text-decoration:underline;text-underline-offset:3px}.select{border:1px solid var(--line);border-radius:7px;background:#fff;padding:10px 11px}.tabs{display:flex;border-bottom:1px solid var(--line);gap:0}.tab{border:0;background:#fff;padding:8px 13px;font-weight:800;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}.tab.active{color:#111;border-bottom-color:#111}.right-tools,.row-between,.bulk-left,.bulk-actions{display:flex;align-items:center;gap:9px}.field-panel{display:flex;gap:13px;flex-wrap:wrap;background:#fafafa;border:1px solid var(--line);border-radius:7px;padding:12px 14px;margin-bottom:14px;font-size:11px}.bulk-bar{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);background:#111;color:#fff;border-radius:7px;padding:9px 10px;margin-bottom:14px;font-size:11px}.bulk-bar .text-btn{color:#fff}.bulk-bar .btn{border-color:#fff}.bulk-bar .btn.danger{background:#fff;color:#111;border-style:solid}.bulk-bar .btn:not(.danger){background:#111;color:#fff}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.14s transform,.14s box-shadow;position:relative}.card:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.06)}.card.selection-mode:has(.card-check:checked){outline:2px solid #111;outline-offset:2px}.thumb{aspect-ratio:4/5;background:#f2f2f2;overflow:hidden;position:relative}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.card-body{padding:10px 11px 11px;border-top:1px solid var(--hair)}.card-title{font-weight:780;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-sub{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-controls{position:absolute;top:8px;right:8px;display:flex;gap:5px}.round{width:30px;height:30px;border-radius:50%;border:1px solid #111;background:rgba(255,255,255,.93);color:#111;display:grid;place-items:center}.check-badge{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.94);border:1px solid #111;border-radius:999px;padding:5px 7px;display:flex;align-items:center;gap:5px;font-size:8px;font-weight:900;letter-spacing:.08em}.check-badge input{width:13px;height:13px;accent-color:#111;margin:0}
+.list-wrap{overflow:auto;border:1px solid var(--line);border-radius:7px;background:#fff}.data-table{border-collapse:collapse;width:100%;font-size:11px}.data-table th,.data-table td{padding:10px 11px;border-bottom:1px solid var(--hair);vertical-align:top;text-align:left}.data-table th{position:sticky;top:0;background:#f7f7f7;z-index:2;font-size:10px;border-bottom:1px solid var(--line)}.table-thumb{width:64px;height:76px;object-fit:cover;border-radius:5px;border:1px solid var(--hair)}.clamp{max-width:360px;max-height:100px;overflow:hidden;white-space:pre-wrap}.empty{text-align:center;padding:92px 20px}.empty-mark{width:54px;height:54px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:24px}.empty h2{font-size:18px}.empty p,.section-head p,.muted-note{color:var(--muted);font-size:11px}.section-head{padding-bottom:13px;border-bottom:1px solid var(--line)}.section-head h1{margin:0 0 4px;font-size:30px;letter-spacing:-.05em}.minor-title{font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.08em}.bookmark-layout{display:grid;gap:30px}.bookmark-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.bookmark-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:13px}.bookmark-card strong{display:block;margin-bottom:6px}.bookmark-code{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4b4b4b;white-space:pre-wrap;max-height:120px;overflow:auto}.bookmark-actions{display:flex;gap:6px;margin-top:10px}.chip-wrap{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 8px;font-size:10px}.chip.active{background:#111;color:#fff;border-color:#111}
+.modal{border:0;padding:0;background:transparent;max-width:none;max-height:none}.modal::backdrop{background:rgba(0,0,0,.48);backdrop-filter:blur(3px)}.modal-shell{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}.detail-modal .modal-shell{width:min(1180px,94vw);height:min(88vh,900px);display:flex;flex-direction:column}.small-modal .modal-shell{width:min(540px,92vw)}.modal-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:13px 17px}.eyebrow{font-size:8px;letter-spacing:.16em;color:var(--muted)}.title-input{border:0;font-weight:850;font-size:18px;display:block;margin-top:2px;outline:0}.detail-grid{display:grid;grid-template-columns:minmax(320px,42%) 1fr;min-height:0;flex:1}.detail-media{padding:15px;border-right:1px solid var(--line);overflow:auto}.detail-media img{width:100%;max-height:65vh;object-fit:contain;background:#f2f2f2;border-radius:7px;border:1px solid var(--hair)}.detail-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.meta-pill{border:1px solid var(--line);border-radius:999px;padding:4px 7px;font-size:9px;color:var(--muted)}.detail-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.detail-content{padding:16px;overflow:auto}.panel{border-bottom:1px solid var(--line);padding:0 0 16px;margin-bottom:16px}.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.panel h3{font-size:11px;margin:0;letter-spacing:.02em}.panel textarea,.field-label textarea,.field-label input{width:100%;border:1px solid var(--line);background:#fafafa;border-radius:7px;padding:10px;resize:vertical;outline:0;font:11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}.panel textarea:focus,.field-label textarea:focus,.field-label input:focus{background:#fff;box-shadow:inset 0 0 0 1px #111}.char-block{position:relative;margin-bottom:8px}.char-label{font-size:9px;color:var(--muted);margin-bottom:5px}.autosave{font-size:9px;color:var(--muted)}.copy-strip{display:flex;gap:8px;position:sticky;bottom:-16px;background:linear-gradient(transparent,#fff 28%);padding:24px 0 4px}.field-label{display:block;padding:12px 18px;font-size:11px;font-weight:750}.field-label input,.field-label textarea{display:block;margin-top:7px;font-weight:400}.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:15px 18px;border-top:1px solid var(--line)}.hint-card{border:1px dashed #777;border-radius:8px;padding:15px;color:var(--muted);font-size:12px}.compare-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.compare-card{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}.compare-card img{width:100%;aspect-ratio:4/5;object-fit:cover}.compare-card .pad{padding:10px}.compare-diff{margin-top:16px}.diff-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:11px}.diff-table th,.diff-table td{border:1px solid var(--line);padding:8px;text-align:left}.diff-changed{font-weight:900;background:#e9e9e9}.toast{position:fixed;right:18px;bottom:18px;background:#111;color:#fff;border:1px solid #111;padding:10px 13px;border-radius:7px;font-size:11px;opacity:0;transform:translateY(6px);pointer-events:none;transition:.2s;z-index:100}.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{position:fixed;z-index:50;left:0;top:58px;width:240px;transform:translateX(-105%);transition:.2s;box-shadow:var(--shadow)}.sidebar.open{transform:translateX(0)}.main{padding:20px 18px}.top-actions .btn:not(.primary){display:none}.detail-grid{grid-template-columns:1fr}.detail-media{border-right:0;border-bottom:1px solid var(--line)}.compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.topbar{padding:0 10px}.top-actions{gap:5px}.top-actions .primary{font-size:10px;padding:7px 8px}.brand{font-size:10px}.gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.toolbar{align-items:stretch;flex-direction:column}.select{width:100%}.subtoolbar{align-items:flex-end}.right-tools{gap:5px;flex-wrap:wrap;justify-content:flex-end}.bulk-bar{align-items:flex-start;gap:8px}.bulk-left,.bulk-actions{flex-wrap:wrap}.detail-modal .modal-shell{width:100vw;height:100vh;border-radius:0}.compare-grid{grid-template-columns:1fr}.section-head h1{font-size:25px}}
+
+/* v0.5 portal shell */
+body{background:#fff}
+.topbar{display:none!important}
+.shell{display:block;min-height:100vh}
+.main{padding:0;min-height:100vh}
+.view{min-height:100vh;padding:72px clamp(20px,4vw,58px) calc(48px + var(--safe-b))}
+#homeView.view{padding:0}
+.menu-btn{position:fixed;z-index:70;left:22px;top:22px;width:28px;height:24px;border:0;border-radius:0;background:transparent;display:none;place-items:center;padding:2px}
+.menu-btn:before,.menu-btn:after,.menu-btn span{content:"";display:block;width:22px;height:1.5px;background:#111;border-radius:0;transition:.18s transform,.18s opacity}
+.menu-btn span{margin:4.5px 0}.menu-btn.open:before{transform:translateY(6px) rotate(45deg)}.menu-btn.open span{opacity:0}.menu-btn.open:after{transform:translateY(-6px) rotate(-45deg)}
+body:not(.is-home) .menu-btn{display:grid}
+.sidebar{position:fixed;z-index:60;left:0;top:0;width:min(300px,82vw);height:100vh;padding:82px 26px 28px;border-right:1px solid #111;background:#fff;transform:translateX(-102%);transition:.22s ease;overflow:auto;box-shadow:none}
+.sidebar.open{transform:translateX(0)}
+.sidebar-brand{font-size:9px;letter-spacing:.18em;font-weight:800;margin-bottom:28px}.nav-item{padding:15px 0;border-bottom:1px solid #e8e8e8;font-size:14px;font-weight:650}.nav-item.active{background:#fff;color:#111;padding-left:0;padding-right:0;border-bottom-color:#111}.nav-index{font-size:9px;color:#999;letter-spacing:.08em}.side-section.library-filter{display:none}.side-utility{margin-top:34px;padding-top:16px;border-top:1px solid #111;display:grid;gap:3px}.utility-btn{border:0;background:#fff;text-align:left;padding:10px 0;font-size:11px;color:#555}.utility-btn:hover{color:#111}
+.portal{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;padding:clamp(24px,4vw,64px);gap:0;background:#fff}.portal-card{--accent:#eef4ff;border:0;background:#fff;position:relative;text-align:left;padding:clamp(24px,4.5vw,66px);display:grid;grid-template-rows:auto 1fr auto;min-height:42vh;overflow:hidden;isolation:isolate}.portal-card:nth-child(1),.portal-card:nth-child(3){border-right:1px solid #ededed}.portal-card:nth-child(-n+2){border-bottom:1px solid #ededed}.portal-card:nth-child(1){--accent:#eaf4ff}.portal-card:nth-child(2){--accent:#f0edff}.portal-card:nth-child(3){--accent:#edf7f1}.portal-card:nth-child(4){--accent:#fff0f6}.portal-kicker{font-size:10px;letter-spacing:.21em;color:#7f7f7f;text-transform:uppercase;position:relative;z-index:2}.portal-icon-wrap{align-self:center;justify-self:center;width:clamp(112px,16vw,210px);aspect-ratio:1;border-radius:50%;background:var(--accent);display:grid;place-items:center;transition:.24s transform,.24s background;position:relative}.portal-icon{width:48%;height:48%;display:block;stroke:#111;fill:none;stroke-width:1.55;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}.portal-card:hover .portal-icon-wrap{transform:translateY(-4px) scale(1.025)}.portal-label{display:flex;align-items:end;justify-content:space-between;gap:12px;position:relative;z-index:2}.portal-title{font-size:clamp(18px,2.2vw,30px);line-height:1;letter-spacing:-.045em;font-weight:620;margin:0}.portal-arrow{font-size:20px;font-weight:300;transition:.18s transform}.portal-card:hover .portal-arrow{transform:translateX(5px)}
+.section-head h1{font-size:clamp(32px,4vw,54px);font-weight:580}.section-head{margin-top:8px}.add-shell{max-width:860px;margin:0 auto}.add-hero{margin:4vh 0 34px}.add-hero h1{font-size:clamp(42px,7vw,84px);letter-spacing:-.07em;font-weight:560;margin:0 0 10px}.add-hero p{font-size:11px;color:#777}.dropzone{min-height:360px;border:1px solid #111;display:grid;place-items:center;text-align:center;padding:34px;background:#fff;transition:.15s}.dropzone.drag{background:#f7f7f7}.drop-plus{font-size:58px;font-weight:200;line-height:1;margin-bottom:18px}.dropzone strong{display:block;font-size:14px;margin-bottom:7px}.dropzone p{font-size:10px;color:#888;margin:0 0 20px}.add-status{font-size:10px;color:#777;margin-top:12px;text-align:center}
+@media(max-width:900px){.sidebar{top:0;height:100vh}.main{padding:0}.view{padding:70px 18px calc(36px + var(--safe-b))}.portal{padding:18px}.menu-btn{left:16px;top:18px}}
+@media(max-width:560px){.portal{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;padding:0}.portal-card{min-height:50vh;padding:26px 18px}.portal-card:nth-child(1),.portal-card:nth-child(3){border-right:1px solid #ededed}.portal-kicker{font-size:8px;letter-spacing:.16em}.portal-icon-wrap{width:clamp(92px,30vw,136px)}.portal-title{font-size:clamp(17px,5vw,24px)}.portal-arrow{font-size:18px}.view{padding-left:16px;padding-right:16px}.toolbar{margin-top:4px}.add-hero{margin-top:2vh}.dropzone{min-height:320px}}
+
+
+/* v0.5 library + display type */
+.portal-title,.add-hero h1{font-family:"Caveat",cursive;font-weight:600;letter-spacing:-.035em}.portal-title{font-size:clamp(34px,4.4vw,64px)}
+.portal-kicker{font-family:Inter,ui-sans-serif,sans-serif;letter-spacing:.18em}.portal-card:nth-child(4){--accent:#fff1f5}
+.library-hub{max-width:1180px;margin:0 auto}.library-head{display:flex;align-items:end;justify-content:space-between;gap:18px;padding:8px 0 22px;border-bottom:1px solid #111}.library-head h1{font-family:"Caveat",cursive;font-size:58px;line-height:.9;margin:0;font-weight:600}.library-head p{margin:8px 0 0;color:#777;font-size:11px}.folder-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:20px}.folder-card{border:1px solid #111;background:#fff;min-height:170px;padding:16px;display:flex;flex-direction:column;text-align:left;position:relative}.folder-card:hover{background:#fafafa}.folder-card .folder-mark{width:38px;height:29px;border:1.4px solid #111;border-radius:2px;position:relative;margin-bottom:30px}.folder-card .folder-mark:before{content:"";position:absolute;left:-1.4px;top:-8px;width:17px;height:8px;border:1.4px solid #111;border-bottom:0;border-radius:2px 2px 0 0;background:#fff}.folder-name{font-size:19px;font-weight:650}.folder-meta{font-size:9px;color:#888;letter-spacing:.12em;text-transform:uppercase;margin-top:5px}.folder-star{position:absolute;right:13px;top:11px;border:0;background:transparent;font-size:21px;padding:4px}.folder-empty{grid-column:1/-1;padding:70px 20px;text-align:center;color:#888;font-size:12px;border-bottom:1px solid #e8e8e8}.folder-dialog .modal-shell{width:min(920px,94vw);max-height:88vh;display:flex;flex-direction:column}.folder-body{padding:18px;overflow:auto}.folder-items{display:grid;gap:8px}.folder-item{border:1px solid #e0e0e0;padding:11px 12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start}.folder-type{font-size:8px;letter-spacing:.13em;color:#888;padding-top:3px}.folder-content{font-size:11px;line-height:1.55;white-space:pre-wrap;word-break:break-word}.folder-content img{width:90px;height:110px;object-fit:cover;border:1px solid #eee}.folder-item-actions{display:flex;gap:4px}.folder-compose{border-top:1px solid #111;padding:14px 18px;display:grid;grid-template-columns:130px 1fr auto;gap:8px}.folder-compose select,.folder-compose textarea{border:1px solid #111;background:#fff;padding:9px;font-size:11px}.folder-compose textarea{resize:vertical;min-height:42px}.folder-image-picker{grid-column:2/3}.folder-image-picker select{width:100%}.bookmarked-folder-grid{margin-bottom:28px}
+@media(max-width:560px){.portal-title{font-size:38px}.library-head h1{font-size:50px}.folder-grid{grid-template-columns:1fr 1fr;gap:8px}.folder-card{min-height:145px;padding:13px}.folder-compose{grid-template-columns:1fr}.folder-image-picker{grid-column:auto}.folder-card .folder-mark{margin-bottom:22px}}
+
+
+/* v0.6 home balance + flexible library */
+.portal-card{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:clamp(17px,2.3vw,30px);text-align:center!important}
+.portal-icon-wrap{margin:0!important;align-self:auto!important;justify-self:auto!important;flex:0 0 auto}
+.portal-label{display:flex!important;flex-direction:column;align-items:center!important;justify-content:center!important;gap:6px!important}
+.portal-title{font-family:"Young Serif",serif!important;font-weight:400!important;font-size:clamp(24px,2.75vw,40px)!important;line-height:1.02!important;letter-spacing:-.035em!important;text-align:center!important}
+.portal-sub{font-family:Inter,ui-sans-serif,sans-serif;font-size:9px;line-height:1;letter-spacing:.16em;color:#888;font-weight:500;text-align:center}
+.portal-arrow,.portal-card>.portal-kicker{display:none!important}
+.add-hero h1,.library-head h1{font-family:"Young Serif",serif!important;font-weight:400!important;letter-spacing:-.035em!important}
+.library-head h1{font-size:48px!important}
+.folder-card{min-height:160px}.folder-type-summary{margin-top:auto;padding-top:18px;font-size:8px;color:#8b8b8b;letter-spacing:.09em;line-height:1.5;text-transform:uppercase}
+.folder-type-filters{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee}.folder-type-filters button{border:1px solid #ddd;background:#fff;padding:5px 8px;font-size:8px;letter-spacing:.08em}.folder-type-filters button.active{background:#111;color:#fff;border-color:#111}
+.folder-item{border-color:#e8e8e8}.folder-item[data-kind="artist"]{border-left:2px solid #111}.folder-type{min-width:48px}.folder-item-actions .mini-btn{padding:5px 7px}.folder-edit-area{width:100%;min-height:90px;border:1px solid #111;padding:8px;font:11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical}
+.pick-title{font-size:18px;margin:2px 0 0}.pick-body{padding:16px 18px}.pick-body .field-label{padding:0}.pick-body select{width:100%;margin-top:7px}.pick-or{text-align:center;font-size:8px;letter-spacing:.16em;color:#aaa;margin:10px 0}.pick-summary{margin-top:14px;border-top:1px solid #eee;padding-top:12px;font-size:10px;line-height:1.55;color:#666}.save-folder-btn{margin-right:4px}
+@media(max-width:560px){.portal-card{gap:15px}.portal-title{font-size:clamp(23px,6.4vw,30px)!important}.portal-sub{font-size:8px;letter-spacing:.13em}.library-head{align-items:flex-start}.library-head h1{font-size:40px!important}.folder-card{min-height:140px}.folder-type-summary{padding-top:12px}}
+
+</style>
+
+<style>
+.export-choice{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #e8e8e8;cursor:pointer}
+.export-choice input{margin-top:3px}.export-choice span{display:flex;flex-direction:column;gap:3px}.export-choice b{font-size:12px}.export-choice small{font-size:10px;color:#777;line-height:1.45}
+.export-fields{margin-top:16px;padding:12px;background:#fafafa;border:1px solid #e8e8e8;border-radius:8px;display:grid;grid-template-columns:1fr 1fr;gap:9px;font-size:11px}
+.export-fields>b{grid-column:1/-1}.backup-folder-choices{margin-top:12px;max-height:220px;overflow:auto;border:1px solid #e8e8e8;border-radius:8px;padding:8px}
+.backup-folder-choices label{display:flex;gap:8px;padding:8px;font-size:11px;border-bottom:1px solid #f2f2f2}.backup-folder-choices label:last-child{border-bottom:0}
+@media(max-width:560px){.compare-head-actions{display:flex;flex-wrap:wrap;gap:5px}.compare-head-actions .btn{font-size:9px;padding:7px 8px}.export-fields{grid-template-columns:1fr}}
+</style>
+
+
+<style>
+.import-progress{margin:-4px 0 14px;border:1px solid #e8e8e8;border-radius:7px;padding:9px 10px;background:#fafafa}.import-progress-top{display:flex;justify-content:space-between;gap:12px;font-size:10px;color:#555;margin-bottom:7px}.import-progress-track{height:3px;background:#e8e8e8;overflow:hidden;border-radius:99px}.import-progress-track i{display:block;width:0;height:100%;background:#111;transition:width .12s linear}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.primary:hover{background:#222}@media(max-width:560px){#libraryView .subtoolbar{align-items:flex-start}#libraryView .right-tools{flex-wrap:wrap;justify-content:flex-end;gap:5px}#galleryAddBtn,#galleryFolderAddBtn{order:-2}#resultCount{width:100%;text-align:right}}
+</style>
+</head>
+<body>
+  <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
+  <input id="fileInput" type="file" accept="image/png,image/jpeg" multiple hidden />
+  <input id="folderImportInput" type="file" accept="image/png,image/jpeg" multiple webkitdirectory directory hidden />
+  
+  <dialog id="backupDialog" class="modal small-modal">
+    <div class="modal-shell">
+      <div class="modal-head"><div><span class="eyebrow">BACKUP</span><h2 style="margin:2px 0 0">백업 범위</h2></div><button class="icon-btn" id="closeBackupBtn">×</button></div>
+      <div style="padding:18px">
+        <label class="export-choice"><input type="radio" name="backupScope" value="all" checked><span><b>전체 백업</b><small>Gallery · Library · Bookmark · Preset 전체</small></span></label>
+        <label class="export-choice"><input type="radio" name="backupScope" value="gallery"><span><b>Gallery 선택 백업</b><small>현재 Gallery에서 선택한 이미지만</small></span></label>
+        <label class="export-choice"><input type="radio" name="backupScope" value="folders"><span><b>Library 폴더 선택 백업</b><small>선택한 폴더와 폴더가 참조하는 Gallery 이미지 포함</small></span></label>
+        <div id="backupFolderChoices" class="backup-folder-choices hidden"></div>
+      </div>
+      <div class="modal-foot"><button id="runBackupBtn" class="btn primary">백업 ZIP 만들기</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="exportDialog" class="modal small-modal">
+    <div class="modal-shell">
+      <div class="modal-head"><div><span class="eyebrow">EXPORT</span><h2 style="margin:2px 0 0">내보내기</h2></div><button class="icon-btn" id="closeExportBtn">×</button></div>
+      <div style="padding:18px">
+        <label class="export-choice"><input type="radio" name="exportScope" value="filtered" checked><span><b>현재 Gallery 결과 PDF</b><small>검색 · 필터가 적용된 현재 결과</small></span></label>
+        <label class="export-choice"><input type="radio" name="exportScope" value="selected"><span><b>선택 이미지 PDF</b><small>Gallery 선택 모드에서 고른 이미지만</small></span></label>
+        <label class="export-choice"><input type="radio" name="exportScope" value="atlas-filtered"><span><b>작가태그 도감 PDF</b><small>현재 Gallery 결과를 이미지 + 작가태그만 정리</small></span></label>
+        <label class="export-choice"><input type="radio" name="exportScope" value="atlas-selected"><span><b>선택 작가태그 도감 PDF</b><small>선택한 이미지만 이미지 + 작가태그로 정리</small></span></label>
+        <label class="export-choice"><input type="radio" name="exportScope" value="atlas-image"><span><b>작가태그 도감 이미지</b><small>현재 Gallery 결과를 긴 PNG 한 장으로 저장</small></span></label>
+        <div class="export-fields">
+          <b>PDF에 포함할 정보</b>
+          <label><input type="checkbox" data-export-field="artists" checked> 작가태그</label>
+          <label><input type="checkbox" data-export-field="prompt" checked> Prompt</label>
+          <label><input type="checkbox" data-export-field="characters" checked> Character Prompt</label>
+          <label><input type="checkbox" data-export-field="uc" checked> UC</label>
+          <label><input type="checkbox" data-export-field="memo" checked> 메모</label>
+        </div>
+      </div>
+      <div class="modal-foot"><button id="runExportBtn" class="btn primary">PDF 만들기</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="comparePickerDialog" class="modal compare-picker-dialog">
+    <div class="modal-shell">
+      <div class="modal-head">
+        <div><span class="eyebrow">COMPARE</span><h2 class="compare-picker-title">이미지 불러오기</h2></div>
+        <button class="icon-btn close-btn" id="closeComparePickerBtn" type="button">×</button>
+      </div>
+      <div class="compare-picker-tools">
+        <input id="comparePickerSearch" type="search" placeholder="제목 · 작가태그 검색">
+        <div class="compare-picker-bulk"><button id="comparePickerSelectAll" type="button" class="btn small">전체 선택</button><button id="comparePickerClearAll" type="button" class="btn small">전체 취소</button></div>
+      </div>
+      <div class="compare-drag-hint">이미지를 꾹 누른 뒤 손을 떼지 않고 쓸어 여러 장을 선택할 수 있습니다.</div>
+      <div id="comparePickerGrid" class="compare-picker-grid"></div>
+      <div class="compare-picker-footer">
+        <span id="comparePickerCount" class="muted-note">0개 선택</span>
+        <button id="confirmComparePickerBtn" type="button" class="btn primary">선택 완료</button>
+      </div>
+    </div>
+  </dialog>
+  <input id="restoreInput" type="file" accept=".zip,application/zip" hidden />
+  <input id="folderAttachInput" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden />
+
+  <div class="shell">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">NAI ARCHIVE</div>
+      <nav class="nav-group">
+        <button class="nav-item" data-view="home"><span>Home</span><span class="nav-index">00</span></button>
+        <button class="nav-item" data-view="library"><span>Gallery</span><span class="nav-index">01</span></button>
+        <button class="nav-item" data-view="compare"><span>Compare</span><span class="nav-index">02</span><b id="compareCount" class="hidden">0</b></button>
+        <button class="nav-item" data-view="add"><span>Add New</span><span class="nav-index">03</span></button>
+        <button class="nav-item" data-view="folders"><span>Library</span><span class="nav-index">04</span></button>
+        <button class="nav-item" data-view="bookmarks"><span>Bookmark</span><span class="nav-index">05</span></button>
+      </nav>
+
+      <div class="side-section library-filter">
+        <div class="side-title row-between"><span>아티스트 필터</span><button id="clearArtistFilters" class="text-btn">초기화</button></div>
+        <div id="activeArtistFilters" class="chip-wrap muted-note">선택 없음</div>
+      </div>
+      <div class="side-section library-filter">
+        <div class="side-title">빠른 필터</div>
+        <label class="check-line"><input id="favOnly" type="checkbox" /> 이미지 즐겨찾기만</label>
+        <label class="check-line"><input id="memoOnly" type="checkbox" /> 메모 있는 것만</label>
+      </div>
+      <div class="side-utility">
+        <button id="backupBtn" class="utility-btn">Backup</button>
+        <button id="restoreBtn" class="utility-btn">Restore</button>
+        <button id="pdfBtn" class="utility-btn">Export</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section id="homeView" class="view active">
+        <div class="portal">
+          <button class="portal-card" data-go="library" aria-label="Gallery"><span class="portal-icon-wrap" aria-hidden="true"><svg class="portal-icon" viewBox="0 0 64 64"><rect x="9" y="9" width="46" height="46" rx="1"/><path d="M24.3 9v46M39.7 9v46M9 24.3h46M9 39.7h46"/></svg></span><span class="portal-label"><span class="portal-title">Gallery</span><span class="portal-sub">BROWSE / SEARCH</span></span></button>
+          <button class="portal-card" data-go="compare" aria-label="Compare"><span class="portal-icon-wrap" aria-hidden="true"><svg class="portal-icon" viewBox="0 0 64 64"><path d="M10 19c8-7 16 7 24 0s16 7 20 0M10 32c8-7 16 7 24 0s16 7 20 0M10 45c8-7 16 7 24 0s16 7 20 0"/></svg></span><span class="portal-label"><span class="portal-title">Compare</span><span class="portal-sub">WEIGHT LAB</span></span></button>
+          <button class="portal-card" data-go="add" aria-label="Add New"><span class="portal-icon-wrap" aria-hidden="true"><svg class="portal-icon" viewBox="0 0 64 64"><circle cx="32" cy="32" r="23"/><path d="M32 20v24M20 32h24"/></svg></span><span class="portal-label"><span class="portal-title">Add New</span><span class="portal-sub">IMPORT PNG</span></span></button>
+          <button class="portal-card" data-go="folders" aria-label="Library"><span class="portal-icon-wrap" aria-hidden="true"><svg class="portal-icon" viewBox="0 0 64 64"><path d="M8 18h19l5 6h24v27H8z"/><path d="M8 18v-5h18l5 5"/></svg></span><span class="portal-label"><span class="portal-title">Library</span><span class="portal-sub">COLLECT / ORGANIZE</span></span></button>
+        </div>
+      </section>
+
+      <section id="libraryView" class="view">
+        <div class="toolbar">
+          <div class="search-box">
+            <input id="searchInput" type="search" placeholder="작가태그 · 프롬프트 · 캐릭터 프롬프트 · UC · 메모 검색" />
+            <button id="clearSearch" class="icon-btn" aria-label="검색 지우기">×</button>
+          </div>
+          <div class="segmented gallery-logic" id="logicToggle" aria-label="검색 조건"><button data-logic="AND" class="active">AND</button><button data-logic="OR">OR</button></div>
+          <select id="sortSelect" class="select" aria-label="정렬">
+            <option value="newest">최근 등록순</option>
+            <option value="oldest">오래된순</option>
+            <option value="artist">작가태그순</option>
+            <option value="favorite">즐겨찾기 우선</option>
+          </select>
+        </div>
+
+        <div class="subtoolbar">
+          <div class="tabs" id="displayTabs">
+            <button class="tab active" data-tab="gallery">갤러리</button>
+            <button class="tab" data-tab="list">리스트</button>
+          </div>
+          <div class="right-tools">
+            <button id="galleryAddBtn" class="btn small primary">＋ 이미지 추가</button>
+            <button id="galleryFolderAddBtn" class="btn small">폴더 일괄 추가</button>
+            <button id="fieldBtn" class="btn small">표시 열</button>
+            <button id="selectModeBtn" class="btn small">선택</button>
+            <span id="resultCount" class="muted-note">0개</span>
+          </div>
+        </div>
+        <div id="importProgress" class="import-progress hidden"><div class="import-progress-top"><span id="importProgressText">이미지 가져오는 중…</span><span id="importProgressCount">0 / 0</span></div><div class="import-progress-track"><i id="importProgressBar"></i></div></div>
+
+        <div id="bulkBar" class="bulk-bar hidden">
+          <div class="bulk-left"><span id="selectedCount">0개 선택</span><button id="selectAllBtn" class="text-btn">현재 결과 전체 선택</button><span class="sweep-hint">꾹 눌러 쓸어 선택</span></div>
+          <div class="bulk-actions"><button id="selectedToFolderBtn" class="btn small">폴더에 추가</button><button id="selectedToCompareBtn" class="btn small">Compare에 추가</button><button id="saveSelectedOriginalBtn" class="btn small">원본 저장</button><button id="saveSelectedCleanBtn" class="btn small">메타데이터 제거 저장</button><button id="selectedPdfBtn" class="btn small">PDF로 저장</button><button id="selectedAtlasPdfBtn" class="btn small">도감 PDF</button><button id="selectedAtlasImageBtn" class="btn small">도감 이미지</button><button id="selectedBackupBtn" class="btn small">백업 ZIP</button><button id="deleteSelectedBtn" class="btn small danger">선택 삭제</button><button id="cancelSelectBtn" class="btn small">취소</button></div>
+        </div>
+
+        <div id="fieldPanel" class="field-panel hidden">
+          <label><input type="checkbox" data-field="image" checked /> 이미지</label>
+          <label><input type="checkbox" data-field="artists" checked /> 작가태그</label>
+          <label><input type="checkbox" data-field="memo" checked /> 메모</label>
+          <label><input type="checkbox" data-field="prompt" /> Prompt</label>
+          <label><input type="checkbox" data-field="characters" /> Character Prompt</label>
+          <label><input type="checkbox" data-field="uc" /> UC</label>
+          <label><input type="checkbox" data-field="model" /> 모델</label>
+          <label><input type="checkbox" data-field="created" /> 등록일</label>
+        </div>
+
+        <div id="gallery" class="gallery"></div>
+        <div id="listWrap" class="list-wrap hidden">
+          <table class="data-table"><thead id="listHead"></thead><tbody id="listBody"></tbody></table>
+        </div>
+        <div id="emptyState" class="empty hidden">
+          <div class="empty-mark">＋</div>
+          <h2>첫 NAI 이미지를 등록해보세요</h2>
+          <p>PNG 메타데이터에서 작가태그, Prompt, Character Prompt, UC를 자동으로 읽습니다.</p>
+          <button class="btn primary" id="emptyImportBtn">이미지 등록</button>
+        </div>
+      </section>
+
+      <section id="addView" class="view">
+        <div class="add-shell">
+          <div class="add-hero"><div class="portal-kicker">03 / IMPORT PNG</div><h1>Add New</h1><p>NovelAI 이미지의 메타데이터를 읽어 작가태그, Prompt, Character Prompt, UC를 자동으로 정리합니다.</p></div>
+          <div id="dropzone" class="dropzone">
+            <div><div class="drop-plus">＋</div><strong>이미지를 놓거나 눌러서 선택</strong><p>PNG 다중 등록 지원 · 중복 이미지는 자동 제외</p><button id="addChooseBtn" class="btn primary" type="button">이미지 선택</button></div>
+          </div>
+          <div id="addStatus" class="add-status"></div>
+        </div>
+      </section>
+
+      <section id="foldersView" class="view">
+        <div class="library-hub">
+          <div class="library-head"><div><div class="portal-kicker">COLLECT / ORGANIZE</div><h1>Library</h1><p>이미지, 태그, 프롬프트, UC, 메모를 원하는 방식으로 섞어 보관합니다.</p></div><button id="newFolderBtn" class="btn primary">+ New Folder</button></div>
+          <div id="folderGrid" class="folder-grid"></div>
+        </div>
+      </section>
+
+      <section id="bookmarksView" class="view">
+        <div class="section-head"><div><h1>Bookmark</h1><p>자주 쓰는 작가태그와 태그 조합을 빠르게 꺼내 씁니다.</p></div><button id="newPresetBtn" class="btn primary">+ 조합 저장</button></div>
+        <div class="bookmark-layout"><div><h2 class="minor-title">북마크한 폴더</h2><div id="folderBookmarks" class="folder-grid bookmarked-folder-grid"></div></div>
+          <div><h2 class="minor-title">즐겨찾는 작가태그</h2><div id="artistBookmarks" class="bookmark-grid"></div></div>
+          <div><h2 class="minor-title">저장한 작가태그 조합</h2><div id="presetBookmarks" class="bookmark-grid"></div></div>
+        </div>
+      </section>
+
+      <section id="compareView" class="view">
+        <div class="section-head"><div><h1>Compare</h1><p>동일 작가태그 구성에서 가중치 차이를 한눈에 비교합니다.</p></div><div class="compare-head-actions"><button id="openComparePickerBtn" class="btn">이미지 불러오기</button><button id="compareImageExportBtn" class="btn">결과 이미지</button><button id="comparePdfExportBtn" class="btn">결과 PDF</button><button id="clearCompareBtn" class="btn">선택 비우기</button></div></div>
+        <div id="compareHint" class="hint-card">Gallery에서 선택해 추가하거나, 여기서 바로 이미지를 불러오세요.</div>
+        <div id="compareGrid" class="compare-grid"></div>
+        <div id="compareDiff" class="compare-diff"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="detailDialog" class="modal detail-modal">
+    <form method="dialog" class="modal-shell">
+      <div class="modal-head">
+        <div><span class="eyebrow">ENTRY</span><input id="detailTitle" class="title-input" placeholder="제목 없음" /></div>
+        <button class="icon-btn close-btn" value="cancel" aria-label="닫기">×</button>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-media">
+          <img id="detailImage" alt="등록 이미지" />
+          <div class="detail-meta" id="detailMeta"></div>
+          <div class="detail-actions"><button type="button" id="detailFav" class="btn">☆ 이미지 즐겨찾기</button><button type="button" id="detailToFolder" class="btn">폴더에 추가</button><button type="button" id="saveCleanImage" class="btn">메타데이터 제거 저장</button><button type="button" id="addCompare" class="btn">Compare에 추가</button><button type="button" id="deleteEntry" class="btn danger">삭제</button></div>
+        </div>
+        <div class="detail-content">
+          <section class="panel"><div class="panel-head"><h3>작가태그</h3><div><button type="button" id="bookmarkArtistsBtn" class="mini-btn">☆ 북마크</button><button type="button" class="mini-btn save-folder-btn" data-folder-source="artists">폴더 저장</button><button type="button" class="mini-btn copy-btn" data-copy="artists">복사</button></div></div><textarea id="detailArtists" rows="5"></textarea><div id="artistTokens" class="chip-wrap"></div></section>
+          <section class="panel"><div class="panel-head"><h3>Prompt</h3><div><button type="button" class="mini-btn save-folder-btn" data-folder-source="prompt">폴더 저장</button><button type="button" class="mini-btn copy-btn" data-copy="prompt">복사</button></div></div><textarea id="detailPrompt" rows="8"></textarea></section>
+          <section class="panel"><div class="panel-head"><h3>Character Prompt</h3><div><button type="button" class="mini-btn save-folder-btn" data-folder-source="characters">폴더 저장</button><button type="button" class="mini-btn copy-btn" data-copy="characters">복사</button></div></div><div id="characterPrompts"></div></section>
+          <section class="panel"><div class="panel-head"><h3>UC</h3><div><button type="button" class="mini-btn save-folder-btn" data-folder-source="uc">폴더 저장</button><button type="button" class="mini-btn copy-btn" data-copy="uc">복사</button></div></div><textarea id="detailUc" rows="6"></textarea></section>
+          <section class="panel"><div class="panel-head"><h3>메모</h3><div><button type="button" class="mini-btn save-folder-btn" data-folder-source="note">폴더 저장</button><span class="autosave">자동 저장</span></div></div><textarea id="detailMemo" rows="5" placeholder="이 작가태그의 인상, 가중치 테스트 결과 등을 기록하세요."></textarea></section>
+          <div class="copy-strip"><button type="button" id="copyStylePrompt" class="btn primary">작가태그 + Prompt 복사</button><button type="button" id="copyAll" class="btn">전체 복사</button></div>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="presetDialog" class="modal small-modal">
+    <form method="dialog" class="modal-shell">
+      <div class="modal-head"><h2>작가태그 조합 저장</h2><button class="icon-btn close-btn" value="cancel">×</button></div>
+      <label class="field-label">이름<input id="presetName" placeholder="예: 남캐 얇쌍 조합" /></label>
+      <label class="field-label">작가태그<textarea id="presetText" rows="8" placeholder="0.8::artist:...::,"></textarea></label>
+      <div class="modal-foot"><button value="cancel" class="btn">취소</button><button type="button" id="savePreset" class="btn primary">저장</button></div>
+    </form>
+  </dialog>
+
+
+  <dialog id="folderCreateDialog" class="modal small-modal">
+    <form method="dialog" class="modal-shell">
+      <div class="modal-head"><h2>새 폴더</h2><button class="icon-btn close-btn" value="cancel">×</button></div>
+      <label class="field-label">폴더 이름<input id="folderNameInput" placeholder="예: POSE / TAG TEST / BACKGROUND" /></label>
+      <div class="modal-foot"><button value="cancel" class="btn">취소</button><button type="button" id="createFolderBtn" class="btn primary">생성</button></div>
+    </form>
+  </dialog>
+  <dialog id="folderDialog" class="modal folder-dialog">
+    <div class="modal-shell">
+      <div class="modal-head"><div><span class="eyebrow">NOTEBOOK</span><input id="folderTitleInput" class="title-input" /></div><div><button type="button" id="folderBookmarkBtn" class="btn small">☆ Folder</button><button type="button" id="deleteFolderBtn" class="btn small danger">삭제</button><button class="icon-btn close-btn" id="closeFolderBtn">×</button></div></div>
+      <div class="folder-body">
+        <div id="folderItems" class="folder-items"></div>
+      </div>
+      <div class="folder-compose notebook-compose">
+        <textarea id="folderItemText" placeholder="메모, 태그, 프롬프트… 무엇이든 적어두세요."></textarea>
+        <div class="notebook-actions">
+          <button type="button" id="addFolderItemBtn" class="btn primary">텍스트 추가</button>
+          <button type="button" id="attachFolderImageBtn" class="btn">이미지 첨부</button>
+        </div>
+        <div class="saved-import-launch">
+          <button type="button" id="openSavedHubBtn" class="btn saved-hub-btn">＋ 저장된 요소 불러오기</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+
+  <dialog id="savedHubDialog" class="modal saved-hub-dialog">
+    <div class="modal-shell">
+      <div class="modal-head">
+        <div><span class="eyebrow">IMPORT TO NOTEBOOK</span><h2 class="saved-hub-title">저장된 요소 불러오기</h2></div>
+        <button class="icon-btn close-btn" id="closeSavedHubBtn" type="button">×</button>
+      </div>
+      <div class="saved-hub-tabs" id="savedHubTabs">
+        <button class="active" data-hub-type="image">IMAGE</button>
+        <button data-hub-type="tag">TAG</button>
+        <button data-hub-type="prompt">PROMPT</button>
+        <button data-hub-type="note">NOTE</button>
+        <button data-hub-type="bookmark">BOOKMARK</button>
+        <button data-hub-type="folder">FOLDER</button>
+      </div>
+      <div class="saved-hub-search"><input id="savedHubSearch" type="search" placeholder="검색"></div>
+      <div id="savedHubGrid" class="saved-hub-grid"></div>
+      <div class="saved-hub-footer"><span id="savedHubCount" class="muted-note">0개 선택</span><span class="sweep-hint hub-sweep-hint">꾹 눌러 쓸어 다중 선택</span><div class="saved-hub-foot-actions"><button id="savedHubClearBtn" type="button" class="btn small">선택 취소</button><button id="savedHubImportBtn" type="button" class="btn primary">불러오기</button></div></div>
+    </div>
+  </dialog>
+
+  <dialog id="folderPickDialog" class="modal small-modal">
+    <form method="dialog" class="modal-shell">
+      <div class="modal-head"><div><span class="eyebrow">ADD TO LIBRARY</span><h2 class="pick-title">폴더에 추가</h2></div><button class="icon-btn close-btn" value="cancel">×</button></div>
+      <div class="pick-body">
+        <label class="field-label">기존 폴더<select id="folderPickSelect" class="select"></select></label>
+        <div class="pick-or">OR</div>
+        <label class="field-label">새 폴더 만들기<input id="folderPickNewName" placeholder="새 폴더 이름 (선택)" /></label>
+        <div id="folderPickSummary" class="pick-summary"></div>
+      </div>
+      <div class="modal-foot"><button value="cancel" class="btn">취소</button><button type="button" id="confirmFolderPickBtn" class="btn primary">추가</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script>
+(() => {
+  'use strict';
+
+  const DB_NAME = 'nai-archive'; // stable internal storage id; independent from visible site name
+  const DB_VERSION = 1;
+  const STORE_ENTRIES = 'entries';
+  const STORE_META = 'meta';
+  const state = {
+    entries: [],
+    logic: 'AND',
+    artistFilters: [],
+    search: '',
+    favOnly: false,
+    memoOnly: false,
+    tab: 'gallery',
+    view: 'library',
+    sort: 'newest',
+    visibleFields: new Set(['image','artists','memo']),
+    compareIds: [],
+    comparePickerIds: [],
+    currentId: null,
+    artistBookmarks: [],
+    presets: [],
+    folders: [],
+    currentFolderId: null,
+    currentFolderFilter: 'all',
+    pendingFolderItems: [],
+    savedHubType: 'image',
+    savedHubSelected: [],
+    selectMode: false,
+    selectedIds: []
+  };
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const els = {};
+  let db;
+  let saveTimer;
+
+  document.addEventListener('DOMContentLoaded', init);
+
+  async function init(){
+    mapEls(); bind();
+    db = await openDB();
+    await loadAll();
+    document.body.classList.add('is-home');
+    render();
+  }
+
+  function mapEls(){
+    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddBtn','galleryFolderAddBtn','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderItemText','addFolderItemBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','toast'].forEach(id=>els[id]=$(`#${id}`));
+  }
+
+  function bind(){
+    els.emptyImportBtn.onclick = () => setView('add');
+    els.addChooseBtn.onclick = () => els.fileInput.click();
+    els.galleryAddBtn.onclick = () => els.fileInput.click();
+    els.galleryFolderAddBtn.onclick = () => els.folderImportInput.click();
+    els.dropzone.onclick = e => { if(e.target.closest('button')) return; els.fileInput.click(); };
+    ['dragenter','dragover'].forEach(t=>els.dropzone.addEventListener(t,e=>{e.preventDefault();els.dropzone.classList.add('drag')}));
+    ['dragleave','drop'].forEach(t=>els.dropzone.addEventListener(t,e=>{e.preventDefault();els.dropzone.classList.remove('drag')}));
+    els.dropzone.addEventListener('drop',e=>importImages(e.dataTransfer.files));
+    $$('.portal-card').forEach(b=>b.onclick=()=>setView(b.dataset.go));
+    els.fileInput.onchange = e => importImages(e.target.files);
+    els.folderImportInput.onchange = e => importImages(e.target.files, {source:'folder'});
+    els.backupBtn.onclick = openBackupDialog;
+    els.restoreBtn.onclick = () => els.restoreInput.click();
+    els.restoreInput.onchange = e => restoreZip(e.target.files[0]);
+    els.pdfBtn.onclick = openExportDialog;
+    els.menuBtn.onclick = () => { const open=els.sidebar.classList.toggle('open'); els.menuBtn.classList.toggle('open',open); };
+    $$('.nav-item').forEach(b => b.onclick = () => setView(b.dataset.view));
+    els.searchInput.oninput = e => { state.search = e.target.value.trim().toLowerCase(); renderLibrary(); };
+    els.clearSearch.onclick = () => { els.searchInput.value=''; state.search=''; renderLibrary(); };
+    els.sortSelect.onchange = e => { state.sort=e.target.value; renderLibrary(); };
+    els.logicToggle.onclick = e => { if(!e.target.dataset.logic) return; state.logic=e.target.dataset.logic; [...els.logicToggle.children].forEach(x=>x.classList.toggle('active',x.dataset.logic===state.logic)); renderLibrary(); };
+    els.clearArtistFilters.onclick = () => {state.artistFilters=[]; render();};
+    els.favOnly.onchange = e => {state.favOnly=e.target.checked; renderLibrary();};
+    els.memoOnly.onchange = e => {state.memoOnly=e.target.checked; renderLibrary();};
+    els.displayTabs.onclick = e => { if(!e.target.dataset.tab) return; state.tab=e.target.dataset.tab; $$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===state.tab)); renderLibrary(); };
+    els.fieldBtn.onclick = () => els.fieldPanel.classList.toggle('hidden');
+    els.fieldPanel.onchange = e => { if(e.target.dataset.field){ e.target.checked?state.visibleFields.add(e.target.dataset.field):state.visibleFields.delete(e.target.dataset.field); renderList(filteredEntries()); }};
+    els.newPresetBtn.onclick = () => {els.presetName.value='';els.presetText.value='';els.presetDialog.showModal();};
+    els.newFolderBtn.onclick=()=>{els.folderNameInput.value='';els.folderCreateDialog.showModal();setTimeout(()=>els.folderNameInput.focus(),30);};
+    els.createFolderBtn.onclick=createFolder;
+    els.folderTitleInput.oninput=saveFolderTitle;
+    els.folderBookmarkBtn.onclick=toggleFolderBookmark;
+    els.deleteFolderBtn.onclick=deleteCurrentFolder;
+    els.closeFolderBtn.onclick=()=>els.folderDialog.close();
+    els.addFolderItemBtn.onclick=addFolderItem;
+    els.attachFolderImageBtn.onclick=()=>els.folderAttachInput.click();
+    els.folderAttachInput.onchange=e=>attachImagesToFolder(e.target.files);
+    els.openSavedHubBtn.onclick=openSavedHub;
+    els.closeSavedHubBtn.onclick=()=>els.savedHubDialog.close();
+    els.savedHubTabs.onclick=e=>{const t=e.target.dataset.hubType;if(!t)return;state.savedHubType=t;state.savedHubSelected=[];[...els.savedHubTabs.children].forEach(b=>b.classList.toggle('active',b.dataset.hubType===t));renderSavedHub();};
+    els.savedHubSearch.oninput=renderSavedHub;
+    els.savedHubClearBtn.onclick=()=>{state.savedHubSelected=[];renderSavedHub();};
+    els.savedHubImportBtn.onclick=importFromSavedHub;
+    els.confirmFolderPickBtn.onclick=confirmFolderPick;
+    els.selectedToFolderBtn.onclick=()=>openFolderPicker(state.selectedIds.map(id=>({type:'image',entryId:id})));
+    els.detailToFolder.onclick=()=>openFolderPicker([{type:'image',entryId:state.currentId}]);
+    els.saveCleanImage.onclick=saveCurrentImageWithoutMetadata;
+    $$('.save-folder-btn').forEach(b=>b.onclick=()=>saveCurrentFieldToFolder(b.dataset.folderSource));
+    els.selectModeBtn.onclick = () => {state.selectMode=!state.selectMode;if(!state.selectMode)state.selectedIds=[];renderLibrary();};
+    els.cancelSelectBtn.onclick = () => {state.selectMode=false;state.selectedIds=[];renderLibrary();};
+    els.selectAllBtn.onclick = () => {const ids=filteredEntries().map(e=>e.id);const all=ids.length&&ids.every(id=>state.selectedIds.includes(id));state.selectedIds=all?state.selectedIds.filter(id=>!ids.includes(id)):[...new Set([...state.selectedIds,...ids])];renderLibrary();};
+    els.selectedToCompareBtn.onclick = addSelectedToCompare;
+    els.saveSelectedOriginalBtn.onclick = ()=>saveSelectedImages(false);
+    els.saveSelectedCleanBtn.onclick = ()=>saveSelectedImages(true);
+    els.selectedPdfBtn.onclick = ()=>exportEntriesPdf(selectedEntries(), getExportFields(), 'selected');
+    els.selectedAtlasPdfBtn.onclick = ()=>exportArtistAtlasPdf(selectedEntries());
+    els.selectedAtlasImageBtn.onclick = ()=>exportArtistAtlasImage(selectedEntries());
+    els.selectedBackupBtn.onclick = ()=>backupZip({scope:'gallery', entryIds:[...state.selectedIds]});
+    els.deleteSelectedBtn.onclick = deleteSelected;
+    els.savePreset.onclick = savePreset;
+    els.openComparePickerBtn.onclick = openComparePicker;
+    els.closeComparePickerBtn.onclick = ()=>els.comparePickerDialog.close();
+    els.comparePickerSearch.oninput = renderComparePicker;
+    els.comparePickerSelectAll.onclick = toggleComparePickerAll;
+    els.comparePickerClearAll.onclick = clearComparePickerAll;
+    els.confirmComparePickerBtn.onclick = confirmComparePicker;
+    els.clearCompareBtn.onclick = () => {state.compareIds=[]; renderCompare(); render();};
+    els.compareImageExportBtn.onclick = exportCompareImage;
+    els.comparePdfExportBtn.onclick = exportComparePdf;
+    els.closeBackupBtn.onclick=()=>els.backupDialog.close();
+    els.runBackupBtn.onclick=runBackupFromDialog;
+    document.querySelectorAll('input[name="backupScope"]').forEach(r=>r.onchange=renderBackupFolderChoices);
+    els.closeExportBtn.onclick=()=>els.exportDialog.close();
+    els.runExportBtn.onclick=runExportFromDialog;
+    els.detailTitle.oninput = debounceSaveDetail;
+    els.detailArtists.oninput = debounceSaveDetail;
+    els.detailPrompt.oninput = debounceSaveDetail;
+    els.detailUc.oninput = debounceSaveDetail;
+    els.detailMemo.oninput = debounceSaveDetail;
+    els.detailFav.onclick = toggleCurrentFavorite;
+    els.addCompare.onclick = () => toggleCompare(state.currentId);
+    els.deleteEntry.onclick = deleteCurrent;
+    els.bookmarkArtistsBtn.onclick = bookmarkCurrentArtists;
+    $$('.copy-btn').forEach(b => b.onclick = () => copyCurrent(b.dataset.copy));
+    els.copyStylePrompt.onclick = () => copyCurrent('stylePrompt');
+    els.copyAll.onclick = () => copyCurrent('all');
+    window.addEventListener('beforeunload', revokeObjectUrls);
+  }
+
+  function openDB(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,DB_VERSION);
+      req.onupgradeneeded=()=>{
+        const d=req.result;
+        if(!d.objectStoreNames.contains(STORE_ENTRIES)) d.createObjectStore(STORE_ENTRIES,{keyPath:'id'});
+        if(!d.objectStoreNames.contains(STORE_META)) d.createObjectStore(STORE_META,{keyPath:'key'});
+      };
+      req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+    });
+  }
+  const txGetAll = store => new Promise((res,rej)=>{const r=db.transaction(store).objectStore(store).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+  const txPut = (store,val) => new Promise((res,rej)=>{const r=db.transaction(store,'readwrite').objectStore(store).put(val);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)});
+  const txDel = (store,key) => new Promise((res,rej)=>{const r=db.transaction(store,'readwrite').objectStore(store).delete(key);r.onsuccess=()=>res();r.onerror=()=>rej(r.error)});
+
+  async function loadAll(){
+    state.entries = await txGetAll(STORE_ENTRIES);
+    const meta = await txGetAll(STORE_META);
+    const map=Object.fromEntries(meta.map(x=>[x.key,x.value]));
+    state.artistBookmarks=map.artistBookmarks||[]; state.presets=map.presets||[]; state.folders=map.folders||[];
+  }
+
+  function render(){
+    els.compareCount.textContent=state.compareIds.length;
+    renderArtistFilters(); renderLibrary(); renderFolders(); renderBookmarks(); renderCompare();
+  }
+
+  function setView(view){
+    state.view=view;
+    document.body.classList.toggle('is-home',view==='home');
+    $$('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.view===view));
+    $$('.view').forEach(x=>x.classList.remove('active'));
+    $(`#${view}View`).classList.add('active');
+    els.sidebar.classList.remove('open'); els.menuBtn.classList.remove('open');
+    $$('.library-filter').forEach(x=>x.style.display=view==='library'?'block':'none');
+    if(view==='compare') renderCompare(); if(view==='bookmarks') renderBookmarks(); if(view==='folders') renderFolders();
+  }
+
+  async function importImages(fileList, options={}){
+    const files=[...(fileList||[])].filter(file=>/^image\/(png|jpeg)$/i.test(file.type)||/\.(png|jpe?g)$/i.test(file.name||''));
+    if(!files.length){toast('가져올 PNG/JPG 이미지가 없습니다.');return;}
+    let added=0, skipped=0, failed=0;
+    const knownHashes=new Set(state.entries.map(e=>e.hash).filter(Boolean));
+    const total=files.length;
+    if(els.importProgress){
+      els.importProgress.classList.remove('hidden');
+      els.importProgressText.textContent=options.source==='folder'?'폴더에서 이미지 가져오는 중…':'이미지 가져오는 중…';
+      els.importProgressCount.textContent=`0 / ${total}`;
+      els.importProgressBar.style.width='0%';
+    }
+    // Thousands of files are accepted. Process sequentially and yield periodically so mobile UI stays responsive.
+    for(let i=0;i<files.length;i++){
+      const file=files[i];
+      try{
+        const hash=await sha256(file);
+        if(knownHashes.has(hash)){skipped++;}
+        else{
+          const meta=await extractImageMetadata(file);
+          const parsed=parseNovelAI(meta);
+          const id=crypto.randomUUID();
+          const now=Date.now();
+          const entry={id,hash,fileName:file.name,imageBlob:file,createdAt:now,updatedAt:now,favorite:false,memo:'',title:'',...parsed,rawMetadata:meta};
+          await txPut(STORE_ENTRIES,entry);state.entries.push(entry);knownHashes.add(hash);added++;
+        }
+      }catch(err){console.error(err);failed++;}
+      if(els.importProgress && (i%5===0 || i===total-1)){
+        els.importProgressCount.textContent=`${i+1} / ${total}`;
+        els.importProgressBar.style.width=`${Math.round(((i+1)/total)*100)}%`;
+      }
+      if(i%12===11) await new Promise(r=>setTimeout(r,0));
+    }
+    els.fileInput.value=''; if(els.folderImportInput) els.folderImportInput.value='';
+    render();
+    const parts=[`${added}개 등록`]; if(skipped)parts.push(`중복 ${skipped}개 제외`); if(failed)parts.push(`실패 ${failed}개`);
+    const msg=parts.join(' · '); if(els.addStatus)els.addStatus.textContent=msg; toast(msg);
+    if(els.importProgress){els.importProgressText.textContent=msg;setTimeout(()=>els.importProgress.classList.add('hidden'),1800)}
+    if(added && state.view==='add') setView('library');
+  }
+  async function extractImageMetadata(file){
+    const buf=await file.arrayBuffer(); const u=new Uint8Array(buf);
+    const isPng=u.length>8 && [137,80,78,71,13,10,26,10].every((v,i)=>u[i]===v);
+    if(!isPng) return {Format:file.type||'image', Comment:'', Description:''};
+    const dv=new DataView(buf); let pos=8; const out={};
+    while(pos+12<=u.length){
+      const len=dv.getUint32(pos); const type=ascii(u.slice(pos+4,pos+8)); const data=u.slice(pos+8,pos+8+len); pos += 12+len;
+      try{
+        if(type==='tEXt'){
+          const z=data.indexOf(0); const key=latin1(data.slice(0,z)); const val=latin1(data.slice(z+1)); out[key]=val;
+        }else if(type==='iTXt'){
+          const parsed=parseITXt(data); if(parsed) out[parsed.key]=parsed.value;
+        }else if(type==='zTXt'){
+          const z=data.indexOf(0); const key=latin1(data.slice(0,z)); const compressed=data.slice(z+2);
+          if(window.DecompressionStream){
+            try{ const ds=new DecompressionStream('deflate'); const ab=await new Response(new Blob([compressed]).stream().pipeThrough(ds)).arrayBuffer(); out[key]=latin1(new Uint8Array(ab)); }catch(_){ out[key]=''; }
+          }
+        }
+      }catch(err){console.warn('chunk parse failed',type,err)}
+      if(type==='IEND') break;
+    }
+    return out;
+  }
+
+  function parseITXt(data){
+    let p=0; const read0=()=>{const s=p;while(p<data.length&&data[p]!==0)p++;const part=data.slice(s,p);p++;return part};
+    const key=utf8(read0()); const compressed=data[p++]; p++; read0(); read0(); const text=data.slice(p);
+    if(compressed) return null; return {key,value:utf8(text)};
+  }
+  const ascii=u=>String.fromCharCode(...u); const latin1=u=>new TextDecoder('latin1').decode(u); const utf8=u=>new TextDecoder('utf-8').decode(u);
+
+  function parseNovelAI(meta){
+    let comment=meta.Comment||meta.comment||''; let j={};
+    try{j=JSON.parse(comment)}catch(_){ }
+    const base = j?.v4_prompt?.caption?.base_caption ?? j.prompt ?? meta.Description ?? '';
+    const chars = (j?.v4_prompt?.caption?.char_captions||[]).map(x=>x?.char_caption||'').filter(Boolean);
+    const uc = j?.v4_negative_prompt?.caption?.base_caption ?? j.uc ?? '';
+    const charUc = (j?.v4_negative_prompt?.caption?.char_captions||[]).map(x=>x?.char_caption||'').filter(Boolean);
+    const split=splitArtistTags(base);
+    const source=meta.Source||meta.source||'';
+    return {
+      artistsText:split.artistText,
+      artists:split.artists,
+      prompt:split.prompt,
+      originalPrompt:base,
+      characterPrompts:chars,
+      uc, characterUc:charUc,
+      model:source,
+      seed:j.seed ?? null, steps:j.steps ?? null, width:j.width ?? null, height:j.height ?? null,
+      sampler:j.sampler||'', scale:j.scale ?? null, requestType:j.request_type||'', software:meta.Software||meta.software||''
+    };
+  }
+
+  function splitArtistTags(text){
+    const parts=splitTopLevelCommas(text); const artistParts=[], promptParts=[], artists=[];
+    for(const raw of parts){
+      const t=raw.trim(); if(!t) continue;
+      if(/artist\s*:/i.test(t)){
+        artistParts.push(t);
+        const a=parseArtistTag(t); if(a) artists.push(a);
+      } else promptParts.push(t);
+    }
+    return {artistText:artistParts.join(',\n')+(artistParts.length?',':''),prompt:promptParts.join(',\n')+(promptParts.length?',':''),artists};
+  }
+  function splitTopLevelCommas(text){
+    const out=[];let cur='';let braces=0;for(let i=0;i<text.length;i++){const c=text[i];if(c==='{')braces++;if(c==='}')braces=Math.max(0,braces-1);if(c===','&&braces===0){out.push(cur);cur='';}else cur+=c;}out.push(cur);return out;
+  }
+  function parseArtistTag(tag){
+    const m=tag.match(/^(?:(-?\d+(?:\.\d+)?)\s*::\s*)?artist\s*:\s*(.*?)\s*(?:::)?$/i);
+    if(!m) return null; return {name:m[2].replace(/::$/,'').trim(),weight:m[1]!==undefined?Number(m[1]):1,raw:tag.trim()};
+  }
+
+  function filteredEntries(){
+    let arr=state.entries.filter(e=>{
+      if(state.favOnly&&!e.favorite)return false; if(state.memoOnly&&!e.memo?.trim())return false;
+      if(state.artistFilters.length){
+        const names=(e.artists||[]).map(a=>norm(a.name)); const tests=state.artistFilters.map(f=>names.includes(norm(f)));
+        if(state.logic==='AND'?!tests.every(Boolean):!tests.some(Boolean))return false;
+      }
+      if(state.search){
+        const hay=[e.title,e.artistsText,e.prompt,(e.characterPrompts||[]).join('\n'),e.uc,e.memo,e.model].join('\n').toLowerCase();
+        if(!hay.includes(state.search))return false;
+      }
+      return true;
+    });
+    arr.sort((a,b)=>state.sort==='oldest'?a.createdAt-b.createdAt:state.sort==='artist'?(a.artistsText||'').localeCompare(b.artistsText||''):state.sort==='favorite'?(Number(b.favorite)-Number(a.favorite)||b.createdAt-a.createdAt):b.createdAt-a.createdAt);
+    return arr;
+  }
+
+
+  function bindSweepSelectionGrid({
+    grid,
+    cardSelector,
+    checkboxSelector,
+    getKey,
+    isSelected,
+    setSelected,
+    updateCount,
+    enabled=()=>true
+  }){
+    if(!grid)return;
+    if(grid._genericSweepCleanup)grid._genericSweepCleanup();
+
+    const HOLD_MS=300;
+    const MOVE_CANCEL=14;
+    let holdTimer=null;
+    let active=false;
+    let paintValue=true;
+    let seen=new Set();
+    let startX=0,startY=0,lastX=0,lastY=0;
+    let touchId=null;
+    let autoRAF=0;
+    let mouseDown=false;
+
+    const clearHold=()=>{if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}};
+
+    const cardAt=(x,y)=>{
+      const el=document.elementFromPoint(x,y);
+      return el?.closest?.(cardSelector)||null;
+    };
+
+    const applyCard=(card)=>{
+      if(!card)return;
+      const cb=card.querySelector(checkboxSelector);
+      const key=getKey(card,cb);
+      if(!key||seen.has(key))return;
+      seen.add(key);
+      cb.checked=paintValue;
+      setSelected(key,paintValue);
+      updateCount?.();
+    };
+
+    const paintBetween=(x1,y1,x2,y2)=>{
+      const d=Math.hypot(x2-x1,y2-y1);
+      const steps=Math.max(1,Math.ceil(d/10));
+      for(let i=0;i<=steps;i++){
+        const t=i/steps;
+        applyCard(cardAt(x1+(x2-x1)*t,y1+(y2-y1)*t));
+      }
+    };
+
+    const stopAuto=()=>{
+      if(autoRAF){cancelAnimationFrame(autoRAF);autoRAF=0;}
+    };
+
+    const startAuto=()=>{
+      stopAuto();
+      const tick=()=>{
+        if(!active)return;
+        const r=grid.getBoundingClientRect();
+        const edge=58;
+        let dy=0;
+        if(lastY<r.top+edge)dy=-7;
+        else if(lastY>r.bottom-edge)dy=7;
+        if(dy){
+          grid.scrollTop+=dy;
+          applyCard(cardAt(lastX,lastY));
+        }
+        autoRAF=requestAnimationFrame(tick);
+      };
+      autoRAF=requestAnimationFrame(tick);
+    };
+
+    const activate=(x,y)=>{
+      if(!enabled())return;
+      const card=cardAt(x,y);
+      if(!card)return;
+      const cb=card.querySelector(checkboxSelector);
+      const key=getKey(card,cb);
+      if(!cb||!key)return;
+      active=true;
+      seen=new Set();
+      paintValue=!isSelected(key);
+      lastX=x;lastY=y;
+      grid.classList.add('sweep-selecting');
+      applyCard(card);
+      startAuto();
+      try{navigator.vibrate?.(15)}catch(_){}
+    };
+
+    const finish=()=>{
+      clearHold();
+      active=false;
+      touchId=null;
+      mouseDown=false;
+      seen.clear();
+      grid.classList.remove('sweep-selecting');
+      stopAuto();
+    };
+
+    const onTouchStart=(ev)=>{
+      if(!enabled()||ev.touches.length!==1)return;
+      const card=ev.target.closest(cardSelector);
+      if(!card||!card.querySelector(checkboxSelector))return;
+      const t=ev.touches[0];
+      touchId=t.identifier;
+      startX=lastX=t.clientX;
+      startY=lastY=t.clientY;
+      clearHold();
+      holdTimer=setTimeout(()=>activate(lastX,lastY),HOLD_MS);
+    };
+
+    const onTouchMove=(ev)=>{
+      const t=[...ev.touches].find(x=>x.identifier===touchId);
+      if(!t)return;
+      if(!active){
+        if(Math.hypot(t.clientX-startX,t.clientY-startY)>MOVE_CANCEL)clearHold();
+        lastX=t.clientX;lastY=t.clientY;
+        return;
+      }
+      ev.preventDefault();
+      paintBetween(lastX,lastY,t.clientX,t.clientY);
+      lastX=t.clientX;lastY=t.clientY;
+    };
+
+    const onTouchEnd=(ev)=>{
+      if(active)ev.preventDefault();
+      finish();
+    };
+
+    const onMouseDown=(ev)=>{
+      if(!enabled()||ev.button!==0)return;
+      const card=ev.target.closest(cardSelector);
+      if(!card||!card.querySelector(checkboxSelector))return;
+      mouseDown=true;
+      startX=lastX=ev.clientX;
+      startY=lastY=ev.clientY;
+      clearHold();
+      holdTimer=setTimeout(()=>{if(mouseDown)activate(lastX,lastY)},HOLD_MS);
+    };
+
+    const onMouseMove=(ev)=>{
+      if(!mouseDown)return;
+      if(!active){
+        if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>MOVE_CANCEL)clearHold();
+        lastX=ev.clientX;lastY=ev.clientY;
+        return;
+      }
+      ev.preventDefault();
+      paintBetween(lastX,lastY,ev.clientX,ev.clientY);
+      lastX=ev.clientX;lastY=ev.clientY;
+    };
+
+    const onMouseUp=()=>finish();
+    const onContextMenu=(ev)=>{if(active||holdTimer)ev.preventDefault();};
+
+    grid.addEventListener('touchstart',onTouchStart,{passive:true});
+    grid.addEventListener('touchmove',onTouchMove,{passive:false});
+    grid.addEventListener('touchend',onTouchEnd,{passive:false});
+    grid.addEventListener('touchcancel',finish,{passive:true});
+    grid.addEventListener('mousedown',onMouseDown);
+    window.addEventListener('mousemove',onMouseMove,{passive:false});
+    window.addEventListener('mouseup',onMouseUp);
+    grid.addEventListener('contextmenu',onContextMenu);
+
+    grid._genericSweepCleanup=()=>{
+      finish();
+      grid.removeEventListener('touchstart',onTouchStart);
+      grid.removeEventListener('touchmove',onTouchMove);
+      grid.removeEventListener('touchend',onTouchEnd);
+      grid.removeEventListener('touchcancel',finish);
+      grid.removeEventListener('mousedown',onMouseDown);
+      window.removeEventListener('mousemove',onMouseMove);
+      window.removeEventListener('mouseup',onMouseUp);
+      grid.removeEventListener('contextmenu',onContextMenu);
+    };
+  }
+
+  function updateGallerySelectionControls(){
+    els.selectedCount.textContent=`${state.selectedIds.length}개 선택`;
+    const disabled=!state.selectedIds.length;
+    els.deleteSelectedBtn.disabled=disabled;
+    els.selectedToFolderBtn.disabled=disabled;
+    els.selectedToCompareBtn.disabled=disabled;
+    els.saveSelectedOriginalBtn.disabled=disabled;
+    els.saveSelectedCleanBtn.disabled=disabled;
+  }
+
+  function bindGallerySweepSelection(){
+    if(!state.selectMode||state.tab!=='gallery')return;
+    bindSweepSelectionGrid({
+      grid:els.gallery,
+      cardSelector:'.card',
+      checkboxSelector:'.card-check',
+      getKey:(card)=>card.dataset.id,
+      isSelected:(id)=>state.selectedIds.includes(id),
+      setSelected:(id,on)=>{
+        if(on&&!state.selectedIds.includes(id))state.selectedIds.push(id);
+        if(!on)state.selectedIds=state.selectedIds.filter(x=>x!==id);
+      },
+      updateCount:updateGallerySelectionControls,
+      enabled:()=>state.selectMode
+    });
+  }
+
+  function bindSavedHubSweepSelection(){
+    bindSweepSelectionGrid({
+      grid:els.savedHubGrid,
+      cardSelector:'.saved-hub-card',
+      checkboxSelector:'.hub-check',
+      getKey:(_,cb)=>cb?.dataset.key,
+      isSelected:(key)=>state.savedHubSelected.includes(key),
+      setSelected:(key,on)=>{
+        if(on&&!state.savedHubSelected.includes(key))state.savedHubSelected.push(key);
+        if(!on)state.savedHubSelected=state.savedHubSelected.filter(x=>x!==key);
+      },
+      updateCount:updateSavedHubCount
+    });
+  }
+
+  function renderLibrary(){
+    const arr=filteredEntries(); els.resultCount.textContent=`${arr.length}개`;
+    els.selectModeBtn.classList.toggle('active',state.selectMode);
+    els.selectModeBtn.textContent=state.selectMode?'선택 중':'선택';
+    els.bulkBar.classList.toggle('hidden',!state.selectMode);
+    els.selectedCount.textContent=`${state.selectedIds.length}개 선택`;
+    els.deleteSelectedBtn.disabled=!state.selectedIds.length;
+    els.selectedToFolderBtn.disabled=!state.selectedIds.length;
+    els.selectedToCompareBtn.disabled=!state.selectedIds.length;
+    els.saveSelectedOriginalBtn.disabled=!state.selectedIds.length;
+    els.saveSelectedCleanBtn.disabled=!state.selectedIds.length;
+    els.gallery.classList.toggle('hidden',state.tab!=='gallery'); els.listWrap.classList.toggle('hidden',state.tab!=='list');
+    els.emptyState.classList.toggle('hidden',state.entries.length!==0 || state.search || state.artistFilters.length);
+    if(state.tab==='gallery') renderGallery(arr); else renderList(arr);
+  }
+  function renderGallery(arr){
+    revokeObjectUrls(els.gallery); els.gallery.innerHTML='';
+    arr.forEach(e=>{
+      const card=document.createElement('article'); card.className='card'; card.dataset.id=e.id;
+      const url=URL.createObjectURL(e.imageBlob); card.dataset.url=url;
+      const checked=state.selectedIds.includes(e.id);
+      card.classList.toggle('selection-mode',state.selectMode);
+      card.innerHTML=`<div class="thumb"><img src="${url}" alt="">${state.selectMode?`<label class="check-badge"><input class="card-check" type="checkbox" ${checked?'checked':''}><span>선택</span></label>`:''}<div class="card-controls"><button class="round fav">${e.favorite?'★':'☆'}</button></div></div><div class="card-body"><div class="card-title">${esc(displayTitle(e))}</div><div class="card-sub">${esc(artistSummary(e))}</div></div>`;
+      card.querySelector('img').onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id); card.querySelector('.card-body').onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id);
+      card.querySelector('.fav').onclick=ev=>{ev.stopPropagation(); toggleFavorite(e.id)};
+      const cardCheck=card.querySelector('.card-check');if(cardCheck)cardCheck.onchange=ev=>{ev.stopPropagation();toggleSelected(e.id,ev.target.checked)};
+      els.gallery.appendChild(card);
+    });
+    bindGallerySweepSelection();
+  }
+
+  function renderList(arr){
+    const defs={image:'이미지',artists:'작가태그',memo:'메모',prompt:'Prompt',characters:'Character Prompt',uc:'UC',model:'모델',created:'등록일'};
+    const fields=[...state.visibleFields]; els.listHead.innerHTML=`<tr>${state.selectMode?'<th>선택</th>':''}`+fields.map(f=>`<th>${defs[f]}</th>`).join('')+'</tr>';
+    revokeObjectUrls(els.listBody); els.listBody.innerHTML='';
+    arr.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;const checked=state.selectedIds.includes(e.id);let html=state.selectMode?`<td><input type="checkbox" class="row-check" ${checked?'checked':''}></td>`:'';
+      for(const f of fields){ if(f==='image'){const url=URL.createObjectURL(e.imageBlob);tr.dataset.url=(tr.dataset.url||'')+' '+url;html+=`<td><img class="table-thumb open" src="${url}"></td>`;} else if(f==='artists')html+=`<td><div class="clamp open">${esc(e.artistsText)}</div></td>`; else if(f==='memo')html+=`<td><div class="clamp open">${esc(e.memo||'')}</div></td>`; else if(f==='prompt')html+=`<td><div class="clamp open">${esc(e.prompt||'')}</div></td>`; else if(f==='characters')html+=`<td><div class="clamp open">${esc((e.characterPrompts||[]).join('\n---\n'))}</div></td>`; else if(f==='uc')html+=`<td><div class="clamp open">${esc(e.uc||'')}</div></td>`; else if(f==='model')html+=`<td>${esc(e.model||'')}</td>`; else if(f==='created')html+=`<td>${new Date(e.createdAt).toLocaleString()}</td>`; }
+      tr.innerHTML=html; tr.querySelectorAll('.open').forEach(x=>x.onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id)); const cb=tr.querySelector('.row-check');if(cb)cb.onchange=ev=>toggleSelected(e.id,ev.target.checked); els.listBody.appendChild(tr);
+    });
+  }
+
+  function renderArtistFilters(){
+    if(!state.artistFilters.length){els.activeArtistFilters.innerHTML='<span class="muted-note">선택 없음</span>';return;}
+    els.activeArtistFilters.innerHTML=state.artistFilters.map(a=>`<button class="chip active" data-name="${escAttr(a)}">${esc(a)} ×</button>`).join('');
+    els.activeArtistFilters.querySelectorAll('button').forEach(b=>b.onclick=()=>{state.artistFilters=state.artistFilters.filter(x=>x!==b.dataset.name);render();});
+  }
+
+  async function openDetail(id){
+    const e=state.entries.find(x=>x.id===id); if(!e)return; state.currentId=id;
+    els.detailTitle.value=e.title||''; revokeDetailObjectUrl(); els.detailImage.src=URL.createObjectURL(e.imageBlob); els.detailImage.dataset.url=els.detailImage.src;
+    els.detailArtists.value=e.artistsText||''; els.detailPrompt.value=e.prompt||''; els.detailUc.value=e.uc||''; els.detailMemo.value=e.memo||'';
+    els.detailFav.textContent=e.favorite?'★ 이미지 즐겨찾기':'☆ 이미지 즐겨찾기'; els.addCompare.textContent=state.compareIds.includes(id)?'비교에서 제거':'비교에 추가';
+    els.detailMeta.innerHTML=[e.model,e.seed!=null?`seed ${e.seed}`:'',e.steps!=null?`${e.steps} steps`:'',e.width&&e.height?`${e.width}×${e.height}`:''].filter(Boolean).map(x=>`<span class="meta-pill">${esc(x)}</span>`).join('');
+    renderDetailArtists(e); renderCharacterInputs(e); els.detailDialog.showModal();
+  }
+
+  function renderDetailArtists(e){
+    els.artistTokens.innerHTML=(e.artists||[]).map(a=>`<button type="button" class="chip" data-name="${escAttr(a.name)}">${esc(a.name)} · ${a.weight}</button>`).join('');
+    els.artistTokens.querySelectorAll('button').forEach(b=>b.onclick=()=>{const n=b.dataset.name;if(!state.artistFilters.includes(n))state.artistFilters.push(n);els.detailDialog.close();setView('library');render();});
+  }
+  function renderCharacterInputs(e){
+    const cps=e.characterPrompts?.length?e.characterPrompts:['']; els.characterPrompts.innerHTML=cps.map((p,i)=>`<div class="char-block"><div class="char-label">Character ${i+1}</div><textarea rows="6" data-index="${i}">${esc(p)}</textarea></div>`).join('');
+    els.characterPrompts.querySelectorAll('textarea').forEach(t=>t.oninput=debounceSaveDetail);
+  }
+
+  function debounceSaveDetail(){clearTimeout(saveTimer);saveTimer=setTimeout(saveDetail,350)}
+  async function saveDetail(){
+    const e=state.entries.find(x=>x.id===state.currentId); if(!e)return;
+    e.title=els.detailTitle.value.trim(); e.artistsText=els.detailArtists.value; e.artists=splitArtistTags(els.detailArtists.value).artists; e.prompt=els.detailPrompt.value; e.uc=els.detailUc.value; e.memo=els.detailMemo.value; e.characterPrompts=[...els.characterPrompts.querySelectorAll('textarea')].map(x=>x.value).filter((x,i,a)=>x.trim()||a.length===1); e.updatedAt=Date.now(); await txPut(STORE_ENTRIES,e); renderDetailArtists(e); render();
+  }
+  async function toggleCurrentFavorite(){await toggleFavorite(state.currentId);const e=state.entries.find(x=>x.id===state.currentId);els.detailFav.textContent=e.favorite?'★ 이미지 즐겨찾기':'☆ 이미지 즐겨찾기'}
+  async function toggleFavorite(id){const e=state.entries.find(x=>x.id===id);if(!e)return;e.favorite=!e.favorite;await txPut(STORE_ENTRIES,e);render();}
+  function toggleCompare(id,force){const has=state.compareIds.includes(id);const next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(id);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==id);render();if(state.currentId===id)els.addCompare.textContent=state.compareIds.includes(id)?'Compare에서 제거':'Compare에 추가';}
+
+  function toggleSelected(id,force){
+    const has=state.selectedIds.includes(id); const next=force!==undefined?force:!has;
+    if(next&&!has)state.selectedIds.push(id); else if(!next&&has)state.selectedIds=state.selectedIds.filter(x=>x!==id);
+    renderLibrary();
+  }
+  async function addSelectedToCompare(){
+    const ids=state.selectedIds.filter(id=>state.entries.some(e=>e.id===id));
+    if(!ids.length)return;
+    let added=0;
+    for(const id of ids)if(!state.compareIds.includes(id)){state.compareIds.push(id);added++;}
+    render();
+    toast(added?`${added}개 이미지를 Compare에 추가했습니다.`:'선택한 이미지는 이미 Compare에 있습니다.');
+  }
+
+  async function saveSelectedImages(clean=false){
+    const entries=state.selectedIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);
+    if(!entries.length)return;
+    if(!window.JSZip){toast('ZIP 모듈을 불러오지 못했습니다.');return;}
+    try{
+      const zip=new JSZip();
+      const used=new Set();
+      for(let i=0;i<entries.length;i++){
+        const e=entries[i];
+        let blob=e.imageBlob;
+        let ext=extOf(e.fileName);
+        if(clean){
+          const isPng=(blob.type||'').toLowerCase()==='image/png'||String(e.fileName||'').toLowerCase().endsWith('.png');
+          if(isPng){blob=await stripPngMetadata(blob);ext='png';}
+          else{blob=await reencodeImageWithoutMetadata(blob);ext=(blob.type||'').includes('png')?'png':'jpg';}
+        }
+        let base=(e.fileName||e.title||`image_${i+1}`).replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'_')||`image_${i+1}`;
+        let name=`${base}${clean?'_clean':''}.${ext}`,n=2;
+        while(used.has(name)){name=`${base}_${n++}${clean?'_clean':''}.${ext}`;}
+        used.add(name);zip.file(name,blob);
+      }
+      const out=await zip.generateAsync({type:'blob'});
+      downloadBlob(out,`NAI_ARCHIVE_${clean?'metadata_removed':'original'}_${entries.length}_${dateStamp()}.zip`);
+      toast(clean?`${entries.length}개 메타데이터 제거본을 저장했습니다.`:`${entries.length}개 원본을 저장했습니다.`);
+    }catch(err){console.error(err);toast('일괄 저장에 실패했습니다.');}
+  }
+
+  async function deleteSelected(){
+    const ids=[...state.selectedIds]; if(!ids.length)return;
+    if(!confirm(`선택한 ${ids.length}개 항목을 도감에서 삭제할까요?\n이 작업은 백업이 없다면 되돌릴 수 없습니다.`))return;
+    for(const id of ids) await txDel(STORE_ENTRIES,id);
+    state.entries=state.entries.filter(e=>!ids.includes(e.id));
+    state.compareIds=state.compareIds.filter(id=>!ids.includes(id));
+    let folderChanged=false;state.folders.forEach(f=>{const before=(f.items||[]).length;f.items=(f.items||[]).filter(it=>!(it.type==='image'&&ids.includes(it.entryId)));if(f.items.length!==before){f.updatedAt=Date.now();folderChanged=true;}});if(folderChanged)await persistFolders();
+    state.selectedIds=[]; state.selectMode=false; render(); toast(`${ids.length}개 삭제했습니다.`);
+  }
+
+  async function deleteCurrent(){const e=state.entries.find(x=>x.id===state.currentId);if(!e||!confirm('이 항목을 도감에서 삭제할까요?'))return;await txDel(STORE_ENTRIES,e.id);state.entries=state.entries.filter(x=>x.id!==e.id);state.compareIds=state.compareIds.filter(x=>x!==e.id);let folderChanged=false;state.folders.forEach(f=>{const before=(f.items||[]).length;f.items=(f.items||[]).filter(it=>!(it.type==='image'&&it.entryId===e.id));if(f.items.length!==before){f.updatedAt=Date.now();folderChanged=true;}});if(folderChanged)await persistFolders();els.detailDialog.close();render();toast('삭제했습니다.');}
+
+  function copyCurrent(type){const e=state.entries.find(x=>x.id===state.currentId);if(!e)return;let text='';if(type==='artists')text=e.artistsText;if(type==='prompt')text=e.prompt;if(type==='characters')text=(e.characterPrompts||[]).join('\n\n');if(type==='uc')text=e.uc;if(type==='stylePrompt')text=[e.artistsText,e.prompt].filter(Boolean).join('\n\n');if(type==='all')text=[`[ARTISTS]\n${e.artistsText}`,`[PROMPT]\n${e.prompt}`,...(e.characterPrompts||[]).map((x,i)=>`[CHARACTER ${i+1}]\n${x}`),`[UC]\n${e.uc}`].join('\n\n');navigator.clipboard.writeText(text||'').then(()=>toast('복사했습니다.'));}
+
+  async function bookmarkCurrentArtists(){
+    const e=state.entries.find(x=>x.id===state.currentId); if(!e)return; let changed=0;
+    for(const a of e.artists||[]){if(!state.artistBookmarks.some(x=>norm(x)===norm(a.name))){state.artistBookmarks.push(a.name);changed++;}}
+    await saveMeta('artistBookmarks',state.artistBookmarks);renderBookmarks();toast(changed?`${changed}개 작가태그 북마크`:'이미 북마크되어 있습니다.');
+  }
+  async function savePreset(){const name=els.presetName.value.trim(),text=els.presetText.value.trim();if(!name||!text){toast('이름과 작가태그를 입력해주세요.');return;}state.presets.push({id:crypto.randomUUID(),name,text});await saveMeta('presets',state.presets);els.presetDialog.close();renderBookmarks();}
+  async function persistFolders(){await saveMeta('folders',state.folders)}
+  function folderById(id){return state.folders.find(f=>f.id===id)}
+  function folderTypeCounts(f){const counts={image:0,artist:0,prompt:0,character:0,uc:0,note:0,attachment:0};for(const it of f.items||[])if(counts[it.type]!==undefined)counts[it.type]++;return counts}
+  function folderSummary(f){const c=folderTypeCounts(f);const labels={image:'IMAGE',attachment:'IMAGE',artist:'TAG',prompt:'PROMPT',character:'CHAR',uc:'UC',note:'NOTE'};return Object.keys(labels).filter(k=>c[k]).map(k=>`${c[k]} ${labels[k]}`).join(' · ')||'EMPTY'}
+  function renderFolders(){
+    if(!els.folderGrid)return;
+    const folders=[...state.folders].sort((a,b)=>(b.bookmarked?1:0)-(a.bookmarked?1:0)||(b.updatedAt||0)-(a.updatedAt||0));
+    els.folderGrid.innerHTML=folders.length?folders.map(f=>`<div class="folder-card" data-folder="${f.id}" role="button" tabindex="0"><button class="folder-star" data-star="${f.id}" aria-label="폴더 북마크">${f.bookmarked?'★':'☆'}</button><span class="folder-mark"></span><span class="folder-name">${esc(f.name)}</span><span class="folder-meta">${(f.items||[]).length} ITEMS</span><span class="folder-type-summary">${esc(folderSummary(f))}</span></div>`).join(''):'<div class="folder-empty">아직 폴더가 없습니다. 이미지 없이 태그만, 프롬프트만, 혹은 여러 종류를 섞어서 자유롭게 만들 수 있습니다.</div>';
+    els.folderGrid.querySelectorAll('.folder-card').forEach(c=>{c.onclick=e=>{if(e.target.closest('.folder-star'))return;openFolder(c.dataset.folder)};c.onkeydown=e=>{if(e.key==='Enter')openFolder(c.dataset.folder)}});
+    els.folderGrid.querySelectorAll('.folder-star').forEach(b=>b.onclick=async e=>{e.stopPropagation();const f=folderById(b.dataset.star);f.bookmarked=!f.bookmarked;f.updatedAt=Date.now();await persistFolders();renderFolders();renderBookmarks();});
+  }
+  async function createFolder(){const name=els.folderNameInput.value.trim();if(!name){toast('폴더 이름을 입력해주세요.');return;}state.folders.push({id:crypto.randomUUID(),name,bookmarked:false,items:[],createdAt:Date.now(),updatedAt:Date.now()});await persistFolders();els.folderCreateDialog.close();renderFolders();toast('폴더를 만들었습니다.');}
+  function openFolder(id){const f=folderById(id);if(!f)return;state.currentFolderId=id;els.folderTitleInput.value=f.name;els.folderBookmarkBtn.textContent=f.bookmarked?'★ Folder':'☆ Folder';renderFolderItems();els.folderDialog.showModal();}
+  function renderFolderItems(){
+    const f=folderById(state.currentFolderId);if(!f)return;
+    revokeFolderObjectUrls();
+    const items=f.items||[];
+    els.folderItems.innerHTML=items.length?items.map((it,i)=>{
+      let content='';
+      let source='';
+      if(it.type==='image'){
+        const e=state.entries.find(x=>x.id===it.entryId);
+        if(e){
+          const url=URL.createObjectURL(e.imageBlob);
+          content=`<img class="notebook-image" src="${url}" alt=""><strong class="notebook-caption">${esc(e.title||e.fileName||'Image')}</strong>`;
+          source='GALLERY';
+        }else content='<span class="muted-note">삭제된 Gallery 이미지</span>';
+      }else if(it.type==='attachment'&&it.blob){
+        const url=URL.createObjectURL(it.blob);
+        content=`<img class="notebook-image" src="${url}" alt=""><strong class="notebook-caption">${esc(it.name||'Image')}</strong>`;
+        source='IMAGE';
+      }else{
+        content=`<div class="notebook-text">${esc(it.text||'')}</div>`;
+        source=it.sourceLabel||folderTypeLabel(it.type);
+      }
+      return `<article class="notebook-item" data-url="${it.type==='image'&&state.entries.find(x=>x.id===it.entryId)?URL.createObjectURL(state.entries.find(x=>x.id===it.entryId).imageBlob):it.type==='attachment'&&it.blob?URL.createObjectURL(it.blob):''}">
+        <div class="notebook-item-head"><span>${esc(source||'NOTE')}</span><div class="folder-item-actions">${it.text?`<button class="mini-btn folder-copy" data-i="${i}">복사</button><button class="mini-btn folder-edit" data-i="${i}">수정</button>`:''}${it.type==='image'&&state.entries.some(e=>e.id===it.entryId)?`<button class="mini-btn folder-open-image" data-i="${i}">열기</button>`:''}<button class="mini-btn folder-remove" data-i="${i}">×</button></div></div>
+        <div class="notebook-item-content">${content}</div>
+      </article>`;
+    }).join(''):'<div class="notebook-empty">아직 아무것도 없습니다.<br>아래에 바로 적거나 이미지를 붙이고, Gallery에 저장된 요소를 불러올 수 있습니다.</div>';
+
+    // Correct image src/data-url pairs without leaking temporary duplicate URLs.
+    els.folderItems.querySelectorAll('.notebook-item').forEach((node,i)=>{
+      const it=items[i], img=node.querySelector('img');
+      if(!img)return;
+      let blob=null;
+      if(it.type==='image') blob=state.entries.find(x=>x.id===it.entryId)?.imageBlob;
+      else if(it.type==='attachment') blob=it.blob;
+      if(blob){
+        const old=img.src;
+        if(old.startsWith('blob:'))URL.revokeObjectURL(old);
+        const url=URL.createObjectURL(blob);
+        img.src=url;node.dataset.url=url;
+      }
+    });
+    els.folderItems.querySelectorAll('.folder-copy').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(f.items[+b.dataset.i].text||'').then(()=>toast('복사했습니다.')));
+    els.folderItems.querySelectorAll('.folder-edit').forEach(b=>b.onclick=async()=>{
+      const it=f.items[+b.dataset.i];const next=prompt('내용 수정',it.text||'');if(next===null)return;
+      it.text=next;f.updatedAt=Date.now();await persistFolders();renderFolderItems();renderFolders();renderBookmarks();
+    });
+    els.folderItems.querySelectorAll('.folder-open-image').forEach(b=>b.onclick=()=>{const it=f.items[+b.dataset.i];els.folderDialog.close();openDetail(it.entryId)});
+    els.folderItems.querySelectorAll('.folder-remove').forEach(b=>b.onclick=async()=>{
+      f.items.splice(+b.dataset.i,1);f.updatedAt=Date.now();await persistFolders();renderFolderItems();renderFolders();renderBookmarks();
+    });
+  }
+
+  function revokeFolderObjectUrls(){
+    if(!els.folderItems)return;
+    els.folderItems.querySelectorAll('[data-url]').forEach(el=>{
+      const u=el.dataset.url;if(u?.startsWith('blob:'))URL.revokeObjectURL(u);
+    });
+  }
+
+  function folderTypeLabel(type){return ({artist:'TAG',prompt:'PROMPT',character:'CHAR',uc:'UC',note:'NOTE',image:'IMAGE'})[type]||String(type||'ITEM').toUpperCase()}
+  async function saveFolderTitle(){const f=folderById(state.currentFolderId);if(!f)return;f.name=els.folderTitleInput.value.trim()||'Untitled';f.updatedAt=Date.now();await persistFolders();renderFolders();renderBookmarks();}
+  async function toggleFolderBookmark(){const f=folderById(state.currentFolderId);if(!f)return;f.bookmarked=!f.bookmarked;f.updatedAt=Date.now();await persistFolders();els.folderBookmarkBtn.textContent=f.bookmarked?'★ Folder':'☆ Folder';renderFolders();renderBookmarks();}
+  async function deleteCurrentFolder(){const f=folderById(state.currentFolderId);if(!f||!confirm(`“${f.name}” 폴더를 삭제할까요?\n원본 이미지와 Gallery 데이터는 삭제되지 않습니다.`))return;state.folders=state.folders.filter(x=>x.id!==f.id);await persistFolders();els.folderDialog.close();renderFolders();renderBookmarks();toast('폴더를 삭제했습니다.');}
+  async function addFolderItem(){
+    const f=folderById(state.currentFolderId);if(!f)return;
+    const text=els.folderItemText.value.trim();
+    if(!text){toast('내용을 입력해주세요.');return;}
+    f.items.push({id:crypto.randomUUID(),type:'note',text,sourceLabel:'NOTE',createdAt:Date.now()});
+    els.folderItemText.value='';f.updatedAt=Date.now();await persistFolders();renderFolderItems();renderFolders();renderBookmarks();toast('폴더에 추가했습니다.');
+  }
+
+  async function attachImagesToFolder(fileList){
+    const f=folderById(state.currentFolderId);if(!f)return;
+    const files=[...(fileList||[])].filter(x=>String(x.type||'').startsWith('image/'));
+    if(!files.length)return;
+    for(const file of files){
+      f.items.push({id:crypto.randomUUID(),type:'attachment',name:file.name||'Image',mime:file.type||'image/png',blob:file,createdAt:Date.now()});
+    }
+    f.updatedAt=Date.now();await persistFolders();els.folderAttachInput.value='';renderFolderItems();renderFolders();renderBookmarks();toast(`${files.length}개 이미지를 붙였습니다.`);
+  }
+
+  function openSavedHub(){
+    state.savedHubType='image';
+    state.savedHubSelected=[];
+    els.savedHubSearch.value='';
+    [...els.savedHubTabs.children].forEach(b=>b.classList.toggle('active',b.dataset.hubType==='image'));
+    renderSavedHub();
+    els.savedHubDialog.showModal();
+  }
+
+  function hubKey(type,id,extra=''){return `${type}::${id}::${extra}`}
+
+  function savedHubItems(){
+    const type=state.savedHubType;
+    const out=[];
+    if(type==='image'){
+      for(const e of state.entries) out.push({key:hubKey('image',e.id),kind:'image',entryId:e.id,title:displayTitle(e),sub:artistSummary(e),blob:e.imageBlob});
+    }
+    if(type==='tag'){
+      const seen=new Set();
+      for(const e of state.entries) for(const a of (e.artists||[])){
+        const name=String(a.name||'').trim(); if(!name)continue; const k=norm(name); if(seen.has(k))continue; seen.add(k);
+        const raw=(e.artistsText||'').split(',').map(x=>x.trim()).find(x=>norm(x).includes(`artist:${k}`))||`artist:${name}`;
+        out.push({key:hubKey('tag',k),kind:'artist',text:raw,title:name,sub:'작가태그'});
+      }
+    }
+    if(type==='prompt'){
+      for(const e of state.entries){
+        if(String(e.prompt||'').trim())out.push({key:hubKey('prompt',e.id,'prompt'),kind:'prompt',text:e.prompt,title:`${displayTitle(e)} · Prompt`,sub:previewText(e.prompt)});
+        (e.characterPrompts||[]).forEach((t,i)=>{if(String(t||'').trim())out.push({key:hubKey('prompt',e.id,`char${i}`),kind:'character',text:t,title:`${displayTitle(e)} · Character ${i+1}`,sub:previewText(t)});});
+        if(String(e.uc||'').trim())out.push({key:hubKey('prompt',e.id,'uc'),kind:'uc',text:e.uc,title:`${displayTitle(e)} · UC`,sub:previewText(e.uc)});
+      }
+    }
+    if(type==='note'){
+      for(const e of state.entries) if(String(e.memo||'').trim()) out.push({key:hubKey('note',e.id,'memo'),kind:'note',text:e.memo,title:`${displayTitle(e)} · 메모`,sub:previewText(e.memo)});
+      for(const f of state.folders) for(const it of (f.items||[])) if(it.text && ['note','artist','prompt','character','uc'].includes(it.type)) out.push({key:hubKey('foldernote',f.id,it.id),kind:it.type,text:it.text,title:`${f.name} · ${it.sourceLabel||folderTypeLabel(it.type)}`,sub:previewText(it.text)});
+    }
+    if(type==='bookmark'){
+      for(const a of state.artistBookmarks) out.push({key:hubKey('bookmark-tag',norm(a)),kind:'artist',text:`artist:${a}`,title:a,sub:'북마크 · 작가태그'});
+      for(const p of state.presets) out.push({key:hubKey('bookmark-preset',p.id),kind:'artist',text:p.text,title:p.name,sub:'북마크 · 작가태그 조합'});
+      for(const f of state.folders.filter(x=>x.bookmarked)) out.push({key:hubKey('bookmark-folder',f.id),kind:'folder',folderId:f.id,title:f.name,sub:`북마크 · ${(f.items||[]).length} ITEMS`});
+    }
+    if(type==='folder'){
+      for(const f of state.folders) if(f.id!==state.currentFolderId) out.push({key:hubKey('folder',f.id),kind:'folder',folderId:f.id,title:f.name,sub:`${(f.items||[]).length} ITEMS · ${folderSummary(f)}`});
+    }
+    return out;
+  }
+
+  function previewText(s){return String(s||'').replace(/\s+/g,' ').trim().slice(0,120)}
+
+  function renderSavedHub(){
+    const q=norm(els.savedHubSearch.value||'').trim();
+    const items=savedHubItems().filter(it=>!q||norm([it.title,it.sub,it.text].filter(Boolean).join(' ')).includes(q));
+    revokeSavedHubUrls();
+    els.savedHubGrid.className=`saved-hub-grid hub-${state.savedHubType}`;
+    els.savedHubGrid.innerHTML=items.length?items.map(it=>{
+      const checked=state.savedHubSelected.includes(it.key);
+      if(it.kind==='image'){
+        const u=URL.createObjectURL(it.blob);
+        return `<label class="saved-hub-card image-card" data-url="${u}"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><img src="${u}" alt=""><div class="hub-card-copy"><strong>${esc(it.title)}</strong><span>${esc(it.sub||'')}</span></div></label>`;
+      }
+      const icon=it.kind==='folder'?'▱':it.kind==='artist'?'#':it.kind==='uc'?'UC':it.kind==='character'?'C':'T';
+      return `<label class="saved-hub-card text-card"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><span class="hub-kind">${esc(icon)}</span><div class="hub-card-copy"><strong>${esc(it.title||'Untitled')}</strong><span>${esc(it.sub||previewText(it.text||''))}</span></div></label>`;
+    }).join(''):'<div class="notebook-empty">불러올 항목이 없습니다.</div>';
+    els.savedHubGrid.querySelectorAll('.hub-check').forEach(cb=>cb.onchange=()=>{const k=cb.dataset.key;if(cb.checked&&!state.savedHubSelected.includes(k))state.savedHubSelected.push(k);if(!cb.checked)state.savedHubSelected=state.savedHubSelected.filter(x=>x!==k);updateSavedHubCount();});
+    bindSavedHubSweepSelection();
+    updateSavedHubCount();
+  }
+
+  function updateSavedHubCount(){
+    els.savedHubCount.textContent=`${state.savedHubSelected.length}개 선택`;
+    els.savedHubImportBtn.disabled=!state.savedHubSelected.length;
+  }
+
+  function revokeSavedHubUrls(){
+    if(!els.savedHubGrid)return;
+    els.savedHubGrid.querySelectorAll('[data-url]').forEach(el=>{const u=el.dataset.url;if(u?.startsWith('blob:'))URL.revokeObjectURL(u)});
+  }
+
+  function cloneFolderItemForImport(it){
+    if(!it)return null;
+    if(it.type==='image')return {id:crypto.randomUUID(),type:'image',entryId:it.entryId,createdAt:Date.now()};
+    if(it.type==='attachment')return {id:crypto.randomUUID(),type:'attachment',name:it.name||'Image',mime:it.mime||it.blob?.type||'image/png',blob:it.blob,createdAt:Date.now()};
+    return {id:crypto.randomUUID(),type:it.type||'note',text:it.text||'',sourceLabel:it.sourceLabel||folderTypeLabel(it.type),createdAt:Date.now()};
+  }
+
+  async function importFromSavedHub(){
+    const target=folderById(state.currentFolderId);if(!target)return;
+    const all=savedHubItems();const chosen=all.filter(it=>state.savedHubSelected.includes(it.key));if(!chosen.length)return;
+    let added=0,skipped=0;
+    const pushItem=it=>{
+      if(!it)return;
+      if(it.type==='image'&&(target.items||[]).some(x=>x.type==='image'&&x.entryId===it.entryId)){skipped++;return;}
+      target.items.push(it);added++;
+    };
+    for(const it of chosen){
+      if(it.kind==='image'){pushItem({id:crypto.randomUUID(),type:'image',entryId:it.entryId,createdAt:Date.now()});continue;}
+      if(it.kind==='folder'){
+        const f=folderById(it.folderId);if(!f)continue;
+        for(const src of (f.items||[]))pushItem(cloneFolderItemForImport(src));
+        continue;
+      }
+      pushItem({id:crypto.randomUUID(),type:it.kind||'note',text:it.text||'',sourceLabel:it.sub?.startsWith('북마크')?'BOOKMARK':folderTypeLabel(it.kind),createdAt:Date.now()});
+    }
+    target.updatedAt=Date.now();await persistFolders();els.savedHubDialog.close();state.savedHubSelected=[];renderFolderItems();renderFolders();renderBookmarks();toast(skipped?`${added}개 불러옴 · ${skipped}개 중복 제외`:`${added}개를 불러왔습니다.`);
+  }
+
+  function openFolderPicker(items){
+    items=(items||[]).filter(Boolean);if(!items.length){toast('추가할 항목이 없습니다.');return;}
+    state.pendingFolderItems=items.map(it=>({...it}));
+    els.folderPickSelect.innerHTML=state.folders.length?state.folders.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join(''):'<option value="">기존 폴더 없음</option>';
+    els.folderPickNewName.value='';
+    const counts={};items.forEach(it=>counts[folderTypeLabel(it.type)]=(counts[folderTypeLabel(it.type)]||0)+1);
+    els.folderPickSummary.textContent=`추가 예정 · ${Object.entries(counts).map(([k,v])=>`${k} ${v}`).join(' / ')}`;
+    els.folderPickDialog.showModal();setTimeout(()=>{if(!state.folders.length)els.folderPickNewName.focus()},30);
+  }
+  async function confirmFolderPick(){
+    const newName=els.folderPickNewName.value.trim();let f;
+    if(newName){f={id:crypto.randomUUID(),name:newName,bookmarked:false,items:[],createdAt:Date.now(),updatedAt:Date.now()};state.folders.push(f);}else{f=folderById(els.folderPickSelect.value);}
+    if(!f){toast('폴더를 선택하거나 새 폴더 이름을 입력해주세요.');return;}
+    let added=0,skipped=0;
+    for(const raw of state.pendingFolderItems){const it={...raw,id:crypto.randomUUID(),createdAt:Date.now()};if(it.type==='image'&&(f.items||[]).some(x=>x.type==='image'&&x.entryId===it.entryId)){skipped++;continue;}f.items.push(it);added++;}
+    f.updatedAt=Date.now();await persistFolders();els.folderPickDialog.close();state.pendingFolderItems=[];renderFolders();renderBookmarks();if(state.currentFolderId===f.id&&els.folderDialog.open)renderFolderItems();toast(skipped?`${added}개 추가 · ${skipped}개 중복 제외`:`${added}개를 폴더에 추가했습니다.`);
+  }
+
+  async function saveMeta(key,value){await txPut(STORE_META,{key,value})}
+
+  function renderBookmarks(){
+    if(els.folderBookmarks){const fs=state.folders.filter(f=>f.bookmarked);els.folderBookmarks.innerHTML=fs.length?fs.map(f=>`<div class="folder-card" data-folder="${f.id}"><span class="folder-mark"></span><span class="folder-name">${esc(f.name)}</span><span class="folder-meta">${(f.items||[]).length} ITEMS</span><span class="folder-type-summary">${esc(folderSummary(f))}</span></div>`).join(''):'<div class="muted-note">북마크한 폴더가 없습니다.</div>';els.folderBookmarks.querySelectorAll('.folder-card').forEach(c=>c.onclick=()=>openFolder(c.dataset.folder));}
+    els.artistBookmarks.innerHTML=state.artistBookmarks.length?state.artistBookmarks.map(a=>`<div class="bookmark-card"><strong>☆ ${esc(a)}</strong><div class="bookmark-actions"><button class="mini-btn filter-artist" data-name="${escAttr(a)}">도감 검색</button><button class="mini-btn copy-artist" data-name="${escAttr(a)}">태그 복사</button><button class="mini-btn remove-artist" data-name="${escAttr(a)}">삭제</button></div></div>`).join(''):'<div class="muted-note">아직 즐겨찾는 작가태그가 없습니다.</div>';
+    els.artistBookmarks.querySelectorAll('.filter-artist').forEach(b=>b.onclick=()=>{state.artistFilters=[b.dataset.name];setView('library');render();});
+    els.artistBookmarks.querySelectorAll('.copy-artist').forEach(b=>b.onclick=()=>navigator.clipboard.writeText(`artist:${b.dataset.name}`).then(()=>toast('복사했습니다.')));
+    els.artistBookmarks.querySelectorAll('.remove-artist').forEach(b=>b.onclick=async()=>{state.artistBookmarks=state.artistBookmarks.filter(x=>x!==b.dataset.name);await saveMeta('artistBookmarks',state.artistBookmarks);renderBookmarks();});
+    els.presetBookmarks.innerHTML=state.presets.length?state.presets.map(p=>`<div class="bookmark-card"><strong>${esc(p.name)}</strong><div class="bookmark-code">${esc(p.text)}</div><div class="bookmark-actions"><button class="mini-btn copy-preset" data-id="${p.id}">복사</button><button class="mini-btn remove-preset" data-id="${p.id}">삭제</button></div></div>`).join(''):'<div class="muted-note">저장한 작가태그 조합이 없습니다.</div>';
+    els.presetBookmarks.querySelectorAll('.copy-preset').forEach(b=>b.onclick=()=>{const p=state.presets.find(x=>x.id===b.dataset.id);navigator.clipboard.writeText(p.text).then(()=>toast('복사했습니다.'));});
+    els.presetBookmarks.querySelectorAll('.remove-preset').forEach(b=>b.onclick=async()=>{state.presets=state.presets.filter(x=>x.id!==b.dataset.id);await saveMeta('presets',state.presets);renderBookmarks();});
+  }
+
+  function openComparePicker(){
+    state.comparePickerIds=[...state.compareIds];
+    els.comparePickerSearch.value='';
+    renderComparePicker();
+    els.comparePickerDialog.showModal();
+  }
+
+  function filteredComparePickerEntries(){
+    const q=norm(els.comparePickerSearch?.value||'').trim();
+    if(!q)return [...state.entries];
+    return state.entries.filter(e=>{
+      const hay=[displayTitle(e),e.artistsText,e.prompt,e.memo].map(norm).join('\n');
+      return hay.includes(q);
+    });
+  }
+
+  function renderComparePicker(){
+    const arr=filteredComparePickerEntries();
+    revokeComparePickerUrls();
+    els.comparePickerGrid.innerHTML=arr.length?arr.map(e=>{
+      const url=URL.createObjectURL(e.imageBlob);
+      const checked=state.comparePickerIds.includes(e.id);
+      return `<label class="compare-pick-card" data-url="${url}">
+        <input type="checkbox" class="compare-pick-check" data-id="${e.id}" ${checked?'checked':''}>
+        <img src="${url}" alt="">
+        <div class="compare-pick-meta"><strong>${esc(displayTitle(e))}</strong><span>${esc(artistSummary(e))}</span></div>
+      </label>`;
+    }).join(''):'<div class="notebook-empty">불러올 이미지가 없습니다.</div>';
+    els.comparePickerGrid.querySelectorAll('.compare-pick-check').forEach(cb=>cb.onchange=()=>{
+      const id=cb.dataset.id;
+      if(cb.checked&&!state.comparePickerIds.includes(id))state.comparePickerIds.push(id);
+      if(!cb.checked)state.comparePickerIds=state.comparePickerIds.filter(x=>x!==id);
+      updateComparePickerCount();
+    });
+    bindComparePickerDragSelect();
+    updateComparePickerCount();
+  }
+
+  function updateComparePickerCount(){
+    els.comparePickerCount.textContent=`${state.comparePickerIds.length}개 선택`;
+    els.confirmComparePickerBtn.disabled=!state.comparePickerIds.length;
+  }
+
+  function clearComparePickerAll(){
+    state.comparePickerIds=[];
+    renderComparePicker();
+  }
+
+  function bindComparePickerDragSelect(){
+    const grid=els.comparePickerGrid;
+    if(!grid)return;
+
+    // Rebinding after every render: clear any previous gesture handlers first.
+    if(grid._sweepCleanup) grid._sweepCleanup();
+
+    const HOLD_MS=300;
+    const MOVE_CANCEL=14;
+    let holdTimer=null;
+    let active=false;
+    let paintValue=true;
+    let seen=new Set();
+    let startX=0,startY=0,lastX=0,lastY=0;
+    let touchId=null;
+    let autoRAF=0;
+
+    const cardAt=(x,y)=>{
+      const el=document.elementFromPoint(x,y);
+      return el?.closest?.('.compare-pick-card')||null;
+    };
+
+    const setCard=(card)=>{
+      if(!card)return;
+      const cb=card.querySelector('.compare-pick-check');
+      const id=cb?.dataset.id;
+      if(!id||seen.has(id))return;
+      seen.add(id);
+
+      cb.checked=paintValue;
+      if(paintValue){
+        if(!state.comparePickerIds.includes(id))state.comparePickerIds.push(id);
+      }else{
+        state.comparePickerIds=state.comparePickerIds.filter(x=>x!==id);
+      }
+      updateComparePickerCount();
+    };
+
+    const paintBetween=(x1,y1,x2,y2)=>{
+      const d=Math.hypot(x2-x1,y2-y1);
+      const steps=Math.max(1,Math.ceil(d/10));
+      for(let i=0;i<=steps;i++){
+        const t=i/steps;
+        setCard(cardAt(x1+(x2-x1)*t,y1+(y2-y1)*t));
+      }
+    };
+
+    const stopAuto=()=>{
+      if(autoRAF){cancelAnimationFrame(autoRAF);autoRAF=0;}
+    };
+
+    const startAuto=()=>{
+      stopAuto();
+      const tick=()=>{
+        if(!active)return;
+        const r=grid.getBoundingClientRect();
+        const edge=58;
+        let dy=0;
+        if(lastY<r.top+edge) dy=-7;
+        else if(lastY>r.bottom-edge) dy=7;
+        if(dy){
+          grid.scrollTop+=dy;
+          setCard(cardAt(lastX,lastY));
+        }
+        autoRAF=requestAnimationFrame(tick);
+      };
+      autoRAF=requestAnimationFrame(tick);
+    };
+
+    const activate=(x,y)=>{
+      const card=cardAt(x,y);
+      if(!card)return;
+      active=true;
+      seen=new Set();
+      paintValue=!card.querySelector('.compare-pick-check')?.checked;
+      lastX=x;lastY=y;
+      grid.classList.add('sweep-selecting');
+      setCard(card);
+      startAuto();
+      try{navigator.vibrate?.(15)}catch(_){}
+    };
+
+    const finish=()=>{
+      if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}
+      active=false;
+      touchId=null;
+      seen.clear();
+      grid.classList.remove('sweep-selecting');
+      stopAuto();
+    };
+
+    // Mobile / touch path.
+    const onTouchStart=(ev)=>{
+      if(ev.touches.length!==1)return;
+      const t=ev.touches[0];
+      const card=ev.target.closest('.compare-pick-card');
+      if(!card)return;
+
+      touchId=t.identifier;
+      startX=lastX=t.clientX;
+      startY=lastY=t.clientY;
+      if(holdTimer)clearTimeout(holdTimer);
+
+      holdTimer=setTimeout(()=>{
+        // use last known coordinates rather than the original event object
+        activate(lastX,lastY);
+      },HOLD_MS);
+    };
+
+    const onTouchMove=(ev)=>{
+      const t=[...ev.touches].find(x=>x.identifier===touchId);
+      if(!t)return;
+
+      if(!active){
+        // Small finger jitter is tolerated; an actual scroll cancels the hold.
+        if(Math.hypot(t.clientX-startX,t.clientY-startY)>MOVE_CANCEL){
+          if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}
+        }
+        lastX=t.clientX;lastY=t.clientY;
+        return;
+      }
+
+      // Once the long-press has activated, this gesture belongs to selection, not page scrolling.
+      ev.preventDefault();
+      paintBetween(lastX,lastY,t.clientX,t.clientY);
+      lastX=t.clientX;lastY=t.clientY;
+    };
+
+    const onTouchEnd=(ev)=>{
+      if(active)ev.preventDefault();
+      finish();
+    };
+
+    // Desktop mouse fallback: press and hold, then sweep.
+    let mouseDown=false;
+    const onMouseDown=(ev)=>{
+      if(ev.button!==0)return;
+      const card=ev.target.closest('.compare-pick-card');
+      if(!card)return;
+      mouseDown=true;
+      startX=lastX=ev.clientX;
+      startY=lastY=ev.clientY;
+      if(holdTimer)clearTimeout(holdTimer);
+      holdTimer=setTimeout(()=>{if(mouseDown)activate(lastX,lastY)},HOLD_MS);
+    };
+    const onMouseMove=(ev)=>{
+      if(!mouseDown)return;
+      if(!active){
+        if(Math.hypot(ev.clientX-startX,ev.clientY-startY)>MOVE_CANCEL){
+          if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}
+        }
+        lastX=ev.clientX;lastY=ev.clientY;
+        return;
+      }
+      ev.preventDefault();
+      paintBetween(lastX,lastY,ev.clientX,ev.clientY);
+      lastX=ev.clientX;lastY=ev.clientY;
+    };
+    const onMouseUp=()=>{mouseDown=false;finish()};
+
+    const onContextMenu=(ev)=>{
+      if(active||holdTimer)ev.preventDefault();
+    };
+
+    grid.addEventListener('touchstart',onTouchStart,{passive:true});
+    grid.addEventListener('touchmove',onTouchMove,{passive:false});
+    grid.addEventListener('touchend',onTouchEnd,{passive:false});
+    grid.addEventListener('touchcancel',finish,{passive:true});
+    grid.addEventListener('mousedown',onMouseDown);
+    window.addEventListener('mousemove',onMouseMove,{passive:false});
+    window.addEventListener('mouseup',onMouseUp);
+    grid.addEventListener('contextmenu',onContextMenu);
+
+    grid._sweepCleanup=()=>{
+      finish();
+      grid.removeEventListener('touchstart',onTouchStart);
+      grid.removeEventListener('touchmove',onTouchMove);
+      grid.removeEventListener('touchend',onTouchEnd);
+      grid.removeEventListener('touchcancel',finish);
+      grid.removeEventListener('mousedown',onMouseDown);
+      window.removeEventListener('mousemove',onMouseMove);
+      window.removeEventListener('mouseup',onMouseUp);
+      grid.removeEventListener('contextmenu',onContextMenu);
+    };
+  }
+
+  function toggleComparePickerAll(){
+    const ids=filteredComparePickerEntries().map(e=>e.id);
+    const all=ids.length&&ids.every(id=>state.comparePickerIds.includes(id));
+    state.comparePickerIds=all
+      ? state.comparePickerIds.filter(id=>!ids.includes(id))
+      : [...new Set([...state.comparePickerIds,...ids])];
+    renderComparePicker();
+  }
+
+  function confirmComparePicker(){
+    state.compareIds=[...new Set(state.comparePickerIds)];
+    els.comparePickerDialog.close();
+    render();
+    toast(`${state.compareIds.length}개 이미지를 Compare에 불러왔습니다.`);
+  }
+
+  function revokeComparePickerUrls(){
+    if(!els.comparePickerGrid)return;
+    els.comparePickerGrid.querySelectorAll('[data-url]').forEach(el=>{
+      const u=el.dataset.url;
+      if(u?.startsWith('blob:'))URL.revokeObjectURL(u);
+    });
+  }
+
+  function renderCompare(){
+    const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean); els.compareCount.textContent=entries.length; els.compareHint.classList.toggle('hidden',entries.length>0); revokeObjectUrls(els.compareGrid);
+    els.compareGrid.innerHTML=entries.map(e=>{const url=URL.createObjectURL(e.imageBlob);return `<article class="compare-card" data-url="${url}" data-id="${e.id}"><button class="compare-remove" data-id="${e.id}" title="Compare에서 제거">×</button><img src="${url}"><div class="pad"><strong>${esc(displayTitle(e))}</strong><div class="card-sub">${esc(artistSummary(e))}</div></div></article>`}).join('');els.compareGrid.querySelectorAll('.compare-remove').forEach(b=>b.onclick=()=>toggleCompare(b.dataset.id,false));
+    if(entries.length<2){els.compareDiff.innerHTML='';return;}
+    const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
+    const rows=names.map(name=>{const vals=entries.map(e=>{const a=(e.artists||[]).find(x=>norm(x.name)===norm(name));return a?a.weight:'—'});const changed=new Set(vals.map(String)).size>1;return `<tr><th>${esc(name)}</th>${vals.map(v=>`<td class="${changed?'diff-changed':''}">${esc(String(v))}</td>`).join('')}</tr>`}).join('');
+    const samePrompt=entries.every(e=>normalizeText(e.prompt)===normalizeText(entries[0].prompt)); const sameChars=entries.every(e=>normalizeText((e.characterPrompts||[]).join('\n'))===normalizeText((entries[0].characterPrompts||[]).join('\n'))); const sameUc=entries.every(e=>normalizeText(e.uc)===normalizeText(entries[0].uc));
+    els.compareDiff.innerHTML=`<div class="hint-card">${samePrompt&&sameChars&&sameUc?'✓ Prompt · Character Prompt · UC 동일. 가중치 비교에 적합합니다.':'△ 프롬프트 계열에 차이가 있습니다. 순수 가중치 비교가 아닐 수 있습니다.'}</div><table class="diff-table"><thead><tr><th>Artist</th>${entries.map((e,i)=>`<th>테스트 ${i+1}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function selectedEntries(){return state.selectedIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);}
+  function openBackupDialog(){
+    renderBackupFolderChoices();
+    els.backupDialog.showModal();
+  }
+  function renderBackupFolderChoices(){
+    const scope=document.querySelector('input[name="backupScope"]:checked')?.value||'all';
+    els.backupFolderChoices.classList.toggle('hidden',scope!=='folders');
+    if(scope==='folders') els.backupFolderChoices.innerHTML=state.folders.length
+      ? state.folders.map(f=>`<label><input type="checkbox" class="backup-folder-check" value="${esc(f.id)}"><span>${esc(f.name||'Untitled Folder')}</span></label>`).join('')
+      : '<div class="muted-note" style="padding:8px">백업할 폴더가 없습니다.</div>';
+  }
+  async function runBackupFromDialog(){
+    const scope=document.querySelector('input[name="backupScope"]:checked')?.value||'all';
+    if(scope==='gallery'){
+      if(!state.selectedIds.length){toast('Gallery에서 먼저 이미지를 선택해주세요.');return;}
+      await backupZip({scope:'gallery',entryIds:[...state.selectedIds]});
+    }else if(scope==='folders'){
+      const folderIds=[...document.querySelectorAll('.backup-folder-check:checked')].map(x=>x.value);
+      if(!folderIds.length){toast('백업할 폴더를 선택해주세요.');return;}
+      await backupZip({scope:'folders',folderIds});
+    }else await backupZip({scope:'all'});
+    els.backupDialog.close();
+  }
+  async function backupZip(options={scope:'all'}){
+    if(!window.JSZip){toast('ZIP 모듈을 불러오지 못했습니다.');return;}
+    const zip=new JSZip(), scope=options.scope||'all';
+    let entries=[], folders=[], artistBookmarks=[], presets=[];
+    if(scope==='all'){
+      entries=[...state.entries]; folders=[...state.folders]; artistBookmarks=[...state.artistBookmarks]; presets=[...state.presets];
+    }else if(scope==='gallery'){
+      const ids=new Set(options.entryIds||[]);
+      entries=state.entries.filter(e=>ids.has(e.id));
+    }else if(scope==='folders'){
+      const fids=new Set(options.folderIds||[]);
+      folders=state.folders.filter(f=>fids.has(f.id));
+      const referenced=new Set();
+      folders.forEach(f=>(f.items||[]).forEach(it=>{if(it.type==='image'&&it.entryId)referenced.add(it.entryId)}));
+      entries=state.entries.filter(e=>referenced.has(e.id));
+    }
+    const backupFolders=folders.map(f=>({...f,items:(f.items||[]).map(it=>it.type==='attachment'&&it.blob?({...it,blob:undefined,attachmentPath:`folder-images/${f.id}/${it.id}.${mimeExt(it.mime||it.blob.type)}`}):({...it}))}));
+    const manifest={version:4,scope,exportedAt:new Date().toISOString(),entries:entries.map(({imageBlob,rawMetadata,...e})=>({...e,rawMetadata})),artistBookmarks,presets,folders:backupFolders};
+    zip.file('catalog.json',JSON.stringify(manifest,null,2));
+    const imageFolder=zip.folder('images'); entries.forEach(e=>imageFolder.file(`${e.id}.${extOf(e.fileName)}`,e.imageBlob));
+    for(const f of folders)for(const it of (f.items||[]))if(it.type==='attachment'&&it.blob)zip.file(`folder-images/${f.id}/${it.id}.${mimeExt(it.mime||it.blob.type)}`,it.blob);
+    const blob=await zip.generateAsync({type:'blob'});
+    const suffix=scope==='all'?'full':scope==='gallery'?'gallery-selected':'folders-selected';
+    downloadBlob(blob,`nai-archive-backup-${suffix}-${dateStamp()}.zip`);
+    toast('백업 ZIP을 만들었습니다.');
+  }
+  async function restoreZip(file){
+    if(!file||!window.JSZip)return; if(state.entries.length&&!confirm('현재 도감에 백업 내용을 합칠까요? 같은 ID는 백업 항목으로 갱신됩니다.'))return;
+    const zip=await JSZip.loadAsync(file); const manifest=JSON.parse(await zip.file('catalog.json').async('string'));
+    for(const raw of manifest.entries||[]){const imgEntry=Object.keys(zip.files).find(n=>n.startsWith(`images/${raw.id}.`));if(!imgEntry)continue;const blob=await zip.file(imgEntry).async('blob');const e={...raw,imageBlob:blob};await txPut(STORE_ENTRIES,e);const idx=state.entries.findIndex(x=>x.id===e.id);idx>=0?state.entries[idx]=e:state.entries.push(e);}
+    const restoredFolders=manifest.folders||state.folders;
+    for(const f of restoredFolders)for(const it of (f.items||[]))if(it.type==='attachment'&&it.attachmentPath&&zip.file(it.attachmentPath)){it.blob=await zip.file(it.attachmentPath).async('blob');delete it.attachmentPath;}
+    state.artistBookmarks=[...new Set([...(state.artistBookmarks||[]),...(manifest.artistBookmarks||[])])];state.presets=manifest.presets||state.presets;state.folders=restoredFolders;await saveMeta('folders',state.folders);await saveMeta('artistBookmarks',state.artistBookmarks);await saveMeta('presets',state.presets);els.restoreInput.value='';render();toast('백업을 복원했습니다.');
+  }
+
+  function openExportDialog(){els.exportDialog.showModal();}
+  function getExportFields(){
+    const fields={};
+    document.querySelectorAll('[data-export-field]').forEach(x=>fields[x.dataset.exportField]=x.checked);
+    return fields;
+  }
+  async function runExportFromDialog(){
+    const scope=document.querySelector('input[name="exportScope"]:checked')?.value||'filtered';
+    const isSelected=scope==='selected'||scope==='atlas-selected';
+    const arr=isSelected?selectedEntries():filteredEntries();
+    if(!arr.length){toast(isSelected?'선택한 이미지가 없습니다.':'내보낼 항목이 없습니다.');return;}
+    if(scope==='atlas-filtered'||scope==='atlas-selected') await exportArtistAtlasPdf(arr);
+    else if(scope==='atlas-image') await exportArtistAtlasImage(arr);
+    else await exportEntriesPdf(arr,getExportFields(),scope);
+    els.exportDialog.close();
+  }
+  function htmlText(s){return esc(String(s||'')).replace(/\n/g,'<br>');}
+  async function exportEntriesPdf(arr,fields={artists:true,prompt:true,characters:true,uc:true,memo:true},label='gallery'){
+    if(!arr?.length){toast('내보낼 항목이 없습니다.');return;}
+    const win=window.open('','_blank');
+    if(!win){toast('팝업을 허용한 뒤 다시 시도해주세요.');return;}
+    win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>NAI Archive PDF</title><style>body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;color:#111} .page{box-sizing:border-box;min-height:277mm;padding:14mm;page-break-after:always}.page:last-child{page-break-after:auto}h1{font-size:20px;margin:0 0 10px}.top{display:grid;grid-template-columns:72mm 1fr;gap:10mm}.top img{width:72mm;max-height:92mm;object-fit:contain;background:#f4f4f4}.sec{margin:9px 0}.lab{font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:3px}.txt{font-size:9.5px;line-height:1.5;white-space:normal;word-break:break-word}.meta{font-size:9px;color:#666;margin-bottom:7px}@media print{@page{size:A4;margin:0}}</style></head><body>');
+    for(let i=0;i<arr.length;i++){
+      const e=arr[i], data=await blobToDataUrl(e.imageBlob);
+      win.document.write(`<section class="page"><h1>${esc(displayTitle(e))}</h1><div class="meta">${esc(e.fileName||'')}</div><div class="top"><img src="${data}"><div>`);
+      if(fields.artists)win.document.write(`<div class="sec"><div class="lab">작가태그</div><div class="txt">${htmlText(e.artistsText||'')}</div></div>`);
+      if(fields.memo)win.document.write(`<div class="sec"><div class="lab">MEMO</div><div class="txt">${htmlText(e.memo||'')}</div></div>`);
+      win.document.write('</div></div>');
+      if(fields.prompt)win.document.write(`<div class="sec"><div class="lab">PROMPT</div><div class="txt">${htmlText(e.prompt||'')}</div></div>`);
+      if(fields.characters)win.document.write(`<div class="sec"><div class="lab">CHARACTER PROMPT</div><div class="txt">${htmlText((e.characterPrompts||[]).join('\n\n'))}</div></div>`);
+      if(fields.uc)win.document.write(`<div class="sec"><div class="lab">UC</div><div class="txt">${htmlText(e.uc||'')}</div></div>`);
+      win.document.write('</section>');
+    }
+    win.document.write('</body></html>');win.document.close();
+    setTimeout(()=>{win.focus();win.print();},500);
+    toast('인쇄 창에서 PDF로 저장해주세요.');
+  }
+  function artistTagLine(e){
+    if(e.artistsText) return e.artistsText;
+    return (e.artists||[]).map(a=>`${a.weight??1}::artist:${a.name}::`).join(', ');
+  }
+  async function exportArtistAtlasPdf(arr){
+    if(!arr?.length){toast('도감으로 내보낼 항목이 없습니다.');return;}
+    const win=window.open('','_blank');
+    if(!win){toast('팝업을 허용한 뒤 다시 시도해주세요.');return;}
+    win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>NAI Archive · Artist Atlas</title><style>body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;color:#111}.wrap{padding:10mm;display:grid;grid-template-columns:repeat(2,1fr);gap:9mm 6mm}.card{break-inside:avoid;page-break-inside:avoid}.card img{width:100%;height:108mm;object-fit:contain;background:#f5f5f5;display:block}.tag{font-size:8.5pt;line-height:1.5;word-break:break-word;padding-top:3mm}@media print{@page{size:A4;margin:0}.wrap{padding:10mm}}</style></head><body><main class="wrap">');
+    for(const e of arr){const data=await blobToDataUrl(e.imageBlob);win.document.write(`<article class="card"><img src="${data}"><div class="tag">${htmlText(artistTagLine(e))}</div></article>`)}
+    win.document.write('</main></body></html>');win.document.close();setTimeout(()=>{win.focus();win.print()},650);toast('작가태그 도감 PDF 인쇄 창을 열었습니다.');
+  }
+  async function exportArtistAtlasImage(arr){
+    if(!arr?.length){toast('도감으로 내보낼 항목이 없습니다.');return;}
+    const cols=2,cardW=760,imageH=900,tagH=180,gap=36,pad=48,rows=Math.ceil(arr.length/cols),cardH=imageH+tagH;
+    const canvas=document.createElement('canvas');canvas.width=pad*2+cols*cardW+(cols-1)*gap;canvas.height=pad*2+rows*cardH+Math.max(0,rows-1)*gap;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.textBaseline='top';
+    for(let i=0;i<arr.length;i++){
+      const e=arr[i],x=pad+(i%cols)*(cardW+gap),y=pad+Math.floor(i/cols)*(cardH+gap);ctx.fillStyle='#f5f5f5';ctx.fillRect(x,y,cardW,imageH);
+      const img=await loadBlobImage(e.imageBlob),s=Math.min(cardW/img.width,imageH/img.height),w=img.width*s,h=img.height*s;ctx.drawImage(img,x+(cardW-w)/2,y+(imageH-h)/2,w,h);
+      ctx.fillStyle='#111';ctx.font='22px Arial';drawCanvasText(ctx,artistTagLine(e),x,y+imageH+18,cardW,31);
+    }
+    canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-artist-atlas-${dateStamp()}.png`),'image/png');toast('작가태그 도감 이미지를 만들었습니다.');
+  }
+  async function exportCompareImage(){
+    const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);
+    if(entries.length<2){toast('비교 이미지를 2개 이상 불러와주세요.');return;}
+    const cols=Math.min(entries.length,2), cardW=700, cardH=900, gap=30, pad=40;
+    const rows=Math.ceil(entries.length/cols), tableY=pad+rows*(cardH+gap), canvas=document.createElement('canvas');
+    canvas.width=pad*2+cols*cardW+(cols-1)*gap; canvas.height=tableY+220+Math.max(1,new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name))).size)*42;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#111';ctx.textBaseline='top';
+    for(let i=0;i<entries.length;i++){
+      const e=entries[i], x=pad+(i%cols)*(cardW+gap), y=pad+Math.floor(i/cols)*(cardH+gap);
+      const img=await loadBlobImage(e.imageBlob), scale=Math.min(cardW/img.width,760/img.height), w=img.width*scale,h=img.height*scale;
+      ctx.fillStyle='#f4f4f4';ctx.fillRect(x,y,cardW,760);ctx.drawImage(img,x+(cardW-w)/2,y+(760-h)/2,w,h);
+      ctx.fillStyle='#111';ctx.font='bold 30px Arial';ctx.fillText(displayTitle(e),x,y+785);ctx.font='20px Arial';drawCanvasText(ctx,artistSummary(e),x,y+830,cardW,26);
+    }
+    let y=tableY+20;ctx.font='bold 30px Arial';ctx.fillText('Artist Weight Comparison',pad,y);y+=55;
+    const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
+    ctx.font='22px Arial';
+    for(const name of names){
+      const vals=entries.map(e=>{const a=(e.artists||[]).find(x=>norm(x.name)===norm(name));return a?a.weight:'—'});
+      ctx.fillText(`${name}   ${vals.map((v,i)=>`#${i+1}: ${v}`).join('   ')}`,pad,y);y+=42;
+    }
+    canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-compare-${dateStamp()}.png`),'image/png');
+    toast('Compare 결과 이미지를 만들었습니다.');
+  }
+  function loadBlobImage(blob){return new Promise((res,rej)=>{const u=URL.createObjectURL(blob),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=rej;i.src=u})}
+  function drawCanvasText(ctx,text,x,y,maxW,lineH){const words=String(text||'').split(/\s+/);let line='';for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,y);y+=lineH;line=w}else line=t}if(line)ctx.fillText(line,x,y)}
+  async function exportComparePdf(){
+    const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);
+    if(entries.length<2){toast('비교 이미지를 2개 이상 불러와주세요.');return;}
+    const win=window.open('','_blank');if(!win){toast('팝업을 허용한 뒤 다시 시도해주세요.');return;}
+    const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
+    const samePrompt=entries.every(e=>normalizeText(e.prompt)===normalizeText(entries[0].prompt));
+    const sameChars=entries.every(e=>normalizeText((e.characterPrompts||[]).join('\n'))===normalizeText((entries[0].characterPrompts||[]).join('\n')));
+    const sameUc=entries.every(e=>normalizeText(e.uc)===normalizeText(entries[0].uc));
+    win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>NAI Archive Compare</title><style>body{font-family:Arial,"Noto Sans KR",sans-serif;color:#111;padding:12mm}.imgs{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm}.card img{width:100%;height:95mm;object-fit:contain;background:#f4f4f4}.card b{display:block;margin-top:3mm}.card small{font-size:8pt}table{width:100%;border-collapse:collapse;margin-top:10mm;font-size:9pt}th,td{border:1px solid #ccc;padding:2.5mm;text-align:left}.note{margin-top:7mm;padding:4mm;border:1px solid #ccc;font-size:9pt}@media print{@page{size:A4;margin:8mm}}</style></head><body><h1>NAI Archive · Compare</h1><div class="imgs">');
+    for(const e of entries){const data=await blobToDataUrl(e.imageBlob);win.document.write(`<div class="card"><img src="${data}"><b>${esc(displayTitle(e))}</b><small>${htmlText(artistSummary(e))}</small></div>`)}
+    win.document.write('</div><div class="note">'+(samePrompt&&sameChars&&sameUc?'✓ Prompt · Character Prompt · UC 동일':'△ 프롬프트 계열에 차이가 있음')+'</div><table><thead><tr><th>작가태그</th>'+entries.map((e,i)=>`<th>${esc(displayTitle(e))}</th>`).join('')+'</tr></thead><tbody>');
+    for(const name of names){win.document.write(`<tr><th>${esc(name)}</th>${entries.map(e=>{const a=(e.artists||[]).find(x=>norm(x.name)===norm(name));return `<td>${esc(a?String(a.weight):'—')}</td>`}).join('')}</tr>`)}
+    win.document.write('</tbody></table></body></html>');win.document.close();setTimeout(()=>{win.focus();win.print()},500);toast('인쇄 창에서 PDF로 저장해주세요.');
+  }
+
+  async function saveCurrentImageWithoutMetadata(){
+    const e=state.entries.find(x=>x.id===state.currentId);
+    if(!e?.imageBlob){toast('저장할 이미지를 찾지 못했습니다.');return;}
+    try{
+      const source=e.imageBlob;
+      const isPng=(source.type||'').toLowerCase()==='image/png'||String(e.fileName||'').toLowerCase().endsWith('.png');
+      let cleanBlob,ext;
+      if(isPng){
+        cleanBlob=await stripPngMetadata(source);
+        ext='png';
+      }else{
+        cleanBlob=await reencodeImageWithoutMetadata(source);
+        ext=(source.type||'').toLowerCase().includes('png')?'png':'jpg';
+      }
+      const base=(e.fileName||e.title||'image').replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'_')||'image';
+      downloadBlob(cleanBlob,`${base}_clean.${ext}`);
+      toast('메타데이터를 제거한 이미지를 저장했습니다.');
+    }catch(err){
+      console.error(err);
+      toast('메타데이터 제거 저장에 실패했습니다.');
+    }
+  }
+
+  async function stripPngMetadata(blob){
+    const bytes=new Uint8Array(await blob.arrayBuffer());
+    const sig=[137,80,78,71,13,10,26,10];
+    if(bytes.length<8||!sig.every((v,i)=>bytes[i]===v)) throw new Error('Invalid PNG');
+    const removed=new Set(['tEXt','zTXt','iTXt','eXIf','tIME']);
+    const parts=[bytes.slice(0,8)];
+    let p=8;
+    while(p+12<=bytes.length){
+      const len=((bytes[p]<<24)|(bytes[p+1]<<16)|(bytes[p+2]<<8)|bytes[p+3])>>>0;
+      const end=p+12+len;
+      if(end>bytes.length) throw new Error('Broken PNG chunk');
+      const type=String.fromCharCode(bytes[p+4],bytes[p+5],bytes[p+6],bytes[p+7]);
+      if(!removed.has(type)) parts.push(bytes.slice(p,end));
+      p=end;
+      if(type==='IEND') break;
+    }
+    return new Blob(parts,{type:'image/png'});
+  }
+
+  async function reencodeImageWithoutMetadata(blob){
+    const url=URL.createObjectURL(blob);
+    try{
+      const img=await new Promise((res,rej)=>{
+        const im=new Image();
+        im.onload=()=>res(im);
+        im.onerror=()=>rej(new Error('Image decode failed'));
+        im.src=url;
+      });
+      const canvas=document.createElement('canvas');
+      canvas.width=img.naturalWidth||img.width;
+      canvas.height=img.naturalHeight||img.height;
+      const ctx=canvas.getContext('2d',{alpha:true});
+      ctx.drawImage(img,0,0);
+      const outType=(blob.type||'').toLowerCase()==='image/png'?'image/png':'image/jpeg';
+      return await new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('Canvas export failed')),outType,outType==='image/jpeg'?0.97:undefined));
+    }finally{
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  const norm=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim(); const normalizeText=s=>norm(s).replace(/\s*,\s*/g,',');
+  function displayTitle(e){
+    const custom=String(e?.title||'').trim();
+    if(custom)return custom;
+    const ordered=[...state.entries].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)||String(a.id).localeCompare(String(b.id)));
+    const idx=ordered.findIndex(x=>x.id===e.id);
+    return `IMG${String((idx<0?0:idx)+1).padStart(2,'0')}`;
+  }
+  const primaryArtist=e=>e.artists?.[0]?.name||''; const artistSummary=e=>(e.artists||[]).map(a=>`${a.name} ${a.weight}`).join(' · '); const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); const escAttr=esc;
+  function toast(msg){els.toast.textContent=msg;els.toast.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>els.toast.classList.remove('show'),1800)}
+  async function sha256(file){const b=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  function revokeObjectUrls(root){
+    const scope=root||document;
+    scope.querySelectorAll?.('[data-url]').forEach(el=>{
+      String(el.dataset.url||'').trim().split(/\s+/).filter(Boolean).forEach(u=>u.startsWith('blob:')&&URL.revokeObjectURL(u));
+      el.removeAttribute('data-url');
+    });
+  }
+  function revokeDetailObjectUrl(){
+    if(els.detailImage?.dataset.url){
+      URL.revokeObjectURL(els.detailImage.dataset.url);
+      delete els.detailImage.dataset.url;
+    }
+  }
+  function mimeExt(mime){mime=String(mime||'').toLowerCase();if(mime.includes('jpeg'))return'jpg';if(mime.includes('webp'))return'webp';return'png';}
+  function extOf(name){return (name?.split('.').pop()||'png').toLowerCase().replace(/[^a-z0-9]/g,'')||'png'}
+  function dateStamp(){const d=new Date();return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`}
+  function downloadBlob(blob,name){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+  function blobToDataUrl(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsDataURL(blob)})}
+})();
+
+</script>
+</body>
+</html>
+
+<style id="section-title-unify">
+.view h1,
+.section-title,
+.page-title{
+  font-family:"Young Serif", serif !important;
+  font-weight:400 !important;
+  letter-spacing:-.035em !important;
+}
+</style>
+
+<style id="v07-layout-fixes">
+/* Gallery search belongs to Gallery, not the drawer. Keep it compact. */
+.toolbar{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center!important;
+  gap:7px!important;
+  margin-bottom:13px!important;
+}
+.search-box{max-width:none!important;height:38px;border-radius:6px}
+.search-box input{padding:7px 10px!important;font-size:11px!important;min-width:0}
+.search-box .icon-btn{font-size:17px!important;padding:6px 9px!important}
+.gallery-logic{width:106px;height:38px;border-radius:6px!important}
+.gallery-logic button{padding:0 8px!important;font-size:10px!important}
+#sortSelect{height:38px!important;padding:0 28px 0 10px!important;font-size:11px!important;border-radius:6px!important}
+
+/* Compare: the images are the comparison surface, so keep them visible together. */
+.compare-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;align-items:start}
+.compare-card img{width:100%!important;aspect-ratio:3/4!important;object-fit:contain!important;background:#f7f7f7}
+.compare-card .pad{padding:7px 8px!important}
+.compare-card .pad strong{font-size:10px!important}
+.compare-card .card-sub{font-size:8px!important;margin-top:3px!important}
+.compare-diff{margin-top:12px!important}
+.diff-table{font-size:9px!important}
+.diff-table th,.diff-table td{padding:6px!important}
+
+/* Folder = a tiny notebook, not a typed database form. */
+.folder-dialog .modal-shell{width:min(820px,95vw)!important;height:min(88vh,850px)!important}
+.folder-body{padding:16px 18px!important;background:#fff;flex:1;overflow:auto}
+.folder-items{display:grid!important;gap:12px!important}
+.notebook-empty{min-height:220px;display:grid;place-items:center;text-align:center;color:#999;font-size:11px;line-height:1.7}
+.notebook-item{border-bottom:1px solid #e8e8e8;padding:0 0 13px}
+.notebook-item-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;font-size:8px;letter-spacing:.11em;color:#999}
+.notebook-item-content{font-size:12px;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.notebook-text{white-space:pre-wrap}
+.notebook-image{display:block;max-width:100%;max-height:430px;object-fit:contain;background:#fafafa;border:1px solid #eee}
+.notebook-caption{display:block;font-size:10px;margin-top:6px;font-weight:500}
+.notebook-compose{display:block!important;padding:13px 18px calc(13px + var(--safe-b))!important;border-top:1px solid #111!important;background:#fff}
+.notebook-compose textarea{width:100%;min-height:74px!important;max-height:180px;border:1px solid #111!important;border-radius:6px;padding:10px!important;font:11px/1.55 Inter,ui-sans-serif,sans-serif!important;resize:vertical}
+.notebook-actions{display:flex;gap:7px;margin-top:7px}
+.saved-import{margin-top:10px;padding-top:10px;border-top:1px solid #eee;display:grid;grid-template-columns:1fr 150px auto;gap:6px;align-items:center}
+.saved-import-label{grid-column:1/-1;font-size:8px;letter-spacing:.12em;color:#888}
+.saved-import .select{height:34px!important;padding:0 8px!important;font-size:10px!important}
+.saved-import .btn{height:34px;padding:0 10px;font-size:10px}
+
+/* The old category/filter form is intentionally retired. */
+.folder-type-filters,.folder-image-picker{display:none!important}
+
+@media(max-width:900px){
+  .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:560px){
+  .toolbar{grid-template-columns:1fr auto!important;gap:6px!important}
+  .search-box{grid-column:1/-1;height:36px}
+  .gallery-logic{width:104px;height:34px}
+  #sortSelect{width:142px!important;height:34px!important;justify-self:end;font-size:10px!important}
+  .compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+  .compare-card img{aspect-ratio:3/4!important}
+  .compare-card .pad{padding:6px!important}
+  .section-head{gap:8px!important}
+  .section-head h1{font-size:30px!important}
+  .folder-dialog .modal-shell{width:100vw!important;height:100vh!important;border-radius:0!important}
+  .folder-body{padding:14px!important}
+  .saved-import{grid-template-columns:1fr 110px!important}
+  .saved-import .btn{grid-column:1/-1}
+  .notebook-image{max-height:55vh}
+}
+</style>
+
+<style id="v071-selection-compare">
+.bulk-actions{display:flex!important;flex-wrap:wrap!important;justify-content:flex-end!important;gap:6px!important}
+.compare-card{position:relative}
+.compare-remove{position:absolute;z-index:3;top:6px;right:6px;width:25px;height:25px;border:1px solid #111;border-radius:50%;background:rgba(255,255,255,.94);font-size:15px;line-height:1;display:grid;place-items:center}
+.compare-diff{overflow-x:auto!important}
+.diff-table{min-width:max-content}
+@media(min-width:901px){
+  .compare-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))!important}
+}
+@media(max-width:560px){
+  .bulk-bar{align-items:flex-start!important;gap:8px!important}
+  .bulk-actions{justify-content:flex-start!important}
+  .bulk-actions .btn{font-size:9px!important;padding:7px 8px!important}
+}
+</style>
+
+<style id="v073-compare-picker">
+.compare-head-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.compare-picker-dialog .modal-shell{width:min(920px,94vw);max-height:88vh}
+.compare-picker-title{margin:4px 0 0;font-family:"Young Serif",serif;font-weight:400;font-size:28px}
+.compare-picker-tools{display:flex;gap:7px;padding:14px 18px;border-bottom:1px solid #e8e8e8}
+.compare-picker-tools input{flex:1;min-width:0;height:36px;border:1px solid #111;border-radius:6px;padding:0 10px;font-size:11px}
+.compare-picker-grid{padding:14px 18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;overflow:auto;flex:1}
+.compare-pick-card{position:relative;border:1px solid #ddd;border-radius:7px;overflow:hidden;background:#fff;cursor:pointer}
+.compare-pick-card:has(input:checked){outline:2px solid #111;outline-offset:1px}
+.compare-pick-card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#f4f4f4}
+.compare-pick-check{position:absolute;top:8px;left:8px;width:16px;height:16px;accent-color:#111;z-index:2}
+.compare-pick-meta{padding:8px 9px;border-top:1px solid #eee;display:grid;gap:3px}
+.compare-pick-meta strong{font-size:10px}
+.compare-pick-meta span{font-size:8px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.compare-picker-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;border-top:1px solid #111}
+@media(max-width:560px){
+  .section-head{align-items:flex-start!important}
+  .compare-head-actions{gap:5px}
+  .compare-head-actions .btn{font-size:9px;padding:7px 8px}
+  .compare-picker-dialog .modal-shell{width:100vw!important;height:100vh!important;max-height:none!important;border-radius:0!important}
+  .compare-picker-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:12px}
+  .compare-picker-tools{padding:12px}
+  .compare-picker-footer{padding:10px 12px calc(10px + var(--safe-b))}
+}
+</style>
+
+<style id="v074-compare-picker-scroll-fix">
+.compare-picker-dialog{
+  padding:0!important;
+}
+.compare-picker-dialog .modal-shell{
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  max-height:88dvh!important;
+}
+.compare-picker-dialog .modal-head,
+.compare-picker-dialog .compare-picker-tools,
+.compare-picker-dialog .compare-picker-footer{
+  flex:0 0 auto!important;
+}
+.compare-picker-dialog .compare-picker-grid{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.compare-picker-dialog .compare-picker-footer{
+  position:sticky;
+  bottom:0;
+  z-index:5;
+  background:#fff;
+}
+@media(max-width:560px){
+  .compare-picker-dialog .modal-shell{
+    height:100dvh!important;
+    max-height:100dvh!important;
+  }
+  .compare-picker-dialog .modal-head{
+    padding-top:max(18px,env(safe-area-inset-top))!important;
+  }
+  .compare-picker-dialog .compare-picker-footer{
+    padding-bottom:max(12px,env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
+
+<style id="v075-compare-picker-grid">
+.compare-picker-bulk{display:flex;gap:6px;flex:0 0 auto}
+.compare-picker-grid{
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr))!important;
+}
+.compare-pick-card.drag-picked{outline:2px solid #111;outline-offset:1px}
+.compare-picker-grid.drag-selecting{
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.compare-picker-grid.drag-selecting .compare-pick-card{cursor:crosshair}
+@media(max-width:560px){
+  .compare-picker-tools{gap:6px!important}
+  .compare-picker-tools input{height:34px!important;font-size:10px!important;padding:0 9px!important}
+  .compare-picker-bulk{gap:4px}
+  .compare-picker-bulk .btn{height:34px!important;padding:0 8px!important;font-size:9px!important}
+  .compare-picker-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:5px!important;
+    padding:10px!important;
+  }
+  .compare-pick-card{border-radius:5px!important}
+  .compare-pick-card img{aspect-ratio:1/1.18!important}
+  .compare-pick-check{
+    top:5px!important;
+    left:5px!important;
+    width:15px!important;
+    height:15px!important;
+  }
+  .compare-pick-meta{padding:5px 6px!important;gap:2px!important}
+  .compare-pick-meta strong{font-size:8px!important}
+  .compare-pick-meta span{font-size:7px!important}
+}
+</style>
+
+<style id="v075-drag-hint">
+.compare-drag-hint{
+  flex:0 0 auto;
+  padding:7px 18px 0;
+  font-size:8px;
+  color:#999;
+  letter-spacing:.02em;
+}
+@media(max-width:560px){
+  .compare-drag-hint{padding:6px 12px 0;font-size:7px}
+}
+</style>
+
+<style id="v076-sweep-select">
+.compare-picker-grid.sweep-selecting{
+  touch-action:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  cursor:crosshair;
+}
+.compare-picker-grid.sweep-selecting .compare-pick-card{
+  -webkit-user-drag:none;
+}
+.compare-picker-grid.sweep-selecting img{
+  pointer-events:none;
+  -webkit-user-drag:none;
+}
+</style>
+
+<style id="v077-touch-sweep-fix">
+.compare-picker-grid{
+  touch-action:pan-y!important;
+}
+.compare-picker-grid.sweep-selecting{
+  touch-action:none!important;
+  overscroll-behavior:contain!important;
+}
+.compare-pick-card,
+.compare-pick-card img{
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+</style>
+
+<style id="v078-saved-hub">
+.saved-import-launch{margin-top:10px;padding-top:10px;border-top:1px solid #eee}
+.saved-hub-btn{width:100%;height:40px;font-size:10px;letter-spacing:.02em}
+.saved-hub-dialog .modal-shell{width:min(920px,95vw);height:min(88dvh,820px);display:flex;flex-direction:column;overflow:hidden}
+.saved-hub-title{margin:4px 0 0;font-family:"Young Serif",serif;font-weight:400;font-size:28px}
+.saved-hub-tabs{display:flex;gap:0;padding:0 18px;border-bottom:1px solid #111;overflow-x:auto;scrollbar-width:none;flex:0 0 auto}
+.saved-hub-tabs::-webkit-scrollbar{display:none}
+.saved-hub-tabs button{border:0;background:#fff;padding:12px 13px 10px;font-size:9px;letter-spacing:.12em;color:#888;border-bottom:2px solid transparent;white-space:nowrap}
+.saved-hub-tabs button.active{color:#111;border-bottom-color:#111}
+.saved-hub-search{padding:10px 18px;border-bottom:1px solid #eee;flex:0 0 auto}
+.saved-hub-search input{width:100%;height:35px;border:1px solid #111;border-radius:6px;padding:0 10px;font-size:10px}
+.saved-hub-grid{padding:14px 18px;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;align-content:start;flex:1;min-height:0;-webkit-overflow-scrolling:touch}
+.saved-hub-grid.hub-image{grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}
+.saved-hub-card{position:relative;border:1px solid #e3e3e3;border-radius:6px;background:#fff;overflow:hidden;display:block;cursor:pointer}
+.saved-hub-card:has(.hub-check:checked){outline:2px solid #111;outline-offset:1px}
+.saved-hub-card .hub-check{position:absolute;z-index:3;top:7px;left:7px;width:15px;height:15px;accent-color:#111}
+.saved-hub-card.image-card img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#f5f5f5}
+.hub-card-copy{padding:8px 9px;display:grid;gap:3px;min-width:0}
+.hub-card-copy strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hub-card-copy span{font-size:8px;color:#888;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.saved-hub-card.text-card{min-height:92px;padding:14px 12px 10px 44px}
+.saved-hub-card.text-card .hub-card-copy{padding:0}
+.hub-kind{position:absolute;left:12px;top:14px;width:22px;height:22px;border:1px solid #111;border-radius:50%;display:grid;place-items:center;font-size:8px;font-weight:700}
+.saved-hub-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 18px;border-top:1px solid #111;background:#fff;flex:0 0 auto}
+.saved-hub-foot-actions{display:flex;gap:6px}
+@media(max-width:560px){
+ .saved-hub-dialog .modal-shell{width:100vw!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
+ .saved-hub-dialog .modal-head{padding-top:max(18px,env(safe-area-inset-top))!important}
+ .saved-hub-title{font-size:25px}
+ .saved-hub-tabs{padding:0 10px}
+ .saved-hub-tabs button{padding:11px 10px 9px;font-size:8px}
+ .saved-hub-search{padding:8px 10px}
+ .saved-hub-grid{padding:10px;grid-template-columns:1fr 1fr;gap:6px}
+ .saved-hub-grid.hub-image{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .saved-hub-card.image-card img{aspect-ratio:1/1.16}
+ .saved-hub-card.image-card .hub-card-copy{padding:5px 6px}
+ .saved-hub-card.image-card .hub-card-copy strong{font-size:8px}
+ .saved-hub-card.image-card .hub-card-copy span{font-size:7px;-webkit-line-clamp:1}
+ .saved-hub-card.text-card{min-height:84px;padding:12px 9px 9px 38px}
+ .saved-hub-card.text-card .hub-card-copy strong{font-size:9px}
+ .saved-hub-card.text-card .hub-card-copy span{font-size:7px}
+ .hub-kind{left:9px;top:12px;width:20px;height:20px}
+ .saved-hub-footer{padding:9px 10px max(10px,env(safe-area-inset-bottom))}
+}
+</style>
+
+<style id="v079-sweep-selection">
+.gallery,
+.saved-hub-grid{
+  touch-action:pan-y;
+}
+.gallery.sweep-selecting,
+.saved-hub-grid.sweep-selecting{
+  touch-action:none!important;
+  overscroll-behavior:contain!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+}
+.gallery.sweep-selecting .card,
+.saved-hub-grid.sweep-selecting .saved-hub-card{
+  -webkit-user-drag:none;
+}
+.gallery.sweep-selecting img,
+.saved-hub-grid.sweep-selecting img{
+  pointer-events:none;
+  -webkit-user-drag:none;
+}
+.sweep-hint{
+  font-size:8px;
+  font-weight:500;
+  opacity:.58;
+  white-space:nowrap;
+}
+.hub-sweep-hint{
+  margin-left:8px;
+}
+@media(max-width:560px){
+  .sweep-hint{font-size:7px}
+}
+</style>
