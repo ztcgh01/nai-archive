@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v1.4.7</title>
+  <title>NAI Archive v1.4.8</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1072,6 +1072,30 @@ body.folder-lightbox-open{overflow:hidden}
     const meta = await txGetAll(STORE_META);
     const map=Object.fromEntries(meta.map(x=>[x.key,x.value]));
     state.artistBookmarks=map.artistBookmarks||[]; state.presets=map.presets||[]; state.folders=map.folders||[];
+
+    // v1.4.8: repair only untouched legacy parser results.
+    // If the user edited artist/prompt manually, leave that entry alone.
+    if((Number(map.artistParserVersion)||1)<2){
+      for(const e of state.entries){
+        if(!String(e.originalPrompt||'').trim())continue;
+        const legacy=splitArtistTagsLegacy(e.originalPrompt);
+        const sameArtists=String(e.artistsText||'').trim()===String(legacy.artistText||'').trim();
+        const samePrompt=String(e.prompt||'').trim()===String(legacy.prompt||'').trim();
+        if(!sameArtists||!samePrompt)continue;
+
+        const fixed=splitArtistTags(e.originalPrompt);
+        const changed=String(fixed.artistText||'').trim()!==String(e.artistsText||'').trim()
+          || String(fixed.prompt||'').trim()!==String(e.prompt||'').trim();
+        if(!changed)continue;
+
+        e.artistsText=fixed.artistText;
+        e.artists=fixed.artists;
+        e.prompt=fixed.prompt;
+        e.updatedAt=Date.now();
+        await txPut(STORE_ENTRIES,e);
+      }
+      await saveMeta('artistParserVersion',2);
+    }
   }
 
   function render(){
@@ -1311,22 +1335,75 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function splitArtistTags(text){
-    const parts=splitTopLevelCommas(text); const artistParts=[], promptParts=[], artists=[];
+    const parts=splitTopLevelCommas(String(text||''));
+    const artistParts=[], promptParts=[], artists=[];
+
     for(const raw of parts){
-      const t=raw.trim(); if(!t) continue;
+      const t=raw.trim(); if(!t)continue;
+
+      // Prefer explicit NAI artist syntax ending in "::".
+      // This is the important case for malformed separators such as:
+      //   0.3::artist:name :: year 2025
+      // The artist tag ends at "::"; the trailing ordinary tag stays in Prompt.
+      const closedArtistRe=/(^|\s)((?:(-?\d+(?:\.\d+)?)\s*::\s*)?artist\s*:\s*([^,\n]*?)\s*::)(?=\s|$)/gi;
+      let foundClosed=false;
+      let residual=t.replace(closedArtistRe,(whole,lead,fullTag)=>{
+        foundClosed=true;
+        const clean=String(fullTag||'').trim();
+        artistParts.push(clean);
+        const a=parseArtistTag(clean); if(a)artists.push(a);
+        return lead||'';
+      }).trim();
+
+      if(foundClosed){
+        if(residual)promptParts.push(residual);
+        continue;
+      }
+
+      // Compatibility: NovelAI data can also contain a comma-terminated
+      // unweighted artist tag without the final "::" (e.g. artist:name,).
+      // Only accept it when the WHOLE comma-delimited token is an artist tag.
+      const wholeArtist=parseArtistTag(t);
+      if(wholeArtist){
+        artistParts.push(t);
+        artists.push(wholeArtist);
+      }else{
+        promptParts.push(t);
+      }
+    }
+
+    return {
+      artistText:artistParts.join(',\n')+(artistParts.length?',':''),
+      prompt:promptParts.join(',\n')+(promptParts.length?',':''),
+      artists
+    };
+  }
+
+  // Previous parser retained only for a one-time, non-destructive migration check.
+  // We migrate an old record only when its stored artist/prompt fields still match
+  // exactly what the old parser would have produced, so manual edits are preserved.
+  function splitArtistTagsLegacy(text){
+    const parts=splitTopLevelCommas(String(text||'')); const artistParts=[], promptParts=[], artists=[];
+    for(const raw of parts){
+      const t=raw.trim(); if(!t)continue;
       if(/artist\s*:/i.test(t)){
         artistParts.push(t);
-        const a=parseArtistTag(t); if(a) artists.push(a);
-      } else promptParts.push(t);
+        const a=parseArtistTag(t); if(a)artists.push(a);
+      }else promptParts.push(t);
     }
     return {artistText:artistParts.join(',\n')+(artistParts.length?',':''),prompt:promptParts.join(',\n')+(promptParts.length?',':''),artists};
   }
+
   function splitTopLevelCommas(text){
     const out=[];let cur='';let braces=0;for(let i=0;i<text.length;i++){const c=text[i];if(c==='{')braces++;if(c==='}')braces=Math.max(0,braces-1);if(c===','&&braces===0){out.push(cur);cur='';}else cur+=c;}out.push(cur);return out;
   }
+
   function parseArtistTag(tag){
-    const m=tag.match(/^(?:(-?\d+(?:\.\d+)?)\s*::\s*)?artist\s*:\s*(.*?)\s*(?:::)?$/i);
-    if(!m) return null; return {name:m[2].replace(/::$/,'').trim(),weight:m[1]!==undefined?Number(m[1]):1,raw:tag.trim()};
+    const m=String(tag||'').match(/^(?:(-?\d+(?:\.\d+)?)\s*::\s*)?artist\s*:\s*(.*?)\s*(?:::)?$/i);
+    if(!m)return null;
+    const name=m[2].replace(/::$/,'').trim();
+    if(!name)return null;
+    return {name,weight:m[1]!==undefined?Number(m[1]):1,raw:String(tag).trim()};
   }
 
   function filteredEntries(){
