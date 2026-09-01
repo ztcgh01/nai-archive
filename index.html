@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v1.5.0</title>
+  <title>NAI Archive v1.5.3</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,12 +13,15 @@
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Pretendard,"Noto Sans KR",sans-serif;background:#fff;color:var(--ink);letter-spacing:-.02em}button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}.hidden{display:none!important}
 .topbar{height:58px;position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 18px}.brand-wrap{justify-self:start}.brand{justify-self:center;font-size:12px;font-weight:900;letter-spacing:.16em}.top-actions{justify-self:end;display:flex;align-items:center;gap:7px}.count-pill,.mini-count{border:1px solid var(--line);border-radius:999px;padding:3px 8px;font-size:10px;font-weight:800;background:#fff}.menu-btn{width:36px;height:36px;border:1px solid var(--line);background:#fff;border-radius:7px;display:grid;place-items:center;padding:0}.menu-btn:before,.menu-btn:after,.menu-btn span{content:"";display:block;width:15px;height:1px;background:#111}.menu-btn span{margin:4px 0}
 .shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 58px)}.sidebar{border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:58px;height:calc(100vh - 58px);overflow:auto;background:#fff}.nav-group{display:grid;gap:2px}.nav-item{border:0;border-bottom:1px solid var(--hair);background:#fff;text-align:left;padding:12px 6px;font-weight:760;display:flex;justify-content:space-between}.nav-item:hover{background:#fafafa}.nav-item.active{background:#111;color:#fff;padding-left:11px;padding-right:11px;border-bottom-color:#111}.side-section{border-top:1px solid var(--line);margin-top:24px;padding-top:16px}.side-title{font-size:11px;font-weight:820;letter-spacing:.03em;margin-bottom:10px}.segmented{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#fff}.segmented button{flex:1;border:0;border-right:1px solid var(--line);background:#fff;padding:7px}.segmented button:last-child{border-right:0}.segmented button.active{background:#111;color:#fff}.check-line{display:flex;gap:8px;align-items:center;font-size:12px;margin:9px 0}.main{padding:34px 30px calc(40px + var(--safe-b));min-width:0}.view{display:none}.view.active{display:block}
-.toolbar,.subtoolbar,.section-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.search-box{flex:1;max-width:800px;background:#fff;border:1px solid var(--line);border-radius:7px;display:flex;align-items:center}.search-box input{width:100%;border:0;background:transparent;outline:0;padding:12px 13px}.icon-btn{border:0;background:transparent;font-size:20px;line-height:1;padding:8px}.btn,.mini-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 12px;font-weight:720}.btn:hover,.mini-btn:hover{background:#f5f5f5}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.danger{color:#111;border-style:dashed}.btn.danger:hover{background:#111;color:#fff}.btn.small,.mini-btn{font-size:11px;padding:7px 9px}.btn.active{background:#111;color:#fff}.btn:disabled{opacity:.35;cursor:default}.text-btn{border:0;background:transparent;color:var(--muted);font-size:11px;text-decoration:underline;text-underline-offset:3px}.select{border:1px solid var(--line);border-radius:7px;background:#fff;padding:10px 11px}.tabs{display:flex;border-bottom:1px solid var(--line);gap:0}.tab{border:0;background:#fff;padding:8px 13px;font-weight:800;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}.tab.active{color:#111;border-bottom-color:#111}.right-tools,.row-between,.bulk-left,.bulk-actions{display:flex;align-items:center;gap:9px}.field-panel{display:flex;gap:13px;flex-wrap:wrap;background:#fafafa;border:1px solid var(--line);border-radius:7px;padding:12px 14px;margin-bottom:14px;font-size:11px}.bulk-bar{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);background:#111;color:#fff;border-radius:7px;padding:9px 10px;margin-bottom:14px;font-size:11px}.bulk-bar .text-btn{color:#fff}.bulk-bar .btn{border-color:#fff}.bulk-bar .btn.danger{background:#fff;color:#111;border-style:solid}.bulk-bar .btn:not(.danger){background:#111;color:#fff}
-.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.14s transform,.14s box-shadow;position:relative}.card:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.06)}.card.selection-mode:has(.card-check:checked){outline:2px solid #111;outline-offset:2px}.thumb{aspect-ratio:4/5;background:#f2f2f2;overflow:hidden;position:relative}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.card-body{padding:10px 11px 11px;border-top:1px solid var(--hair)}.card-title{font-weight:780;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-sub{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-controls{position:absolute;top:8px;right:8px;display:flex;gap:5px}.round{width:30px;height:30px;border-radius:50%;border:1px solid #111;background:rgba(255,255,255,.93);color:#111;display:grid;place-items:center}.check-badge{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.94);border:1px solid #111;border-radius:999px;padding:5px 7px;display:flex;align-items:center;gap:5px;font-size:8px;font-weight:900;letter-spacing:.08em}.check-badge input{width:13px;height:13px;accent-color:#111;margin:0}
-.list-wrap{overflow:auto;border:1px solid var(--line);border-radius:7px;background:#fff}.data-table{border-collapse:collapse;width:100%;font-size:11px}.data-table th,.data-table td{padding:10px 11px;border-bottom:1px solid var(--hair);vertical-align:top;text-align:left}.data-table th{position:sticky;top:0;background:#f7f7f7;z-index:2;font-size:10px;border-bottom:1px solid var(--line)}.table-thumb{width:64px;height:76px;object-fit:cover;border-radius:5px;border:1px solid var(--hair)}.clamp{max-width:360px;max-height:100px;overflow:hidden;white-space:pre-wrap}.empty{text-align:center;padding:92px 20px}.empty-mark{width:54px;height:54px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:24px}.empty h2{font-size:18px}.empty p,.section-head p,.muted-note{color:var(--muted);font-size:11px}.section-head{padding-bottom:13px;border-bottom:1px solid var(--line)}.section-head h1{margin:0 0 4px;font-size:30px;letter-spacing:-.05em}.minor-title{font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.08em}.bookmark-layout{display:grid;gap:30px}.bookmark-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.bookmark-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:13px}.bookmark-card strong{display:block;margin-bottom:6px}.bookmark-code{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4b4b4b;white-space:pre-wrap;max-height:120px;overflow:auto}.bookmark-actions{display:flex;gap:6px;margin-top:10px}.chip-wrap{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 8px;font-size:10px}.chip.active{background:#111;color:#fff;border-color:#111}
+.toolbar,.subtoolbar,.section-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px}.search-box{flex:1;max-width:800px;background:#fff;border:1px solid var(--line);border-radius:7px;display:flex;align-items:center}.search-box input{width:100%;border:0;background:transparent;outline:0;padding:12px 13px}.icon-btn{border:0;background:transparent;font-size:20px;line-height:1;padding:8px}.btn,.mini-btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:9px 12px;font-weight:720}.btn:hover,.mini-btn:hover{background:#f5f5f5}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.danger{color:#111;border-style:dashed}.btn.danger:hover{background:#111;color:#fff}.btn.small,.mini-btn{font-size:11px;padding:7px 9px}.btn.active{background:#111;color:#fff}.btn:disabled{opacity:.35;cursor:default}.text-btn{border:0;background:transparent;color:var(--muted);font-size:11px;text-decoration:underline;text-underline-offset:3px}.select{border:1px solid var(--line);border-radius:7px;background:#fff;padding:10px 11px}.tabs{display:flex;border-bottom:1px solid var(--line);gap:0}.tab{border:0;background:#fff;padding:8px 13px;font-weight:800;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}.tab.active{color:#111;border-bottom-color:#111}.right-tools,.row-between,.bulk-left,.bulk-actions{display:flex;align-items:center;gap:9px}.field-panel{display:flex;gap:13px;flex-wrap:wrap;background:#fafafa;border:1px solid var(--line);border-radius:7px;padding:12px 14px;margin-bottom:14px;font-size:11px}.bulk-bar{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);background:#111;color:#fff;border-radius:7px;padding:9px 10px;margin-bottom:14px;font-size:11px;position:relative;z-index:45}.bulk-bar .text-btn{color:#fff}.bulk-bar .btn{border-color:#fff}.bulk-bar .btn.danger{background:#fff;color:#111;border-style:solid}.bulk-bar .btn:not(.danger){background:#111;color:#fff}
+.bulk-more-menu{position:absolute;right:8px;bottom:calc(100% + 8px);width:min(290px,calc(100vw - 24px));background:#fff;color:#111;border:1px solid #111;border-radius:9px;padding:8px;box-shadow:0 12px 32px rgba(0,0,0,.16);display:grid;grid-template-columns:1fr 1fr;gap:6px}.bulk-more-menu .btn{background:#fff!important;color:#111!important;border-color:#d8d8d8!important}.bulk-more-menu .danger{grid-column:1/-1;border-color:#111!important}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.14s transform,.14s box-shadow;position:relative}.card:hover{transform:translateY(-2px);box-shadow:0 7px 22px rgba(0,0,0,.06)}.card.selection-mode:has(.card-check:checked){outline:2px solid #111;outline-offset:2px}.thumb{aspect-ratio:4/5;background:#f2f2f2;overflow:hidden;position:relative}.thumb img{width:100%;height:100%;object-fit:cover;display:block}.card-body{padding:10px 11px 11px;border-top:1px solid var(--hair)}.card-title{font-weight:780;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-sub{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-controls{position:absolute;top:8px;right:8px;display:flex;gap:5px}.round{width:30px;height:30px;border-radius:50%;border:1px solid #111;background:rgba(255,255,255,.93);color:#111;display:grid;place-items:center}.check-badge{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.94);border:1px solid #111;border-radius:999px;padding:5px 7px;display:flex;align-items:center;gap:5px;font-size:8px;font-weight:900;letter-spacing:.08em;opacity:0;pointer-events:none;transition:opacity .12s}.card.selection-mode .check-badge{opacity:1;pointer-events:auto}.check-badge input{width:13px;height:13px;accent-color:#111;margin:0}
+.list-wrap{overflow:auto;border:1px solid var(--line);border-radius:7px;background:#fff}.list-wrap:not(.selection-mode) .field-select{display:none}.data-table tr.row-selected{background:#f2f2f2}
+.scroll-top-btn{position:fixed;right:14px;bottom:calc(18px + var(--safe-b));width:42px;height:42px;border-radius:50%;border:1px solid #111;background:rgba(255,255,255,.96);box-shadow:0 6px 18px rgba(0,0,0,.12);z-index:60;display:grid;place-items:center;font-size:18px;font-weight:700}.scroll-top-btn.with-select-bar{bottom:calc(88px + var(--safe-b))}
+.data-table{border-collapse:collapse;width:100%;font-size:11px}.data-table th,.data-table td{padding:10px 11px;border-bottom:1px solid var(--hair);vertical-align:top;text-align:left}.data-table th{position:sticky;top:0;background:#f7f7f7;z-index:2;font-size:10px;border-bottom:1px solid var(--line)}.table-thumb{width:64px;height:76px;object-fit:cover;border-radius:5px;border:1px solid var(--hair)}.clamp{max-width:360px;max-height:100px;overflow:hidden;white-space:pre-wrap}.empty{text-align:center;padding:92px 20px}.empty-mark{width:54px;height:54px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;margin:0 auto 14px;font-size:24px}.empty h2{font-size:18px}.empty p,.section-head p,.muted-note{color:var(--muted);font-size:11px}.section-head{padding-bottom:13px;border-bottom:1px solid var(--line)}.section-head h1{margin:0 0 4px;font-size:30px;letter-spacing:-.05em}.minor-title{font-size:12px;margin:0 0 12px;text-transform:uppercase;letter-spacing:.08em}.bookmark-layout{display:grid;gap:30px}.bookmark-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.bookmark-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:13px}.bookmark-card strong{display:block;margin-bottom:6px}.bookmark-code{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4b4b4b;white-space:pre-wrap;max-height:120px;overflow:auto}.bookmark-actions{display:flex;gap:6px;margin-top:10px}.chip-wrap{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 8px;font-size:10px}.chip.active{background:#111;color:#fff;border-color:#111}
 .modal{border:0;padding:0;background:transparent;max-width:none;max-height:none}.modal::backdrop{background:rgba(0,0,0,.48);backdrop-filter:blur(3px)}.modal-shell{background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}.detail-modal .modal-shell{width:min(1180px,94vw);height:min(88vh,900px);display:flex;flex-direction:column}.small-modal .modal-shell{width:min(540px,92vw)}.modal-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:13px 17px}.eyebrow{font-size:8px;letter-spacing:.16em;color:var(--muted)}.title-input{border:0;font-weight:850;font-size:18px;display:block;margin-top:2px;outline:0}.detail-grid{display:grid;grid-template-columns:minmax(320px,42%) 1fr;min-height:0;flex:1}.detail-media{padding:15px;border-right:1px solid var(--line);overflow:auto}.detail-media img{width:100%;max-height:65vh;object-fit:contain;background:#f2f2f2;border-radius:7px;border:1px solid var(--hair)}.detail-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.meta-pill{border:1px solid var(--line);border-radius:999px;padding:4px 7px;font-size:9px;color:var(--muted)}.detail-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.detail-content{padding:16px;overflow:auto}.panel{border-bottom:1px solid var(--line);padding:0 0 16px;margin-bottom:16px}.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.panel h3{font-size:11px;margin:0;letter-spacing:.02em}.panel textarea,.field-label textarea,.field-label input{width:100%;border:1px solid var(--line);background:#fafafa;border-radius:7px;padding:10px;resize:vertical;outline:0;font:11px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}.panel textarea:focus,.field-label textarea:focus,.field-label input:focus{background:#fff;box-shadow:inset 0 0 0 1px #111}.char-block{position:relative;margin-bottom:8px}.char-label{font-size:9px;color:var(--muted);margin-bottom:5px}.autosave{font-size:9px;color:var(--muted)}.copy-strip{display:flex;gap:8px;position:sticky;bottom:-16px;background:linear-gradient(transparent,#fff 28%);padding:24px 0 4px}.field-label{display:block;padding:12px 18px;font-size:11px;font-weight:750}.field-label input,.field-label textarea{display:block;margin-top:7px;font-weight:400}.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:15px 18px;border-top:1px solid var(--line)}.hint-card{border:1px dashed #777;border-radius:8px;padding:15px;color:var(--muted);font-size:12px}.compare-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:16px}.compare-card{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden}.compare-card img{width:100%;aspect-ratio:4/5;object-fit:cover}.compare-card .pad{padding:10px}.compare-diff{margin-top:16px}.diff-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);font-size:11px}.diff-table th,.diff-table td{border:1px solid var(--line);padding:8px;text-align:left}.diff-changed{font-weight:900;background:#e9e9e9}.toast{position:fixed;right:18px;bottom:18px;background:#111;color:#fff;border:1px solid #111;padding:10px 13px;border-radius:7px;font-size:11px;opacity:0;transform:translateY(6px);pointer-events:none;transition:.2s;z-index:100}.toast.show{opacity:1;transform:translateY(0)}
 @media(max-width:900px){.shell{grid-template-columns:1fr}.sidebar{position:fixed;z-index:50;left:0;top:58px;width:240px;transform:translateX(-105%);transition:.2s;box-shadow:var(--shadow)}.sidebar.open{transform:translateX(0)}.main{padding:20px 18px}.top-actions .btn:not(.primary){display:none}.detail-grid{grid-template-columns:1fr}.detail-media{border-right:0;border-bottom:1px solid var(--line)}.compare-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:560px){.topbar{padding:0 10px}.top-actions{gap:5px}.top-actions .primary{font-size:10px;padding:7px 8px}.brand{font-size:10px}.gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.toolbar{align-items:stretch;flex-direction:column}.select{width:100%}.subtoolbar{align-items:flex-end}.right-tools{gap:5px;flex-wrap:wrap;justify-content:flex-end}.bulk-bar{align-items:flex-start;gap:8px}.bulk-left,.bulk-actions{flex-wrap:wrap}.detail-modal .modal-shell{width:100vw;height:100vh;border-radius:0}.compare-grid{grid-template-columns:1fr}.section-head h1{font-size:25px}}
+@media(max-width:560px){.topbar{padding:0 10px}.top-actions{gap:5px}.top-actions .primary{font-size:10px;padding:7px 8px}.brand{font-size:10px}.gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.toolbar{align-items:stretch;flex-direction:column}.select{width:100%}.subtoolbar{align-items:flex-end}.right-tools{gap:5px;flex-wrap:wrap;justify-content:flex-end}.bulk-bar{position:fixed;left:8px;right:8px;bottom:calc(8px + var(--safe-b));margin:0;border-radius:10px;align-items:center;gap:6px;padding:8px;box-shadow:0 12px 32px rgba(0,0,0,.2)}.bulk-left{gap:6px;min-width:max-content}.bulk-left .sweep-hint{display:none}.bulk-actions{display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.bulk-actions::-webkit-scrollbar{display:none}.bulk-actions .btn{white-space:nowrap}.bulk-more-menu{position:fixed;left:8px;right:8px;bottom:calc(66px + var(--safe-b));width:auto}.detail-modal .modal-shell{width:100vw;height:100vh;border-radius:0}.compare-grid{grid-template-columns:1fr}.section-head h1{font-size:25px}.main:has(#bulkBar:not(.hidden)){padding-bottom:calc(108px + var(--safe-b))}}
 
 /* v0.5 portal shell */
 body{background:#fff}
@@ -624,8 +627,22 @@ body.folder-lightbox-open{overflow:hidden}
         <div id="importProgress" class="import-progress hidden"><div class="import-progress-top"><span id="importProgressText">이미지 가져오는 중…</span><span id="importProgressCount">0 / 0</span></div><div class="import-progress-track"><i id="importProgressBar"></i></div></div>
 
         <div id="bulkBar" class="bulk-bar hidden">
-          <div class="bulk-left"><span id="selectedCount">0개 선택</span><button id="selectAllBtn" class="text-btn">현재 결과 전체 선택</button><span class="sweep-hint">꾹 눌러 쓸어 선택</span></div>
-          <div class="bulk-actions"><button id="selectedToFolderBtn" class="btn small">폴더에 추가</button><button id="selectedToCompareBtn" class="btn small">Compare에 추가</button><button id="saveSelectedOriginalBtn" class="btn small">원본 저장</button><button id="saveSelectedCleanBtn" class="btn small">메타데이터 제거 저장</button><button id="selectedPdfBtn" class="btn small">PDF로 저장</button><button id="selectedAtlasPdfBtn" class="btn small">도감 PDF</button><button id="selectedAtlasImageBtn" class="btn small">도감 이미지</button><button id="selectedBackupBtn" class="btn small">백업 ZIP</button><button id="deleteSelectedBtn" class="btn small danger">선택 삭제</button><button id="cancelSelectBtn" class="btn small">취소</button></div>
+          <div class="bulk-left"><span id="selectedCount">0개 선택</span><button id="selectAllBtn" class="text-btn">전체 선택</button><span class="sweep-hint">꾹 눌러 쓸어 선택</span></div>
+          <div class="bulk-actions">
+            <button id="selectedToFolderBtn" class="btn small">폴더</button>
+            <button id="selectedToCompareBtn" class="btn small">Compare</button>
+            <button id="saveSelectedOriginalBtn" class="btn small">원본 저장</button>
+            <button id="bulkMoreBtn" class="btn small">⋯ 더보기</button>
+            <button id="cancelSelectBtn" class="btn small">취소</button>
+          </div>
+          <div id="bulkMoreMenu" class="bulk-more-menu hidden">
+            <button id="saveSelectedCleanBtn" class="btn small">메타데이터 제거 저장</button>
+            <button id="selectedPdfBtn" class="btn small">PDF로 저장</button>
+            <button id="selectedAtlasPdfBtn" class="btn small">도감 PDF</button>
+            <button id="selectedAtlasImageBtn" class="btn small">도감 이미지</button>
+            <button id="selectedBackupBtn" class="btn small">백업 ZIP</button>
+            <button id="deleteSelectedBtn" class="btn small danger">선택 삭제</button>
+          </div>
         </div>
 
         <div id="fieldPanel" class="field-panel hidden">
@@ -840,6 +857,7 @@ body.folder-lightbox-open{overflow:hidden}
     </form>
   </dialog>
 
+  <button id="scrollTopBtn" class="scroll-top-btn hidden" type="button" aria-label="맨 위로">↑</button>
   <div id="toast" class="toast" role="status"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -911,10 +929,11 @@ body.folder-lightbox-open{overflow:hidden}
     });
     document.body.classList.add('is-home');
     render();
+    requestAnimationFrame(updateScrollTopButton);
   }
 
   function mapEls(){
-    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','toast'].forEach(id=>els[id]=$(`#${id}`));
+    ['compareCount','fileInput','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
   }
 
   function bind(){
@@ -948,7 +967,12 @@ body.folder-lightbox-open{overflow:hidden}
     els.memoOnly.onchange = e => {state.memoOnly=e.target.checked; renderLibrary();};
     els.displayTabs.onclick = e => { if(!e.target.dataset.tab) return; state.tab=e.target.dataset.tab; $$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===state.tab)); renderLibrary(); };
     els.fieldBtn.onclick = () => els.fieldPanel.classList.toggle('hidden');
-    els.fieldPanel.onchange = e => { if(e.target.dataset.field){ e.target.checked?state.visibleFields.add(e.target.dataset.field):state.visibleFields.delete(e.target.dataset.field); renderList(filteredEntries()); }};
+    els.fieldPanel.onchange = async e => {
+      if(!e.target.dataset.field) return;
+      e.target.checked?state.visibleFields.add(e.target.dataset.field):state.visibleFields.delete(e.target.dataset.field);
+      await saveMeta('visibleFields',[...state.visibleFields]);
+      renderList(filteredEntries());
+    };
     els.newPresetBtn.onclick = () => {els.presetName.value='';els.presetText.value='';els.presetDialog.showModal();};
     els.newFolderBtn.onclick=()=>{els.folderNameInput.value='';els.folderCreateDialog.showModal();setTimeout(()=>els.folderNameInput.focus(),30);};
     els.createFolderBtn.onclick=createFolder;
@@ -981,7 +1005,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.closeSavedHubBtn.onclick=()=>els.savedHubDialog.close();
     els.savedHubTabs.onclick=e=>{const t=e.target.dataset.hubType;if(!t)return;state.savedHubType=t;state.savedHubSelected=[];savedHubRenderLimit=80;[...els.savedHubTabs.children].forEach(b=>b.classList.toggle('active',b.dataset.hubType===t));renderSavedHub();};
     els.savedHubSearch.oninput=()=>{savedHubRenderLimit=80;renderSavedHub();};
-    els.savedHubClearBtn.onclick=()=>{state.savedHubSelected=[];renderSavedHub();};
+    els.savedHubClearBtn.onclick=()=>{state.savedHubSelected=[];els.savedHubGrid.querySelectorAll('.hub-check').forEach(cb=>cb.checked=false);updateSavedHubCount();};
     els.savedHubImportBtn.onclick=importFromSavedHub;
     els.savedHubGrid.addEventListener('scroll',()=>{
       if(els.savedHubGrid.scrollTop+els.savedHubGrid.clientHeight < els.savedHubGrid.scrollHeight-450)return;
@@ -1011,9 +1035,18 @@ body.folder-lightbox-open{overflow:hidden}
       closingDetailFromHistory=false;
     });
     $$('.save-folder-btn').forEach(b=>b.onclick=()=>saveCurrentFieldToFolder(b.dataset.folderSource));
-    els.selectModeBtn.onclick = () => {state.selectMode=!state.selectMode;if(!state.selectMode)state.selectedIds=[];renderLibrary();};
-    els.cancelSelectBtn.onclick = () => {state.selectMode=false;state.selectedIds=[];renderLibrary();};
-    els.selectAllBtn.onclick = () => {const ids=filteredEntries().map(e=>e.id);const all=ids.length&&ids.every(id=>state.selectedIds.includes(id));state.selectedIds=all?state.selectedIds.filter(id=>!ids.includes(id)):[...new Set([...state.selectedIds,...ids])];renderLibrary();};
+    els.selectModeBtn.onclick = () => setGallerySelectionMode(!state.selectMode);
+    els.cancelSelectBtn.onclick = () => setGallerySelectionMode(false);
+    els.selectAllBtn.onclick = () => {
+      const ids=filteredEntries().map(e=>e.id);
+      const all=ids.length&&ids.every(id=>state.selectedIds.includes(id));
+      state.selectedIds=all?state.selectedIds.filter(id=>!ids.includes(id)):[...new Set([...state.selectedIds,...ids])];
+      syncSelectionDom();
+    };
+    els.bulkMoreBtn.onclick = ev => {ev.stopPropagation();els.bulkMoreMenu.classList.toggle('hidden');};
+    document.addEventListener('click',ev=>{if(!els.bulkMoreMenu?.classList.contains('hidden')&&!els.bulkMoreMenu.contains(ev.target)&&ev.target!==els.bulkMoreBtn)els.bulkMoreMenu.classList.add('hidden');});
+    els.scrollTopBtn.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+    window.addEventListener('scroll',updateScrollTopButton,{passive:true});
     els.selectedToCompareBtn.onclick = addSelectedToCompare;
     els.saveSelectedOriginalBtn.onclick = ()=>saveSelectedImages(false);
     els.saveSelectedCleanBtn.onclick = ()=>saveSelectedImages(true);
@@ -1072,7 +1105,13 @@ body.folder-lightbox-open{overflow:hidden}
     const meta = await txGetAll(STORE_META);
     const map=Object.fromEntries(meta.map(x=>[x.key,x.value]));
     state.artistBookmarks=map.artistBookmarks||[]; state.presets=map.presets||[]; state.folders=map.folders||[];
+    const savedVisibleFields=Array.isArray(map.visibleFields)?map.visibleFields.filter(f=>['image','artists','memo','prompt','characters','uc','model','created'].includes(f)):null;
+    if(savedVisibleFields?.length) state.visibleFields=new Set(savedVisibleFields);
+    els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
+    // v1.5.3: 선택 UX/성능 개선 — 부분 업데이트, 롱프레스 진입, 하단 고정바, 맨 위로.
+    // v1.5.2: Compare PDF 직접 파일 저장.
+    // v1.5.1: 표시 열 선택값 영구 저장.
     // v1.5.0: safe parser migration.
     // Only rewrite an entry if its current artist/prompt fields still match
     // an older parser's automatic output exactly. Manual edits are preserved.
@@ -1707,17 +1746,42 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function updateGallerySelectionControls(){
+    els.selectModeBtn.classList.toggle('active',state.selectMode);
+    els.selectModeBtn.textContent=state.selectMode?'선택 중':'선택';
+    els.bulkBar.classList.toggle('hidden',!state.selectMode);
+    if(!state.selectMode)els.bulkMoreMenu?.classList.add('hidden');
     els.selectedCount.textContent=`${state.selectedIds.length}개 선택`;
     const disabled=!state.selectedIds.length;
-    els.deleteSelectedBtn.disabled=disabled;
-    els.selectedToFolderBtn.disabled=disabled;
-    els.selectedToCompareBtn.disabled=disabled;
-    els.saveSelectedOriginalBtn.disabled=disabled;
-    els.saveSelectedCleanBtn.disabled=disabled;
+    [els.deleteSelectedBtn,els.selectedToFolderBtn,els.selectedToCompareBtn,els.saveSelectedOriginalBtn,els.saveSelectedCleanBtn,els.selectedPdfBtn,els.selectedAtlasPdfBtn,els.selectedAtlasImageBtn,els.selectedBackupBtn].forEach(b=>{if(b)b.disabled=disabled;});
+    els.gallery.querySelectorAll('.card').forEach(card=>card.classList.toggle('selection-mode',state.selectMode));
+    els.listWrap.classList.toggle('selection-mode',state.selectMode);
+    updateScrollTopButton();
+  }
+
+  function syncSelectionDom(id=null){
+    const selected=new Set(state.selectedIds);
+    const cards=id?[els.gallery.querySelector(`.card[data-id="${CSS.escape(id)}"]`)].filter(Boolean):[...els.gallery.querySelectorAll('.card[data-id]')];
+    cards.forEach(card=>{
+      const on=selected.has(card.dataset.id),cb=card.querySelector('.card-check');
+      if(cb)cb.checked=on;
+      card.classList.toggle('selection-mode',state.selectMode);
+    });
+    const rows=id?[els.listBody.querySelector(`tr[data-id="${CSS.escape(id)}"]`)].filter(Boolean):[...els.listBody.querySelectorAll('tr[data-id]')];
+    rows.forEach(row=>{
+      const on=selected.has(row.dataset.id),cb=row.querySelector('.row-check');
+      if(cb)cb.checked=on;
+      row.classList.toggle('row-selected',on);
+    });
+    updateGallerySelectionControls();
+  }
+
+  function setGallerySelectionMode(on,{keepSelection=false}={}){
+    state.selectMode=!!on;
+    if(!state.selectMode&&!keepSelection)state.selectedIds=[];
+    syncSelectionDom();
   }
 
   function bindGallerySweepSelection(){
-    if(!state.selectMode||state.tab!=='gallery')return;
     bindSweepSelectionGrid({
       grid:els.gallery,
       cardSelector:'.card',
@@ -1731,6 +1795,85 @@ body.folder-lightbox-open{overflow:hidden}
       updateCount:updateGallerySelectionControls,
       enabled:()=>state.selectMode
     });
+  }
+
+  function bindListSweepSelection(){
+    bindSweepSelectionGrid({
+      grid:els.listBody,
+      cardSelector:'tr[data-id]',
+      checkboxSelector:'.row-check',
+      getKey:(row)=>row.dataset.id,
+      isSelected:(id)=>state.selectedIds.includes(id),
+      setSelected:(id,on)=>{
+        if(on&&!state.selectedIds.includes(id))state.selectedIds.push(id);
+        if(!on)state.selectedIds=state.selectedIds.filter(x=>x!==id);
+        const row=els.listBody.querySelector(`tr[data-id="${CSS.escape(id)}"]`);
+        row?.classList.toggle('row-selected',on);
+      },
+      updateCount:updateGallerySelectionControls,
+      enabled:()=>state.selectMode
+    });
+  }
+
+  function bindLongPressSelectionEntry(container,itemSelector){
+    if(!container)return;
+    if(container._longPressSelectionCleanup)container._longPressSelectionCleanup();
+    const HOLD_MS=320,MOVE_CANCEL=11;
+    let timer=null,active=false,touchId=null,startX=0,startY=0,lastX=0,lastY=0,seen=new Set();
+
+    const clearTimer=()=>{if(timer){clearTimeout(timer);timer=null;}};
+    const itemAt=(x,y)=>document.elementFromPoint(x,y)?.closest(itemSelector);
+    const applyAt=(x,y)=>{
+      const item=itemAt(x,y);if(!item||!container.contains(item))return;
+      const id=item.dataset.id;if(!id||seen.has(id))return;seen.add(id);
+      if(!state.selectedIds.includes(id))state.selectedIds.push(id);
+      syncSelectionDom(id);
+    };
+    const activate=(x,y)=>{
+      const item=itemAt(x,y);if(!item||!container.contains(item))return;
+      active=true;seen.clear();state.selectMode=true;
+      applyAt(x,y);
+      try{navigator.vibrate?.(15)}catch(_){}
+    };
+    const finish=()=>{clearTimer();active=false;touchId=null;seen.clear();};
+
+    const onTouchStart=ev=>{
+      if(state.selectMode||ev.touches.length!==1)return;
+      const item=ev.target.closest(itemSelector);if(!item||!container.contains(item))return;
+      const t=ev.touches[0];touchId=t.identifier;startX=lastX=t.clientX;startY=lastY=t.clientY;
+      clearTimer();timer=setTimeout(()=>activate(lastX,lastY),HOLD_MS);
+    };
+    const onTouchMove=ev=>{
+      const t=[...ev.touches].find(x=>x.identifier===touchId);if(!t)return;
+      if(!active){
+        if(Math.hypot(t.clientX-startX,t.clientY-startY)>MOVE_CANCEL)clearTimer();
+        lastX=t.clientX;lastY=t.clientY;return;
+      }
+      ev.preventDefault();applyAt(t.clientX,t.clientY);lastX=t.clientX;lastY=t.clientY;
+    };
+    const onTouchEnd=ev=>{if(active)ev.preventDefault();finish();};
+    const onContextMenu=ev=>{if(active||timer)ev.preventDefault();};
+
+    container.addEventListener('touchstart',onTouchStart,{passive:true});
+    container.addEventListener('touchmove',onTouchMove,{passive:false});
+    container.addEventListener('touchend',onTouchEnd,{passive:false});
+    container.addEventListener('touchcancel',finish,{passive:true});
+    container.addEventListener('contextmenu',onContextMenu);
+    container._longPressSelectionCleanup=()=>{
+      finish();
+      container.removeEventListener('touchstart',onTouchStart);
+      container.removeEventListener('touchmove',onTouchMove);
+      container.removeEventListener('touchend',onTouchEnd);
+      container.removeEventListener('touchcancel',finish);
+      container.removeEventListener('contextmenu',onContextMenu);
+    };
+  }
+
+  function updateScrollTopButton(){
+    if(!els.scrollTopBtn)return;
+    const show=window.scrollY>520&&state.view!=='home';
+    els.scrollTopBtn.classList.toggle('hidden',!show);
+    els.scrollTopBtn.classList.toggle('with-select-bar',show&&state.selectMode&&state.view==='library');
   }
 
   function bindSavedHubSweepSelection(){
@@ -1753,15 +1896,7 @@ body.folder-lightbox-open{overflow:hidden}
     const isListView=state.tab==='list';
     els.fieldBtn.classList.toggle('hidden',!isListView);
     if(!isListView)els.fieldPanel.classList.add('hidden');
-    els.selectModeBtn.classList.toggle('active',state.selectMode);
-    els.selectModeBtn.textContent=state.selectMode?'선택 중':'선택';
-    els.bulkBar.classList.toggle('hidden',!state.selectMode);
-    els.selectedCount.textContent=`${state.selectedIds.length}개 선택`;
-    els.deleteSelectedBtn.disabled=!state.selectedIds.length;
-    els.selectedToFolderBtn.disabled=!state.selectedIds.length;
-    els.selectedToCompareBtn.disabled=!state.selectedIds.length;
-    els.saveSelectedOriginalBtn.disabled=!state.selectedIds.length;
-    els.saveSelectedCleanBtn.disabled=!state.selectedIds.length;
+    updateGallerySelectionControls();
     els.gallery.classList.toggle('hidden',state.tab!=='gallery'); els.listWrap.classList.toggle('hidden',state.tab!=='list');
     els.emptyState.classList.toggle('hidden',state.entries.length!==0 || state.search || state.artistFilters.length);
     if(state.tab==='gallery') renderGallery(arr); else renderList(arr);
@@ -1773,13 +1908,14 @@ body.folder-lightbox-open{overflow:hidden}
       const url=URL.createObjectURL(e.imageBlob); card.dataset.url=url;
       const checked=state.selectedIds.includes(e.id);
       card.classList.toggle('selection-mode',state.selectMode);
-      card.innerHTML=`<div class="thumb"><img src="${url}" alt="">${state.selectMode?`<label class="check-badge"><input class="card-check" type="checkbox" ${checked?'checked':''}><span>선택</span></label>`:''}<div class="card-controls"><button class="round fav">${e.favorite?'★':'☆'}</button></div></div><div class="card-body"><div class="card-title">${esc(displayTitle(e))}</div><div class="card-sub">${esc(artistSummary(e))}</div></div>`;
+      card.innerHTML=`<div class="thumb"><img src="${url}" alt=""><label class="check-badge"><input class="card-check" type="checkbox" ${checked?'checked':''}><span>선택</span></label><div class="card-controls"><button class="round fav">${e.favorite?'★':'☆'}</button></div></div><div class="card-body"><div class="card-title">${esc(displayTitle(e))}</div><div class="card-sub">${esc(artistSummary(e))}</div></div>`;
       card.querySelector('img').onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id); card.querySelector('.card-body').onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id);
       card.querySelector('.fav').onclick=ev=>{ev.stopPropagation(); toggleFavorite(e.id)};
       const cardCheck=card.querySelector('.card-check');if(cardCheck)cardCheck.onchange=ev=>{ev.stopPropagation();toggleSelected(e.id,ev.target.checked)};
       els.gallery.appendChild(card);
     });
     bindGallerySweepSelection();
+    bindLongPressSelectionEntry(els.gallery,'.card');
   }
 
   function renderList(arr){
@@ -1794,7 +1930,7 @@ body.folder-lightbox-open{overflow:hidden}
       }
       return '눌러서 정렬 방향 전환';
     };
-    els.listHead.innerHTML=`<tr>${state.selectMode?'<th class="field-select">선택</th>':''}`+
+    els.listHead.innerHTML=`<tr><th class="field-select">선택</th>`+
       fields.map(f=>`<th class="field-${f} sortable-head" data-sort-field="${f}" title="${sortTitle(f)}"><span>${defs[f]}</span><span class="sort-arrow">${sortMark(f)}</span></th>`).join('')+'</tr>';
 
     els.listHead.querySelectorAll('[data-sort-field]').forEach(th=>{
@@ -1842,10 +1978,13 @@ body.folder-lightbox-open{overflow:hidden}
     }
 
     revokeObjectUrls(els.listBody); els.listBody.innerHTML='';
-    listArr.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;const checked=state.selectedIds.includes(e.id);let html=state.selectMode?`<td class="field-select"><input type="checkbox" class="row-check" ${checked?'checked':''}></td>`:'';
+    listArr.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;const checked=state.selectedIds.includes(e.id);tr.classList.toggle('row-selected',checked);let html=`<td class="field-select"><input type="checkbox" class="row-check" ${checked?'checked':''}></td>`;
       for(const f of fields){ if(f==='image'){const url=URL.createObjectURL(e.imageBlob);tr.dataset.url=(tr.dataset.url||'')+' '+url;html+=`<td class="field-image"><img class="table-thumb open" src="${url}"></td>`;} else if(f==='artists')html+=`<td class="field-artists"><div class="clamp open">${esc(e.artistsText)}</div></td>`; else if(f==='memo')html+=`<td class="field-memo"><div class="clamp open">${esc(e.memo||'')}</div></td>`; else if(f==='prompt')html+=`<td class="field-prompt"><div class="clamp open">${esc(e.prompt||'')}</div></td>`; else if(f==='characters')html+=`<td class="field-characters"><div class="clamp open">${esc((e.characterPrompts||[]).join('\n---\n'))}</div></td>`; else if(f==='uc')html+=`<td class="field-uc"><div class="clamp open">${esc(e.uc||'')}</div></td>`; else if(f==='model')html+=`<td class="field-model">${esc(e.model||'')}</td>`; else if(f==='created')html+=`<td class="field-created">${new Date(e.createdAt).toLocaleString()}</td>`; }
       tr.innerHTML=html; tr.querySelectorAll('.open').forEach(x=>x.onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id)); const cb=tr.querySelector('.row-check');if(cb)cb.onchange=ev=>toggleSelected(e.id,ev.target.checked); els.listBody.appendChild(tr);
     });
+    els.listWrap.classList.toggle('selection-mode',state.selectMode);
+    bindListSweepSelection();
+    bindLongPressSelectionEntry(els.listBody,'tr[data-id]');
   }
 
   function renderArtistFilters(){
@@ -1909,7 +2048,7 @@ body.folder-lightbox-open{overflow:hidden}
   function toggleSelected(id,force){
     const has=state.selectedIds.includes(id); const next=force!==undefined?force:!has;
     if(next&&!has)state.selectedIds.push(id); else if(!next&&has)state.selectedIds=state.selectedIds.filter(x=>x!==id);
-    renderLibrary();
+    syncSelectionDom(id);
   }
   async function addSelectedToCompare(){
     const ids=state.selectedIds.filter(id=>state.entries.some(e=>e.id===id));
@@ -2466,7 +2605,8 @@ body.folder-lightbox-open{overflow:hidden}
 
   function clearComparePickerAll(){
     state.comparePickerIds=[];
-    renderComparePicker();
+    els.comparePickerGrid.querySelectorAll('.compare-pick-check').forEach(cb=>cb.checked=false);
+    updateComparePickerCount();
   }
 
   function bindComparePickerDragSelect(){
@@ -2661,7 +2801,9 @@ body.folder-lightbox-open{overflow:hidden}
     state.comparePickerIds=all
       ? state.comparePickerIds.filter(id=>!ids.includes(id))
       : [...new Set([...state.comparePickerIds,...ids])];
-    renderComparePicker();
+    const selected=new Set(state.comparePickerIds);
+    els.comparePickerGrid.querySelectorAll('.compare-pick-check').forEach(cb=>cb.checked=selected.has(cb.dataset.id));
+    updateComparePickerCount();
   }
 
   function confirmComparePicker(){
@@ -2891,44 +3033,93 @@ body.folder-lightbox-open{overflow:hidden}
     }
     canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-artist-atlas-${dateStamp()}.png`),'image/png');toast('작가태그 도감 이미지를 만들었습니다.');
   }
-  async function exportCompareImage(){
+  async function buildCompareCanvas(){
     const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);
-    if(entries.length<2){toast('비교 이미지를 2개 이상 불러와주세요.');return;}
+    if(entries.length<2) throw new Error('COMPARE_NEEDS_TWO');
     const cols=Math.min(entries.length,2), cardW=700, cardH=900, gap=30, pad=40;
-    const rows=Math.ceil(entries.length/cols), tableY=pad+rows*(cardH+gap), canvas=document.createElement('canvas');
-    canvas.width=pad*2+cols*cardW+(cols-1)*gap; canvas.height=tableY+220+Math.max(1,new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name))).size)*42;
-    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#111';ctx.textBaseline='top';
+    const rows=Math.ceil(entries.length/cols), tableY=pad+rows*(cardH+gap);
+    const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
+    const canvas=document.createElement('canvas');
+    canvas.width=pad*2+cols*cardW+(cols-1)*gap;
+    canvas.height=tableY+275+Math.max(1,names.length)*42;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#111';ctx.textBaseline='top';
     for(let i=0;i<entries.length;i++){
       const e=entries[i], x=pad+(i%cols)*(cardW+gap), y=pad+Math.floor(i/cols)*(cardH+gap);
       const img=await loadBlobImage(e.imageBlob), scale=Math.min(cardW/img.width,760/img.height), w=img.width*scale,h=img.height*scale;
       ctx.fillStyle='#f4f4f4';ctx.fillRect(x,y,cardW,760);ctx.drawImage(img,x+(cardW-w)/2,y+(760-h)/2,w,h);
       ctx.fillStyle='#111';ctx.font='bold 30px Arial';ctx.fillText(displayTitle(e),x,y+785);ctx.font='20px Arial';drawCanvasText(ctx,artistSummary(e),x,y+830,cardW,26);
     }
-    let y=tableY+20;ctx.font='bold 30px Arial';ctx.fillText('Artist Weight Comparison',pad,y);y+=55;
-    const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
+    let y=tableY+20;
+    const samePrompt=entries.every(e=>normalizeText(e.prompt)===normalizeText(entries[0].prompt));
+    const sameChars=entries.every(e=>normalizeText((e.characterPrompts||[]).join('\n'))===normalizeText((entries[0].characterPrompts||[]).join('\n')));
+    const sameUc=entries.every(e=>normalizeText(e.uc)===normalizeText(entries[0].uc));
+    ctx.font='bold 30px Arial';ctx.fillText('Artist Weight Comparison',pad,y);y+=52;
+    ctx.font='20px Arial';ctx.fillText(samePrompt&&sameChars&&sameUc?'Prompt / Character Prompt / UC : SAME':'Prompt / Character Prompt / UC : DIFFERENT',pad,y);y+=48;
     ctx.font='22px Arial';
     for(const name of names){
       const vals=entries.map(e=>{const a=(e.artists||[]).find(x=>norm(x.name)===norm(name));return a?a.weight:'—'});
       ctx.fillText(`${name}   ${vals.map((v,i)=>`#${i+1}: ${v}`).join('   ')}`,pad,y);y+=42;
     }
-    canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-compare-${dateStamp()}.png`),'image/png');
-    toast('Compare 결과 이미지를 만들었습니다.');
+    return canvas;
+  }
+  async function exportCompareImage(){
+    try{
+      const canvas=await buildCompareCanvas();
+      canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-compare-${dateStamp()}.png`),'image/png');
+      toast('Compare 결과 이미지를 만들었습니다.');
+    }catch(err){
+      if(err?.message==='COMPARE_NEEDS_TWO') toast('비교 이미지를 2개 이상 불러와주세요.');
+      else{console.error(err);toast('Compare 결과 이미지 생성에 실패했습니다.');}
+    }
   }
   function loadBlobImage(blob){return new Promise((res,rej)=>{const u=URL.createObjectURL(blob),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=rej;i.src=u})}
   function drawCanvasText(ctx,text,x,y,maxW,lineH){const words=String(text||'').split(/\s+/);let line='';for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,y);y+=lineH;line=w}else line=t}if(line)ctx.fillText(line,x,y)}
+  function canvasToJpegBytes(canvas,quality=.92){
+    return new Promise((resolve,reject)=>canvas.toBlob(async blob=>{
+      if(!blob){reject(new Error('JPEG encode failed'));return;}
+      resolve(new Uint8Array(await blob.arrayBuffer()));
+    },'image/jpeg',quality));
+  }
+  function makePdfFromJpegs(pages,pageW=595.28,pageH=841.89){
+    const enc=new TextEncoder(), chunks=[], offsets=[0]; let length=0;
+    const push=v=>{const b=typeof v==='string'?enc.encode(v):v;chunks.push(b);length+=b.length;};
+    const addObj=(n,parts)=>{offsets[n]=length;push(`${n} 0 obj\n`);for(const p of parts)push(p);push(`\nendobj\n`);};
+    push('%PDF-1.4\n%âãÏÓ\n');
+    const total=2+pages.length*3;
+    addObj(1,[`<< /Type /Catalog /Pages 2 0 R >>`]);
+    const kids=pages.map((_,i)=>`${3+i*3} 0 R`).join(' ');
+    addObj(2,[`<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`]);
+    pages.forEach((p,i)=>{
+      const pageObj=3+i*3,imgObj=pageObj+1,contentObj=pageObj+2,name=`Im${i+1}`;
+      addObj(pageObj,[`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /${name} ${imgObj} 0 R >> >> /Contents ${contentObj} 0 R >>`]);
+      addObj(imgObj,[`<< /Type /XObject /Subtype /Image /Width ${p.width} /Height ${p.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.bytes.length} >>\nstream\n`,p.bytes,`\nendstream`]);
+      const stream=`q\n${pageW} 0 0 ${pageH} 0 0 cm\n/${name} Do\nQ`;
+      addObj(contentObj,[`<< /Length ${enc.encode(stream).length} >>\nstream\n${stream}\nendstream`]);
+    });
+    const xref=length;push(`xref\n0 ${total+1}\n0000000000 65535 f \n`);
+    for(let i=1;i<=total;i++)push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');
+    push(`trailer\n<< /Size ${total+1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+    return new Blob(chunks,{type:'application/pdf'});
+  }
   async function exportComparePdf(){
-    const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);
-    if(entries.length<2){toast('비교 이미지를 2개 이상 불러와주세요.');return;}
-    const win=window.open('','_blank');if(!win){toast('팝업을 허용한 뒤 다시 시도해주세요.');return;}
-    const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
-    const samePrompt=entries.every(e=>normalizeText(e.prompt)===normalizeText(entries[0].prompt));
-    const sameChars=entries.every(e=>normalizeText((e.characterPrompts||[]).join('\n'))===normalizeText((entries[0].characterPrompts||[]).join('\n')));
-    const sameUc=entries.every(e=>normalizeText(e.uc)===normalizeText(entries[0].uc));
-    win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>NAI Archive Compare</title><style>body{font-family:Arial,"Noto Sans KR",sans-serif;color:#111;padding:12mm}.imgs{display:grid;grid-template-columns:repeat(2,1fr);gap:8mm}.card img{width:100%;height:95mm;object-fit:contain;background:#f4f4f4}.card b{display:block;margin-top:3mm}.card small{font-size:8pt}table{width:100%;border-collapse:collapse;margin-top:10mm;font-size:9pt}th,td{border:1px solid #ccc;padding:2.5mm;text-align:left}.note{margin-top:7mm;padding:4mm;border:1px solid #ccc;font-size:9pt}@media print{@page{size:A4;margin:8mm}}</style></head><body><h1>NAI Archive · Compare</h1><div class="imgs">');
-    for(const e of entries){const data=await blobToDataUrl(e.imageBlob);win.document.write(`<div class="card"><img src="${data}"><b>${esc(displayTitle(e))}</b><small>${htmlText(artistSummary(e))}</small></div>`)}
-    win.document.write('</div><div class="note">'+(samePrompt&&sameChars&&sameUc?'✓ Prompt · Character Prompt · UC 동일':'△ 프롬프트 계열에 차이가 있음')+'</div><table><thead><tr><th>작가태그</th>'+entries.map((e,i)=>`<th>${esc(displayTitle(e))}</th>`).join('')+'</tr></thead><tbody>');
-    for(const name of names){win.document.write(`<tr><th>${esc(name)}</th>${entries.map(e=>{const a=(e.artists||[]).find(x=>norm(x.name)===norm(name));return `<td>${esc(a?String(a.weight):'—')}</td>`}).join('')}</tr>`)}
-    win.document.write('</tbody></table></body></html>');win.document.close();setTimeout(()=>{win.focus();win.print()},500);toast('인쇄 창에서 PDF로 저장해주세요.');
+    try{
+      const canvas=await buildCompareCanvas();
+      const a4Ratio=841.89/595.28;
+      const sliceH=Math.max(1,Math.floor(canvas.width*a4Ratio));
+      const pages=[];
+      for(let sy=0;sy<canvas.height;sy+=sliceH){
+        const h=Math.min(sliceH,canvas.height-sy), page=document.createElement('canvas');
+        page.width=canvas.width;page.height=sliceH;
+        const pctx=page.getContext('2d');pctx.fillStyle='#fff';pctx.fillRect(0,0,page.width,page.height);pctx.drawImage(canvas,0,sy,canvas.width,h,0,0,canvas.width,h);
+        pages.push({bytes:await canvasToJpegBytes(page),width:page.width,height:page.height});
+      }
+      downloadBlob(makePdfFromJpegs(pages),`nai-archive-compare-${dateStamp()}.pdf`);
+      toast('Compare 결과 PDF를 저장했습니다.');
+    }catch(err){
+      if(err?.message==='COMPARE_NEEDS_TWO') toast('비교 이미지를 2개 이상 불러와주세요.');
+      else{console.error(err);toast('Compare PDF 생성에 실패했습니다.');}
+    }
   }
 
   async function saveCurrentImageWithoutMetadata(){
