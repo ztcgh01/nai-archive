@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v1.4.6</title>
+  <title>NAI Archive v1.4.7</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2088,7 +2088,7 @@ body.folder-lightbox-open{overflow:hidden}
       const checked=state.savedHubSelected.includes(it.key);
       if(it.kind==='image'){
         const u=URL.createObjectURL(it.blob);
-        return `<label class="saved-hub-card image-card" data-url="${u}"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><img src="${u}" alt="" loading="lazy" decoding="async"><div class="hub-card-copy"><strong>${esc(it.title)}</strong><span>${esc(it.sub||'')}</span></div></label>`;
+        return `<label class="saved-hub-card image-card" data-url="${u}"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><div class="hub-thumb"><img src="${u}" alt="" decoding="async"></div><div class="hub-card-copy"><strong>${esc(it.title)}</strong><span>${esc(it.sub||'')}</span></div></label>`;
       }
       const icon=it.kind==='folder'?'▱':it.kind==='artist'?'#':it.kind==='uc'?'UC':it.kind==='character'?'C':'T';
       return `<label class="saved-hub-card text-card"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><span class="hub-kind">${esc(icon)}</span><div class="hub-card-copy"><strong>${esc(it.title||'Untitled')}</strong><span>${esc(it.sub||previewText(it.text||''))}</span></div></label>`;
@@ -3194,5 +3194,52 @@ body.folder-lightbox-open{overflow:hidden}
   font:600 10px Inter,sans-serif;
 }
 .saved-hub-more:active{background:#f2f2f2}
+</style>
+
+<style id="v147-saved-hub-thumb-fix">
+/* Real thumbnail boxes: prevent Android/WebView from collapsing object-URL images into thin strips. */
+.saved-hub-grid.hub-image{
+  align-items:start!important;
+  grid-auto-rows:max-content!important;
+}
+.saved-hub-card.image-card{
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.saved-hub-card.image-card .hub-thumb{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  aspect-ratio:1 / 1.18!important;
+  min-height:96px!important;
+  overflow:hidden!important;
+  background:#f2f2f2!important;
+}
+.saved-hub-card.image-card .hub-thumb img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  aspect-ratio:auto!important;
+  object-fit:cover!important;
+  display:block!important;
+  border:0!important;
+  border-radius:0!important;
+  margin:0!important;
+}
+@media(max-width:560px){
+  .saved-hub-grid.hub-image{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  .saved-hub-card.image-card .hub-thumb{
+    aspect-ratio:1 / 1.18!important;
+    min-height:92px!important;
+  }
+}
 </style>
 
