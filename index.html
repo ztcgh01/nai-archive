@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="color-scheme" content="light" />
-  <title>NAI Archive v1.4.4</title>
+  <title>NAI Archive v1.4.6</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -893,6 +893,7 @@ body.folder-lightbox-open{overflow:hidden}
   let pendingFolderImages=[];
   let folderInsertIndex=null;
   let pendingSavedImageItems=[];
+  let savedHubRenderLimit=80;
 
   document.addEventListener('DOMContentLoaded', init);
 
@@ -978,10 +979,20 @@ body.folder-lightbox-open{overflow:hidden}
     els.folderImageLightboxImg.onclick=closeFolderImageLightbox;
     els.openSavedHubBtn.onclick=openSavedHub;
     els.closeSavedHubBtn.onclick=()=>els.savedHubDialog.close();
-    els.savedHubTabs.onclick=e=>{const t=e.target.dataset.hubType;if(!t)return;state.savedHubType=t;state.savedHubSelected=[];[...els.savedHubTabs.children].forEach(b=>b.classList.toggle('active',b.dataset.hubType===t));renderSavedHub();};
-    els.savedHubSearch.oninput=renderSavedHub;
+    els.savedHubTabs.onclick=e=>{const t=e.target.dataset.hubType;if(!t)return;state.savedHubType=t;state.savedHubSelected=[];savedHubRenderLimit=80;[...els.savedHubTabs.children].forEach(b=>b.classList.toggle('active',b.dataset.hubType===t));renderSavedHub();};
+    els.savedHubSearch.oninput=()=>{savedHubRenderLimit=80;renderSavedHub();};
     els.savedHubClearBtn.onclick=()=>{state.savedHubSelected=[];renderSavedHub();};
     els.savedHubImportBtn.onclick=importFromSavedHub;
+    els.savedHubGrid.addEventListener('scroll',()=>{
+      if(els.savedHubGrid.scrollTop+els.savedHubGrid.clientHeight < els.savedHubGrid.scrollHeight-450)return;
+      const q=norm(els.savedHubSearch.value||'').trim();
+      const total=savedHubItems().filter(it=>!q||norm([it.title,it.sub,it.text].filter(Boolean).join(' ')).includes(q)).length;
+      if(savedHubRenderLimit>=total)return;
+      const top=els.savedHubGrid.scrollTop;
+      savedHubRenderLimit=Math.min(total,savedHubRenderLimit+80);
+      renderSavedHub();
+      requestAnimationFrame(()=>{els.savedHubGrid.scrollTop=top;});
+    },{passive:true});
     els.closeSavedImageImportBtn.onclick=()=>{pendingSavedImageItems=[];els.savedImageImportDialog.close();};
     els.savedImageIncludeDetails.onchange=()=>els.savedImageDetailFields.classList.toggle('hidden',!els.savedImageIncludeDetails.checked);
     els.confirmSavedImageImportBtn.onclick=confirmSavedImageImport;
@@ -2018,6 +2029,7 @@ body.folder-lightbox-open{overflow:hidden}
   function openSavedHub(){
     state.savedHubType='image';
     state.savedHubSelected=[];
+    savedHubRenderLimit=80;
     els.savedHubSearch.value='';
     [...els.savedHubTabs.children].forEach(b=>b.classList.toggle('active',b.dataset.hubType==='image'));
     renderSavedHub();
@@ -2066,21 +2078,45 @@ body.folder-lightbox-open{overflow:hidden}
 
   function renderSavedHub(){
     const q=norm(els.savedHubSearch.value||'').trim();
-    const items=savedHubItems().filter(it=>!q||norm([it.title,it.sub,it.text].filter(Boolean).join(' ')).includes(q));
+    const allItems=savedHubItems().filter(it=>!q||norm([it.title,it.sub,it.text].filter(Boolean).join(' ')).includes(q));
+    const items=allItems.slice(0,savedHubRenderLimit);
+    const oldTop=els.savedHubGrid.scrollTop||0;
+
     revokeSavedHubUrls();
     els.savedHubGrid.className=`saved-hub-grid hub-${state.savedHubType}`;
     els.savedHubGrid.innerHTML=items.length?items.map(it=>{
       const checked=state.savedHubSelected.includes(it.key);
       if(it.kind==='image'){
         const u=URL.createObjectURL(it.blob);
-        return `<label class="saved-hub-card image-card" data-url="${u}"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><img src="${u}" alt=""><div class="hub-card-copy"><strong>${esc(it.title)}</strong><span>${esc(it.sub||'')}</span></div></label>`;
+        return `<label class="saved-hub-card image-card" data-url="${u}"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><img src="${u}" alt="" loading="lazy" decoding="async"><div class="hub-card-copy"><strong>${esc(it.title)}</strong><span>${esc(it.sub||'')}</span></div></label>`;
       }
       const icon=it.kind==='folder'?'▱':it.kind==='artist'?'#':it.kind==='uc'?'UC':it.kind==='character'?'C':'T';
       return `<label class="saved-hub-card text-card"><input class="hub-check" type="checkbox" data-key="${escAttr(it.key)}" ${checked?'checked':''}><span class="hub-kind">${esc(icon)}</span><div class="hub-card-copy"><strong>${esc(it.title||'Untitled')}</strong><span>${esc(it.sub||previewText(it.text||''))}</span></div></label>`;
     }).join(''):'<div class="notebook-empty">불러올 항목이 없습니다.</div>';
-    els.savedHubGrid.querySelectorAll('.hub-check').forEach(cb=>cb.onchange=()=>{const k=cb.dataset.key;if(cb.checked&&!state.savedHubSelected.includes(k))state.savedHubSelected.push(k);if(!cb.checked)state.savedHubSelected=state.savedHubSelected.filter(x=>x!==k);updateSavedHubCount();});
+
+    if(allItems.length>items.length){
+      const more=document.createElement('button');
+      more.type='button';
+      more.className='saved-hub-more';
+      more.textContent=`더 불러오기 · ${items.length} / ${allItems.length}`;
+      more.onclick=()=>{
+        const top=els.savedHubGrid.scrollTop;
+        savedHubRenderLimit=Math.min(allItems.length,savedHubRenderLimit+80);
+        renderSavedHub();
+        requestAnimationFrame(()=>{els.savedHubGrid.scrollTop=top;});
+      };
+      els.savedHubGrid.appendChild(more);
+    }
+
+    els.savedHubGrid.querySelectorAll('.hub-check').forEach(cb=>cb.onchange=()=>{
+      const k=cb.dataset.key;
+      if(cb.checked&&!state.savedHubSelected.includes(k))state.savedHubSelected.push(k);
+      if(!cb.checked)state.savedHubSelected=state.savedHubSelected.filter(x=>x!==k);
+      updateSavedHubCount();
+    });
     bindSavedHubSweepSelection();
     updateSavedHubCount();
+    if(oldTop)requestAnimationFrame(()=>{els.savedHubGrid.scrollTop=oldTop;});
   }
 
   function updateSavedHubCount(){
@@ -3145,5 +3181,18 @@ body.folder-lightbox-open{overflow:hidden}
 #foldersView .library-head p{
   margin-top:8px!important;
 }
+</style>
+
+<style id="v146-saved-hub-chunking">
+.saved-hub-more{
+  grid-column:1/-1;
+  width:100%;
+  min-height:44px;
+  margin:8px 0 4px;
+  border:1px solid #111;
+  background:#fff;
+  font:600 10px Inter,sans-serif;
+}
+.saved-hub-more:active{background:#f2f2f2}
 </style>
 
