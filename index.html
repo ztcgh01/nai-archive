@@ -83,6 +83,13 @@ body:not(.is-home) .menu-btn{display:grid}
 .atlas-selection-bar .count{margin-right:auto;font-size:10px;color:#666}
 .atlas-selection-bar button{height:34px;border:1px solid #ddd;background:#fff;padding:0 10px;font-size:9px}
 .atlas-selection-bar button.primary{background:#111;color:#fff;border-color:#111}
+.atlas-selected-more-menu{position:absolute;right:10px;bottom:calc(100% + 8px);display:grid;min-width:190px;padding:6px;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.14);z-index:12}
+.atlas-selected-more-menu.hidden{display:none}.atlas-selected-more-menu button{height:34px;text-align:left;border:0!important;background:#fff!important;color:#111!important;border-radius:7px;padding:0 9px}.atlas-selected-more-menu button.danger{color:#a11!important}
+.atlas-group-selection-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:30;width:min(900px,calc(100vw - 28px));display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:rgba(17,17,17,.96);color:#fff;border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.2);backdrop-filter:blur(12px)}
+.atlas-group-selection-bar.hidden{display:none}.atlas-group-selection-bar .bulk-left,.atlas-group-selection-bar .bulk-actions{display:flex;align-items:center;gap:8px}.atlas-group-selection-bar .text-btn{color:#fff}.atlas-group-selection-bar .sweep-hint{color:#aaa}.atlas-group-selection-bar .btn{border-color:#555;background:#191919;color:#fff}
+.atlas-card{position:relative}.atlas-card.atlas-group-selected{outline:2px solid #111;outline-offset:2px}.atlas-card .atlas-group-check{display:none;position:absolute;left:8px;top:8px;z-index:5;width:21px;height:21px;accent-color:#111}#atlasView.atlas-group-selecting .atlas-card .atlas-group-check{display:block}
+@media(max-width:700px){.atlas-selection-bar{flex-wrap:wrap}.atlas-selection-bar .count{width:100%}.atlas-group-selection-bar{bottom:12px;flex-direction:column;align-items:stretch}.atlas-group-selection-bar .bulk-left,.atlas-group-selection-bar .bulk-actions{justify-content:space-between;flex-wrap:wrap}#atlasView.atlas-group-selecting{padding-bottom:118px}}
+
 @media(max-width:700px){.atlas-artist-tools{top:69px}.atlas-selection-bar{position:fixed;left:2vw;right:2vw;bottom:2vh;border:1px solid #ddd;box-shadow:0 8px 30px rgba(0,0,0,.12)}.atlas-artist-dialog.atlas-selecting .modal-shell{padding-bottom:72px}}
 
 @media(max-width:760px){.atlas-shell{padding-top:6px}.atlas-head{align-items:flex-start;flex-direction:column;margin-bottom:16px}.atlas-head h1{font-size:48px}.atlas-head-actions{width:100%;justify-content:flex-start}.atlas-tools{padding:10px 0}.atlas-tool-row{gap:6px}.atlas-seg button{padding:0 9px}.atlas-count{width:100%;margin-left:0}.atlas-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 11px}.atlas-grid.gallery-mode{grid-template-columns:1fr;gap:24px}.atlas-card-name{font-size:12px}.atlas-artist-dialog .modal-shell,.atlas-image-detail-dialog .modal-shell{width:100vw;height:100dvh;max-height:none;border-radius:0}.atlas-artist-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}.atlas-image-detail-top{grid-template-columns:1fr;padding:10px}.atlas-image-detail-media img{max-height:none}.atlas-gallery-picker-grid{grid-template-columns:repeat(3,1fr)}.atlas-artist-head{padding-top:max(12px,env(safe-area-inset-top))}.atlas-tool-label.hide-mobile{display:none}}
@@ -930,7 +937,7 @@ body.folder-lightbox-open{overflow:hidden}
         <div class="atlas-shell">
           <div class="atlas-head">
             <div><div class="portal-kicker">STYLE INDEX / PERSONAL ARCHIVE</div><h1>Artist Atlas</h1><p>작가별 샘플을 Gallery와 분리해 쌓아두고, 필요한 이미지만 Gallery로 보냅니다.</p></div>
-            <div class="atlas-head-actions"><button id="atlasAddBtn" class="btn primary">＋ 이미지 추가</button><button id="atlasFromGalleryBtn" class="btn">Gallery에서 가져오기</button></div>
+            <div class="atlas-head-actions"><button id="atlasAddBtn" class="btn primary">＋ 이미지 추가</button><button id="atlasFromGalleryBtn" class="btn">Gallery에서 가져오기</button><button id="atlasGroupSelectBtn" class="btn">선택</button></div>
           </div>
           <div class="atlas-tools">
             <div class="atlas-search"><input id="atlasSearch" type="search" placeholder="작가태그 · 메모 · Prompt · Character Prompt · UC · Seed 검색"><button id="atlasSearchClear" type="button">×</button></div>
@@ -955,6 +962,10 @@ body.folder-lightbox-open{overflow:hidden}
           </div>
           <div id="atlasGrid" class="atlas-grid"></div>
           <div id="atlasLoadSentinel" class="atlas-load-sentinel"></div>
+          <div id="atlasGroupSelectionBar" class="atlas-group-selection-bar hidden">
+            <div class="bulk-left"><span id="atlasGroupSelectedCount">0개 작가 선택</span><button id="atlasGroupSelectAllBtn" class="text-btn">전체 선택</button><span class="sweep-hint">꾹 눌러 쓸어 선택</span></div>
+            <div class="bulk-actions"><button id="atlasGroupRepPdfBtn" class="btn small">대표 PDF</button><button id="atlasGroupAllPdfBtn" class="btn small">전체 이미지 PDF</button><button id="atlasGroupCancelBtn" class="btn small">취소</button></div>
+          </div>
         </div>
       </section>
 
@@ -1156,7 +1167,10 @@ body.folder-lightbox-open{overflow:hidden}
       <div class="atlas-artist-memo-box"><div class="atlas-artist-memo-label"><span>ARTIST MEMO</span><span>자동 저장</span></div><textarea id="atlasArtistMemo" class="atlas-artist-memo" placeholder="예: 눈 크게 나옴, 얼굴 어려보이게 함, 근육형"></textarea></div>
       <div class="atlas-artist-tools"><input id="atlasArtistSearch" type="search" placeholder="이 작가 내에서 메모 · Prompt · Character Prompt · UC · Seed 검색"><button id="atlasArtistSearchClear" type="button">지우기</button><button id="atlasArtistSelectBtn" type="button">선택</button></div>
       <div id="atlasArtistGrid" class="atlas-artist-grid"></div>
-      <div id="atlasSelectionBar" class="atlas-selection-bar"><span id="atlasSelectedCount" class="count">0개 선택</span><button id="atlasSelectAllBtn" type="button">전체</button><button id="atlasSelectedFavBtn" type="button">★ 즐겨찾기</button><button id="atlasSelectedGalleryBtn" class="primary" type="button">→ Gallery</button><button id="atlasSelectedDeleteBtn" type="button">삭제</button><button id="atlasSelectCancelBtn" type="button">취소</button></div>
+      <div id="atlasSelectionBar" class="atlas-selection-bar">
+        <span id="atlasSelectedCount" class="count">0개 선택</span><button id="atlasSelectAllBtn" type="button">전체</button><button id="atlasSelectedFolderBtn" type="button">폴더</button><button id="atlasSelectedCompareBtn" type="button">Compare</button><button id="atlasSelectedOriginalBtn" type="button">원본 저장</button><button id="atlasSelectedGalleryBtn" class="primary" type="button">→ Gallery</button><button id="atlasSelectedMoreBtn" type="button">⋯ 더보기</button><button id="atlasSelectCancelBtn" type="button">취소</button>
+        <div id="atlasSelectedMoreMenu" class="atlas-selected-more-menu hidden"><button id="atlasSelectedFavBtn" type="button">★ 즐겨찾기</button><button id="atlasSelectedCleanBtn" type="button">메타데이터 제거 저장</button><button id="atlasSelectedPdfBtn" type="button">PDF로 저장</button><button id="atlasSelectedAtlasPdfBtn" type="button">도감 PDF</button><button id="atlasSelectedAtlasImageBtn" type="button">도감 이미지</button><button id="atlasSelectedBackupBtn" type="button">백업 ZIP</button><button id="atlasSelectedDeleteBtn" class="danger" type="button">선택 삭제</button></div>
+      </div>
     </div>
   </dialog>
 
@@ -1170,7 +1184,7 @@ body.folder-lightbox-open{overflow:hidden}
         <div class="atlas-detail-section"><div class="atlas-detail-lab">CHARACTER PROMPT</div><div id="atlasImageDetailCharacters" class="atlas-detail-text"></div><button class="mini-btn atlas-detail-copy" data-atlas-copy="characters">복사</button></div>
         <div class="atlas-detail-section"><div class="atlas-detail-lab">UC</div><div id="atlasImageDetailUc" class="atlas-detail-text"></div><button class="mini-btn atlas-detail-copy" data-atlas-copy="uc">복사</button></div>
         <div class="atlas-detail-section"><div class="atlas-detail-lab">메모</div><textarea id="atlasImageDetailMemo" class="atlas-detail-memo" placeholder="이 샘플에 대한 메모"></textarea></div>
-        <div class="atlas-detail-actions"><button id="atlasImageFavBtn" class="btn">☆ 이미지 즐겨찾기</button><button id="atlasImageRepBtn" class="btn">대표 이미지 지정</button><button id="atlasImageToGalleryBtn" class="btn primary">Gallery에 추가</button><button id="atlasImageDeleteBtn" class="btn danger">삭제</button></div>
+        <div class="atlas-detail-actions"><button id="atlasImageFavBtn" class="btn">☆ 이미지 즐겨찾기</button><button id="atlasImageRepBtn" class="btn">대표 이미지 지정</button><button id="atlasImageFolderBtn" class="btn">＋ 폴더</button><button id="atlasImageCompareBtn" class="btn">＋ 비교</button><button id="atlasImageOriginalBtn" class="btn">↓ 원본 저장</button><button id="atlasImageCleanBtn" class="btn">↓ 메타 제거 저장</button><button id="atlasImageToGalleryBtn" class="btn primary">Gallery에 추가</button><button id="atlasImageDeleteBtn" class="btn danger">삭제</button></div>
       </div></div>
     </div>
   </dialog>
@@ -1209,6 +1223,8 @@ body.folder-lightbox-open{overflow:hidden}
     atlasArtistSearch: '',
     atlasSelectedIds: [],
     atlasSelectMode: false,
+    atlasGroupSelectMode: false,
+    atlasGroupSelectedKeys: [],
     atlasGalleryPickerIds: [],
     logic: 'AND',
     artistFilters: [],
@@ -1277,7 +1293,7 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function mapEls(){
-    ['compareCount','fileInput','atlasPhotoInput','atlasBulkInput','atlasView','atlasAddBtn','atlasFromGalleryBtn','atlasSearch','atlasSearchClear','atlasFilterTabs','atlasSortTabs','atlasSortDir','atlasMinPosts','atlasViewMode','atlasRepCount','atlasPageSize','atlasCount','atlasGrid','atlasLoadSentinel','atlasImportDialog','atlasImportClose','atlasPhotoBtn','atlasBulkBtn','atlasImportGalleryBtn','atlasGalleryPickerDialog','atlasGalleryPickerClose','atlasGalleryPickerSearch','atlasGalleryPickerAll','atlasGalleryPickerClear','atlasGalleryPickerGrid','atlasGalleryPickerCount','atlasGalleryPickerConfirm','atlasArtistDialog','atlasArtistClose','atlasArtistType','atlasArtistTitle','atlasArtistStats','atlasArtistFavorite','atlasArtistMemo','atlasArtistSearch','atlasArtistSearchClear','atlasArtistSelectBtn','atlasArtistGrid','atlasSelectionBar','atlasSelectedCount','atlasSelectAllBtn','atlasSelectedFavBtn','atlasSelectedGalleryBtn','atlasSelectedDeleteBtn','atlasSelectCancelBtn','atlasImageDetailDialog','atlasImageDetailClose','atlasImageDetailTitle','atlasImageDetailImg','atlasImageDetailMeta','atlasImageDetailArtists','atlasImageDetailPrompt','atlasImageDetailCharacters','atlasImageDetailUc','atlasImageDetailMemo','atlasImageFavBtn','atlasImageRepBtn','atlasImageToGalleryBtn','atlasImageDeleteBtn','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
+    ['compareCount','fileInput','atlasPhotoInput','atlasBulkInput','atlasView','atlasAddBtn','atlasFromGalleryBtn','atlasGroupSelectBtn','atlasSearch','atlasSearchClear','atlasFilterTabs','atlasSortTabs','atlasSortDir','atlasMinPosts','atlasViewMode','atlasRepCount','atlasPageSize','atlasCount','atlasGrid','atlasLoadSentinel','atlasGroupSelectionBar','atlasGroupSelectedCount','atlasGroupSelectAllBtn','atlasGroupRepPdfBtn','atlasGroupAllPdfBtn','atlasGroupCancelBtn','atlasImportDialog','atlasImportClose','atlasPhotoBtn','atlasBulkBtn','atlasImportGalleryBtn','atlasGalleryPickerDialog','atlasGalleryPickerClose','atlasGalleryPickerSearch','atlasGalleryPickerAll','atlasGalleryPickerClear','atlasGalleryPickerGrid','atlasGalleryPickerCount','atlasGalleryPickerConfirm','atlasArtistDialog','atlasArtistClose','atlasArtistType','atlasArtistTitle','atlasArtistStats','atlasArtistFavorite','atlasArtistMemo','atlasArtistSearch','atlasArtistSearchClear','atlasArtistSelectBtn','atlasArtistGrid','atlasSelectionBar','atlasSelectedCount','atlasSelectAllBtn','atlasSelectedFolderBtn','atlasSelectedCompareBtn','atlasSelectedOriginalBtn','atlasSelectedGalleryBtn','atlasSelectedMoreBtn','atlasSelectedMoreMenu','atlasSelectedFavBtn','atlasSelectedCleanBtn','atlasSelectedPdfBtn','atlasSelectedAtlasPdfBtn','atlasSelectedAtlasImageBtn','atlasSelectedBackupBtn','atlasSelectedDeleteBtn','atlasSelectCancelBtn','atlasImageDetailDialog','atlasImageDetailClose','atlasImageDetailTitle','atlasImageDetailImg','atlasImageDetailMeta','atlasImageDetailArtists','atlasImageDetailPrompt','atlasImageDetailCharacters','atlasImageDetailUc','atlasImageDetailMemo','atlasImageFavBtn','atlasImageRepBtn','atlasImageFolderBtn','atlasImageCompareBtn','atlasImageOriginalBtn','atlasImageCleanBtn','atlasImageToGalleryBtn','atlasImageDeleteBtn','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
   }
 
   function bind(){
@@ -1306,17 +1322,37 @@ body.folder-lightbox-open{overflow:hidden}
     els.atlasArtistClose.onclick=()=>els.atlasArtistDialog.close();
     els.atlasArtistFavorite.onclick=()=>toggleAtlasArtistFavorite(state.atlasCurrentGroupKey);
     els.atlasArtistMemo.oninput=()=>{clearTimeout(atlasArtistMemoTimer);atlasArtistMemoTimer=setTimeout(saveAtlasArtistMemo,300)};
+    els.atlasGroupSelectBtn.onclick=()=>{state.atlasGroupSelectMode=!state.atlasGroupSelectMode;if(!state.atlasGroupSelectMode)state.atlasGroupSelectedKeys=[];updateAtlasGroupSelectionUi()};
+    els.atlasGroupCancelBtn.onclick=()=>{state.atlasGroupSelectMode=false;state.atlasGroupSelectedKeys=[];updateAtlasGroupSelectionUi()};
+    els.atlasGroupSelectAllBtn.onclick=()=>{const keys=filteredAtlasGroups().map(g=>g.key),all=keys.length&&keys.every(k=>state.atlasGroupSelectedKeys.includes(k));state.atlasGroupSelectMode=true;state.atlasGroupSelectedKeys=all?state.atlasGroupSelectedKeys.filter(k=>!keys.includes(k)):[...new Set([...state.atlasGroupSelectedKeys,...keys])];updateAtlasGroupSelectionUi()};
+    els.atlasGroupRepPdfBtn.onclick=()=>exportArtistAtlasPdf(atlasGroupEntriesForSelection(true));
+    els.atlasGroupAllPdfBtn.onclick=()=>exportEntriesPdf(atlasGroupEntriesForSelection(false),getExportFields(),'atlas-groups-selected');
+
     els.atlasArtistSearch.oninput=e=>{state.atlasArtistSearch=e.target.value;renderAtlasArtistDialog();};
     els.atlasArtistSearchClear.onclick=()=>{els.atlasArtistSearch.value='';state.atlasArtistSearch='';renderAtlasArtistDialog();};
     els.atlasArtistSelectBtn.onclick=()=>{state.atlasSelectMode=!state.atlasSelectMode;if(!state.atlasSelectMode)state.atlasSelectedIds=[];syncAtlasSelectionDom();};
     els.atlasSelectCancelBtn.onclick=()=>{state.atlasSelectMode=false;state.atlasSelectedIds=[];syncAtlasSelectionDom();};
     els.atlasSelectAllBtn.onclick=()=>{const g=atlasGroups().find(x=>x.key===state.atlasCurrentGroupKey);if(!g)return;const ids=g.entries.filter(e=>atlasArtistEntryMatches(e)).map(e=>e.id);state.atlasSelectMode=true;state.atlasSelectedIds=[...new Set([...state.atlasSelectedIds,...ids])];syncAtlasSelectionDom();};
     els.atlasSelectedFavBtn.onclick=atlasBulkFavorite;
+    els.atlasSelectedFolderBtn.onclick=()=>openFolderPicker(atlasSelectedEntries().map(atlasFolderAttachment));
+    els.atlasSelectedCompareBtn.onclick=addAtlasSelectedToCompare;
+    els.atlasSelectedOriginalBtn.onclick=()=>saveAtlasEntries(atlasSelectedEntries(),false);
     els.atlasSelectedGalleryBtn.onclick=atlasBulkToGallery;
+    els.atlasSelectedMoreBtn.onclick=ev=>{ev.stopPropagation();els.atlasSelectedMoreMenu.classList.toggle('hidden')};
+    els.atlasSelectedCleanBtn.onclick=()=>saveAtlasEntries(atlasSelectedEntries(),true);
+    els.atlasSelectedPdfBtn.onclick=()=>exportEntriesPdf(atlasSelectedEntries(),getExportFields(),'atlas-selected');
+    els.atlasSelectedAtlasPdfBtn.onclick=()=>exportArtistAtlasPdf(atlasSelectedEntries());
+    els.atlasSelectedAtlasImageBtn.onclick=()=>exportArtistAtlasImage(atlasSelectedEntries());
+    els.atlasSelectedBackupBtn.onclick=()=>backupZip({scope:'atlas',atlasEntryIds:[...state.atlasSelectedIds]});
     els.atlasSelectedDeleteBtn.onclick=atlasBulkDelete;
+    document.addEventListener('click',ev=>{if(!els.atlasSelectedMoreMenu?.classList.contains('hidden')&&!els.atlasSelectedMoreMenu.contains(ev.target)&&ev.target!==els.atlasSelectedMoreBtn)els.atlasSelectedMoreMenu.classList.add('hidden')});
     els.atlasImageDetailClose.onclick=()=>els.atlasImageDetailDialog.close();
     els.atlasImageFavBtn.onclick=()=>toggleAtlasImageFavorite(state.atlasCurrentImageId);
     els.atlasImageRepBtn.onclick=()=>{const k=state.atlasCurrentGroupKey,id=state.atlasCurrentImageId;setAtlasRepresentative(k,state.atlasRepresentatives[k]===id?null:id);};
+    els.atlasImageFolderBtn.onclick=()=>{const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(e)openFolderPicker([atlasFolderAttachment(e)])};
+    els.atlasImageCompareBtn.onclick=()=>{const id=state.atlasCurrentImageId;if(id)toggleCompareRef(atlasCompareRef(id))};
+    els.atlasImageOriginalBtn.onclick=()=>{const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(e)saveAtlasEntries([e],false)};
+    els.atlasImageCleanBtn.onclick=()=>{const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(e)saveAtlasEntries([e],true)};
     els.atlasImageToGalleryBtn.onclick=()=>sendAtlasToGallery(state.atlasCurrentImageId);
     els.atlasImageDeleteBtn.onclick=()=>deleteAtlasImage(state.atlasCurrentImageId);
     els.atlasImageDetailMemo.oninput=()=>{clearTimeout(atlasMemoTimer);atlasMemoTimer=setTimeout(saveAtlasImageMemo,350)};
@@ -1497,6 +1533,7 @@ body.folder-lightbox-open{overflow:hidden}
     if(savedVisibleFields?.length) state.visibleFields=new Set(savedVisibleFields);
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
+    // v1.7.0: Artist Atlas selection parity — explicit/long-press selection, selected PDF/atlas export/original/clean/backup/folder/Compare, artist-group selection, mixed-source Compare, direct PDF download.
     // v1.6.5: Internal view header unification — Atlas left alignment + Atlas/Library/Bookmark/Compare/Add New title/subtitle scale unified.
     // v1.6.4: Artist Atlas UI compact/rounded alignment — Gallery/Bookmark visual scale and corner language.
     // v1.6.3: Seed 지원 확장 — Gallery/Atlas 상세 표시·복사, Gallery/Atlas 검색, List 표시 열/정렬.
@@ -1662,19 +1699,20 @@ body.folder-lightbox-open{overflow:hidden}
     els.atlasCount.textContent=atlasSearchTokens().length?`${all.length} artists · ${matchingImages} matching images`:`${all.length} artists · ${state.atlasEntries.length} images`;
     els.atlasGrid.classList.toggle('gallery-mode',state.atlasViewMode==='gallery');
     els.atlasGrid.innerHTML='';
-    if(!arr.length){els.atlasGrid.innerHTML=`<div class="atlas-empty" style="grid-column:1/-1"><strong>${state.atlasEntries.length?'No artists found':'Build your Artist Atlas'}</strong><span>${state.atlasEntries.length?'검색/필터 조건을 바꿔보세요.':'이미지를 추가하면 작가태그를 읽어 자동으로 분류합니다.'}</span></div>`;return;}
+    if(!arr.length){els.atlasGrid.innerHTML=`<div class="atlas-empty" style="grid-column:1/-1"><strong>${state.atlasEntries.length?'No artists found':'Build your Artist Atlas'}</strong><span>${state.atlasEntries.length?'검색/필터 조건을 바꿔보세요.':'이미지를 추가하면 작가태그를 읽어 자동으로 분류합니다.'}</span></div>`;updateAtlasGroupSelectionUi();return;}
     for(const g of arr){
-      const reps=atlasRepresentativeEntries(g), card=document.createElement('button');card.type='button';card.className=`atlas-card ${state.atlasViewMode==='gallery'?'gallery-card':''} ${g.entries.length>1?'is-stack':''}`;card.dataset.groupKey=g.key;
+      const reps=atlasRepresentativeEntries(g), card=document.createElement('button');card.type='button';card.className=`atlas-card ${state.atlasViewMode==='gallery'?'gallery-card':''} ${g.entries.length>1?'is-stack':''} ${state.atlasGroupSelectedKeys.includes(g.key)?'atlas-group-selected':''}`;card.dataset.groupKey=g.key;
       const imgs=reps.map(e=>{const u=URL.createObjectURL(e.imageBlob);atlasGridUrls.push(u);return `<img src="${u}" alt="">`}).join('');
       const fav=state.atlasArtistFavorites.includes(g.key);const latest=g.entries[0];
       const multi=g.type==='multiple'?`<div class="atlas-multi-tags">${esc(atlasWeightsSummary(latest,3))}</div>`:'';
       const artistMemo=(state.atlasArtistMemos[g.key]||'').trim();
       const memoPreview=artistMemo?`<div class="atlas-artist-memo-preview">${esc(artistMemo)}</div>`:'';
       const matchPreview=atlasSearchTokens().length?`<div class="atlas-match-preview">${esc(atlasSearchMatchPreview(g))}</div>`:'';
-      card.innerHTML=`<div class="atlas-card-visual"><div class="atlas-samples ${reps.length>1?'two':''}">${imgs}</div></div><div class="atlas-card-topline"><div class="atlas-card-name">${esc(g.label)}</div><span class="atlas-card-fav" data-atlas-card-fav>${fav?'★':'☆'}</span></div><div class="atlas-card-meta"><span class="atlas-badge">${g.type==='multiple'?'MULTI':g.type==='unsorted'?'UNSORTED':'ARTIST'}</span><span>≈ ${g.entries.length}</span></div>${multi}${memoPreview}${matchPreview}`;
-      card.onclick=e=>{if(e.target.closest('[data-atlas-card-fav]')){e.stopPropagation();toggleAtlasArtistFavorite(g.key);return}openAtlasArtist(g.key)};
+      card.innerHTML=`<input class="atlas-group-check" type="checkbox" ${state.atlasGroupSelectedKeys.includes(g.key)?'checked':''}><div class="atlas-card-visual"><div class="atlas-samples ${reps.length>1?'two':''}">${imgs}</div></div><div class="atlas-card-topline"><div class="atlas-card-name">${esc(g.label)}</div><span class="atlas-card-fav" data-atlas-card-fav>${fav?'★':'☆'}</span></div><div class="atlas-card-meta"><span class="atlas-badge">${g.type==='multiple'?'MULTI':g.type==='unsorted'?'UNSORTED':'ARTIST'}</span><span>≈ ${g.entries.length}</span></div>${multi}${memoPreview}${matchPreview}`;
+      card.querySelector('.atlas-group-check').onchange=ev=>{ev.stopPropagation();state.atlasGroupSelectMode=true;setAtlasGroupSelected(g.key,ev.target.checked)};card.onclick=e=>{if(e.target.closest('[data-atlas-card-fav]')){e.stopPropagation();toggleAtlasArtistFavorite(g.key);return}if(state.atlasGroupSelectMode){setAtlasGroupSelected(g.key,!state.atlasGroupSelectedKeys.includes(g.key));return}openAtlasArtist(g.key)};
       els.atlasGrid.appendChild(card);
     }
+    updateAtlasGroupSelectionUi();bindAtlasGroupSweep();
   }
   async function toggleAtlasArtistFavorite(key){
     if(!key)return;const has=state.atlasArtistFavorites.includes(key);state.atlasArtistFavorites=has?state.atlasArtistFavorites.filter(x=>x!==key):[...state.atlasArtistFavorites,key];await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();
@@ -1689,6 +1727,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.atlasArtistDialog.classList.toggle('atlas-selecting',state.atlasSelectMode);
     els.atlasSelectedCount.textContent=`${state.atlasSelectedIds.length}개 선택`;
     els.atlasArtistSelectBtn.textContent=state.atlasSelectMode?'선택 중':'선택';
+    if(!state.atlasSelectMode)els.atlasSelectedMoreMenu?.classList.add('hidden');
   }
   function syncAtlasSelectionDom(){
     els.atlasArtistGrid.querySelectorAll('.atlas-image-card[data-id]').forEach(card=>{
@@ -1736,6 +1775,25 @@ body.folder-lightbox-open{overflow:hidden}
       updateCount:syncAtlasSelectionDom,enabled:()=>true
     });
   }
+
+  function atlasSelectedEntries(){return state.atlasSelectedIds.map(id=>state.atlasEntries.find(e=>e.id===id)).filter(Boolean)}
+  function atlasFolderAttachment(e){return {type:'attachment',name:e.fileName||displayTitle(e)||'Atlas image',mime:e.imageBlob?.type||'image/png',blob:e.imageBlob,sourceLabel:'ATLAS',atlasEntryId:e.id,atlasMeta:{title:e.title||'',artistsText:e.artistsText||'',artists:e.artists||[],prompt:e.prompt||'',characterPrompts:e.characterPrompts||[],uc:e.uc||'',memo:e.memo||'',seed:e.seed,model:e.model||''}}}
+  async function saveAtlasEntries(entries,clean=false){
+    entries=(entries||[]).filter(e=>e?.imageBlob);if(!entries.length){toast('선택한 이미지가 없습니다.');return}
+    try{
+      if(entries.length===1){const e=entries[0];let blob=e.imageBlob,ext=extOf(e.fileName);if(clean){const isPng=(blob.type||'').toLowerCase()==='image/png'||String(e.fileName||'').toLowerCase().endsWith('.png');if(isPng){blob=await stripPngMetadata(blob);ext='png'}else{blob=await reencodeImageWithoutMetadata(blob);ext=(blob.type||'').includes('png')?'png':'jpg'}}const base=(e.fileName||e.title||'atlas-image').replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'_')||'atlas-image';downloadBlob(blob,`${base}${clean?'_clean':''}.${ext}`)}
+      else{if(!window.JSZip){toast('ZIP 모듈을 불러오지 못했습니다.');return}const zip=new JSZip(),used=new Set();for(let i=0;i<entries.length;i++){const e=entries[i];let blob=e.imageBlob,ext=extOf(e.fileName);if(clean){const isPng=(blob.type||'').toLowerCase()==='image/png'||String(e.fileName||'').toLowerCase().endsWith('.png');if(isPng){blob=await stripPngMetadata(blob);ext='png'}else{blob=await reencodeImageWithoutMetadata(blob);ext=(blob.type||'').includes('png')?'png':'jpg'}}let base=(e.fileName||e.title||`atlas_${i+1}`).replace(/\.[^.]+$/,'').replace(/[\\/:*?"<>|]+/g,'_')||`atlas_${i+1}`,name=`${base}${clean?'_clean':''}.${ext}`,n=2;while(used.has(name))name=`${base}_${n++}${clean?'_clean':''}.${ext}`;used.add(name);zip.file(name,blob)}downloadBlob(await zip.generateAsync({type:'blob'}),`NAI_ARCHIVE_ATLAS_${clean?'metadata_removed':'original'}_${entries.length}_${dateStamp()}.zip`)}
+      toast(clean?'메타데이터 제거본을 저장했습니다.':'원본을 저장했습니다.')
+    }catch(err){console.error(err);toast('이미지 저장에 실패했습니다.')}
+  }
+  function atlasCompareRef(id){return `atlas:${id}`}
+  function resolveCompareRef(ref){return String(ref).startsWith('atlas:')?state.atlasEntries.find(e=>e.id===String(ref).slice(6))||null:state.entries.find(e=>e.id===ref)||null}
+  function toggleCompareRef(ref,force){const has=state.compareIds.includes(ref),next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(ref);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==ref);render()}
+  async function addAtlasSelectedToCompare(){const entries=atlasSelectedEntries();if(!entries.length)return;let added=0;for(const e of entries){const ref=atlasCompareRef(e.id);if(!state.compareIds.includes(ref)){state.compareIds.push(ref);added++}}render();toast(added?`${added}개 이미지를 Compare에 추가했습니다.`:'선택한 이미지는 이미 Compare에 있습니다.')}
+  function atlasGroupEntriesForSelection(representativesOnly=false){const groups=atlasGroups().filter(g=>state.atlasGroupSelectedKeys.includes(g.key));return representativesOnly?groups.map(g=>atlasRepresentativeEntries(g)[0]).filter(Boolean):groups.flatMap(g=>g.entries)}
+  function updateAtlasGroupSelectionUi(){const on=state.atlasGroupSelectMode;els.atlasView.classList.toggle('atlas-group-selecting',on);els.atlasGroupSelectionBar.classList.toggle('hidden',!on);els.atlasGroupSelectBtn.textContent=on?'선택 중':'선택';els.atlasGroupSelectedCount.textContent=`${state.atlasGroupSelectedKeys.length}개 작가 선택`;els.atlasGrid.querySelectorAll('.atlas-card[data-group-key]').forEach(card=>{const selected=state.atlasGroupSelectedKeys.includes(card.dataset.groupKey);card.classList.toggle('atlas-group-selected',selected);const cb=card.querySelector('.atlas-group-check');if(cb)cb.checked=selected})}
+  function setAtlasGroupSelected(key,on){if(on&&!state.atlasGroupSelectedKeys.includes(key))state.atlasGroupSelectedKeys.push(key);if(!on)state.atlasGroupSelectedKeys=state.atlasGroupSelectedKeys.filter(x=>x!==key);updateAtlasGroupSelectionUi()}
+  function bindAtlasGroupSweep(){if(!els.atlasGrid)return;bindSweepSelectionGrid({grid:els.atlasGrid,cardSelector:'.atlas-card',checkboxSelector:'.atlas-group-check',getKey:card=>card.dataset.groupKey,isSelected:key=>state.atlasGroupSelectedKeys.includes(key),setSelected:(key,on)=>{state.atlasGroupSelectMode=true;if(on&&!state.atlasGroupSelectedKeys.includes(key))state.atlasGroupSelectedKeys.push(key);if(!on)state.atlasGroupSelectedKeys=state.atlasGroupSelectedKeys.filter(x=>x!==key)},updateCount:updateAtlasGroupSelectionUi,enabled:()=>true})}
   async function atlasBulkFavorite(){
     const ids=[...state.atlasSelectedIds];if(!ids.length)return;
     for(const id of ids){const e=state.atlasEntries.find(x=>x.id===id);if(e&&!e.favorite){e.favorite=true;e.updatedAt=Date.now();await txPut(STORE_ATLAS,e)}}
@@ -1748,12 +1806,12 @@ body.folder-lightbox-open{overflow:hidden}
   }
   async function atlasBulkDelete(){
     const ids=[...state.atlasSelectedIds];if(!ids.length||!confirm(`선택한 ${ids.length}개 이미지를 Artist Atlas에서 삭제할까요? Gallery 이미지는 삭제되지 않습니다.`))return;
-    for(const id of ids){await txDel(STORE_ATLAS,id);state.atlasEntries=state.atlasEntries.filter(x=>x.id!==id)}
+    for(const id of ids){await txDel(STORE_ATLAS,id);state.atlasEntries=state.atlasEntries.filter(x=>x.id!==id);state.compareIds=state.compareIds.filter(ref=>ref!==atlasCompareRef(id))}
     for(const [k,v] of Object.entries(state.atlasRepresentatives))if(ids.includes(v))delete state.atlasRepresentatives[k];
     await saveMeta('atlasRepresentatives',state.atlasRepresentatives);state.atlasSelectedIds=[];state.atlasSelectMode=false;renderAtlas();renderAtlasArtistDialog();toast(`${ids.length}개를 삭제했습니다.`);
   }
   function openAtlasImageDetail(id){
-    const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;state.atlasCurrentImageId=id;const g=atlasGroupInfo(e);state.atlasCurrentGroupKey=g.key;if(atlasDetailUrl)URL.revokeObjectURL(atlasDetailUrl);atlasDetailUrl=URL.createObjectURL(e.imageBlob);els.atlasImageDetailImg.src=atlasDetailUrl;els.atlasImageDetailTitle.textContent=g.label;els.atlasImageDetailArtists.textContent=e.artistsText||'';els.atlasImageDetailPrompt.textContent=e.prompt||'';els.atlasImageDetailCharacters.textContent=(e.characterPrompts||[]).join('\n\n');els.atlasImageDetailUc.textContent=e.uc||'';els.atlasImageDetailMemo.value=e.memo||'';els.atlasImageDetailMeta.innerHTML=detailMetaHtml(e);bindSeedCopy(els.atlasImageDetailMeta);els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;els.atlasImageRepBtn.textContent=state.atlasRepresentatives[g.key]===id?'대표 이미지 해제':'대표 이미지 지정';els.atlasImageDetailDialog.showModal();
+    const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;state.atlasCurrentImageId=id;const g=atlasGroupInfo(e);state.atlasCurrentGroupKey=g.key;if(atlasDetailUrl)URL.revokeObjectURL(atlasDetailUrl);atlasDetailUrl=URL.createObjectURL(e.imageBlob);els.atlasImageDetailImg.src=atlasDetailUrl;els.atlasImageDetailTitle.textContent=g.label;els.atlasImageDetailArtists.textContent=e.artistsText||'';els.atlasImageDetailPrompt.textContent=e.prompt||'';els.atlasImageDetailCharacters.textContent=(e.characterPrompts||[]).join('\n\n');els.atlasImageDetailUc.textContent=e.uc||'';els.atlasImageDetailMemo.value=e.memo||'';els.atlasImageDetailMeta.innerHTML=detailMetaHtml(e);bindSeedCopy(els.atlasImageDetailMeta);els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;els.atlasImageRepBtn.textContent=state.atlasRepresentatives[g.key]===id?'대표 이미지 해제':'대표 이미지 지정';els.atlasImageCompareBtn.textContent=state.compareIds.includes(atlasCompareRef(id))?'− 비교':'＋ 비교';els.atlasImageDetailDialog.showModal();
   }
   async function saveAtlasArtistMemo(){
     const key=state.atlasCurrentGroupKey;if(!key)return;
@@ -1766,7 +1824,7 @@ body.folder-lightbox-open{overflow:hidden}
   async function toggleAtlasImageFavorite(id){const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;e.favorite=!e.favorite;e.updatedAt=Date.now();await txPut(STORE_ATLAS,e);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id)els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;}
   async function setAtlasRepresentative(key,id){if(!key)return;if(id)state.atlasRepresentatives[key]=id;else delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open)els.atlasImageRepBtn.textContent=id?'대표 이미지 해제':'대표 이미지 지정';}
   async function deleteAtlasImage(id){
-    const e=state.atlasEntries.find(x=>x.id===id);if(!e||!confirm('Artist Atlas에서 이 이미지를 삭제할까요? Gallery 이미지는 삭제되지 않습니다.'))return;const key=atlasGroupInfo(e).key;await txDel(STORE_ATLAS,id);state.atlasEntries=state.atlasEntries.filter(x=>x.id!==id);if(state.atlasRepresentatives[key]===id){delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives)}if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id)els.atlasImageDetailDialog.close();renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();toast('Atlas에서 삭제했습니다.');
+    const e=state.atlasEntries.find(x=>x.id===id);if(!e||!confirm('Artist Atlas에서 이 이미지를 삭제할까요? Gallery 이미지는 삭제되지 않습니다.'))return;const key=atlasGroupInfo(e).key;await txDel(STORE_ATLAS,id);state.atlasEntries=state.atlasEntries.filter(x=>x.id!==id);state.compareIds=state.compareIds.filter(ref=>ref!==atlasCompareRef(id));if(state.atlasRepresentatives[key]===id){delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives)}if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id)els.atlasImageDetailDialog.close();renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();toast('Atlas에서 삭제했습니다.');
   }
   function copyAtlasField(field){const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(!e)return;const txt=field==='artists'?e.artistsText||'':field==='prompt'?e.prompt||'':field==='characters'?(e.characterPrompts||[]).join('\n\n'):e.uc||'';navigator.clipboard.writeText(txt).then(()=>toast('복사했습니다.')).catch(()=>toast('복사하지 못했습니다.'));}
   async function sendAtlasToGallery(id,silent=false){
@@ -2816,7 +2874,8 @@ body.folder-lightbox-open{overflow:hidden}
             if(e){content=`<img class="notebook-image" data-entry-id="${e.id}" alt="">${compactEntryDetails(e,it.detailFields||[])}`;source='GALLERY';}
             else content='<span class="muted-note">삭제된 Gallery 이미지</span>';
           }else if(it.type==='attachment'&&it.blob){
-            content=`<img class="notebook-image" alt="">`;source='IMAGE';
+            const ae=it.atlasEntryId?state.atlasEntries.find(x=>x.id===it.atlasEntryId):null,meta=ae||it.atlasMeta||null;
+            content=`<img class="notebook-image" ${it.atlasEntryId?`data-atlas-entry-id="${escAttr(it.atlasEntryId)}"`:''} alt="">${meta?compactEntryDetails(meta,['artists','memo']):''}`;source=it.sourceLabel||'IMAGE';
           }else{
             content=`<div class="notebook-text clipboard-text" contenteditable="true" data-note-index="${i}" data-placeholder="텍스트 입력">${esc(it.text||'')}</div>`;
             source=it.sourceLabel||folderTypeLabel(it.type);
@@ -2874,7 +2933,7 @@ body.folder-lightbox-open{overflow:hidden}
 
     els.folderItems.querySelectorAll('.notebook-image').forEach(img=>{
       img.classList.add('folder-zoomable-image');
-      img.onclick=e=>{e.stopPropagation();openFolderImageLightbox(img.src,img.dataset.entryId||null);};
+      img.onclick=e=>{e.stopPropagation();openFolderImageLightbox(img.src,img.dataset.entryId||null,img.dataset.atlasEntryId||null);};
     });
 
     els.folderItems.querySelectorAll('.folder-cols').forEach(b=>b.onclick=async()=>{
@@ -2888,10 +2947,10 @@ body.folder-lightbox-open{overflow:hidden}
     });
   }
 
-  function openFolderImageLightbox(src,entryId=null){
+  function openFolderImageLightbox(src,entryId=null,atlasEntryId=null){
     if(!src)return;
     els.folderImageLightboxImg.src=src;
-    const e=entryId?state.entries.find(x=>x.id===entryId):null;
+    const e=entryId?state.entries.find(x=>x.id===entryId):atlasEntryId?state.atlasEntries.find(x=>x.id===atlasEntryId):null;
     if(e){
       const blocks=[];
       if(String(e.artistsText||'').trim())blocks.push(`<div class="artist-row"><b>작가태그</b><span>${esc(e.artistsText)}</span></div>`);
@@ -3209,7 +3268,7 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function openComparePicker(){
-    state.comparePickerIds=[...state.compareIds];
+    state.comparePickerIds=state.compareIds.filter(ref=>!String(ref).startsWith('atlas:'));
     els.comparePickerSearch.value='';
     renderComparePicker();
     els.comparePickerDialog.showModal();
@@ -3455,7 +3514,8 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function confirmComparePicker(){
-    state.compareIds=[...new Set(state.comparePickerIds)];
+    const atlasRefs=state.compareIds.filter(ref=>String(ref).startsWith('atlas:'));
+    state.compareIds=[...new Set([...atlasRefs,...state.comparePickerIds])];
     els.comparePickerDialog.close();
     render();
     toast(`${state.compareIds.length}개 이미지를 Compare에 불러왔습니다.`);
@@ -3470,8 +3530,8 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function renderCompare(){
-    const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean); els.compareCount.textContent=entries.length; els.compareHint.classList.toggle('hidden',entries.length>0); revokeObjectUrls(els.compareGrid);
-    els.compareGrid.innerHTML=entries.map(e=>{const url=URL.createObjectURL(e.imageBlob);return `<article class="compare-card" data-url="${url}" data-id="${e.id}"><button class="compare-remove" data-id="${e.id}" title="Compare에서 제거">×</button><img src="${url}"><div class="pad"><strong>${esc(displayTitle(e))}</strong><div class="card-sub">${esc(artistSummary(e))}</div></div></article>`}).join('');els.compareGrid.querySelectorAll('.compare-remove').forEach(b=>b.onclick=()=>toggleCompare(b.dataset.id,false));
+    const items=state.compareIds.map(ref=>({ref,e:resolveCompareRef(ref)})).filter(x=>x.e),entries=items.map(x=>x.e); els.compareCount.textContent=entries.length; els.compareHint.classList.toggle('hidden',entries.length>0); revokeObjectUrls(els.compareGrid);
+    els.compareGrid.innerHTML=items.map(({ref,e})=>{const url=URL.createObjectURL(e.imageBlob),src=String(ref).startsWith('atlas:')?'ATLAS':'GALLERY';return `<article class="compare-card" data-url="${url}" data-ref="${escAttr(ref)}"><button class="compare-remove" data-ref="${escAttr(ref)}" title="Compare에서 제거">×</button><img src="${url}"><div class="pad"><strong>${esc(displayTitle(e))}</strong><div class="card-sub">${esc(artistSummary(e))}</div><div class="card-sub" style="margin-top:3px;font-size:8px;letter-spacing:.08em">${src}</div></div></article>`}).join('');els.compareGrid.querySelectorAll('.compare-remove').forEach(b=>b.onclick=()=>toggleCompareRef(b.dataset.ref,false));
     if(entries.length<2){els.compareDiff.innerHTML='';return;}
     const names=[...new Set(entries.flatMap(e=>(e.artists||[]).map(a=>a.name)))].sort();
     const rows=names.map(name=>{const vals=entries.map(e=>{const a=(e.artists||[]).find(x=>norm(x.name)===norm(name));return a?a.weight:'—'});const changed=new Set(vals.map(String)).size>1;return `<tr><th>${esc(name)}</th>${vals.map(v=>`<td class="${changed?'diff-changed':''}">${esc(String(v))}</td>`).join('')}</tr>`}).join('');
@@ -3512,6 +3572,9 @@ body.folder-lightbox-open{overflow:hidden}
     }else if(scope==='gallery'){
       const ids=new Set(options.entryIds||[]);
       entries=state.entries.filter(e=>ids.has(e.id));
+    }else if(scope==='atlas'){
+      const ids=new Set(options.atlasEntryIds||[]);
+      atlasEntries=state.atlasEntries.filter(e=>ids.has(e.id));
     }else if(scope==='folders'){
       const fids=new Set(options.folderIds||[]);
       folders=state.folders.filter(f=>fids.has(f.id));
@@ -3536,7 +3599,7 @@ body.folder-lightbox-open{overflow:hidden}
       if(it.type==='imageGroup')for(const img of (it.images||[]))if(img.blob)zip.file(`folder-images/${f.id}/${it.id}/${img.id}.${mimeExt(img.mime||img.blob.type)}`,img.blob);
     }
     const blob=await zip.generateAsync({type:'blob'});
-    const suffix=scope==='all'?'full':scope==='gallery'?'gallery-selected':'folders-selected';
+    const suffix=scope==='all'?'full':scope==='gallery'?'gallery-selected':scope==='atlas'?'atlas-selected':'folders-selected';
     downloadBlob(blob,`nai-archive-backup-${suffix}-${dateStamp()}.zip`);
     toast('백업 ZIP을 만들었습니다.');
   }
@@ -3639,52 +3702,22 @@ body.folder-lightbox-open{overflow:hidden}
     els.exportDialog.close();
   }
   function htmlText(s){return esc(String(s||'')).replace(/\n/g,'<br>');}
+  function canvasWrappedLines(ctx,text,maxW){const out=[];for(const para of String(text||'').replace(/\r/g,'').split('\n')){if(!para){out.push('');continue}const words=para.split(/\s+/);let line='';for(const w of words){const trial=line?line+' '+w:w;if(ctx.measureText(trial).width<=maxW){line=trial;continue}if(line)out.push(line);if(ctx.measureText(w).width<=maxW){line=w;continue}let chunk='';for(const ch of w){const t=chunk+ch;if(ctx.measureText(t).width>maxW&&chunk){out.push(chunk);chunk=ch}else chunk=t}line=chunk}if(line)out.push(line)}return out}
+  function drawPdfSection(ctx,label,value,x,y,w,maxY){if(!String(value||'').trim())return y;ctx.fillStyle='#666';ctx.font='700 18px Arial, sans-serif';ctx.fillText(label,x,y);y+=27;ctx.fillStyle='#111';ctx.font='20px Arial, sans-serif';for(const line of canvasWrappedLines(ctx,value,w)){if(y+28>maxY){ctx.fillStyle='#888';ctx.fillText('…',x,y);return maxY}ctx.fillText(line,x,y);y+=28}return y+18}
   async function exportEntriesPdf(arr,fields={artists:true,prompt:true,characters:true,uc:true,memo:true},label='gallery'){
-    if(!arr?.length){toast('내보낼 항목이 없습니다.');return;}
-    const win=window.open('','_blank');
-    if(!win){toast('팝업을 허용한 뒤 다시 시도해주세요.');return;}
-    win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>NAI Archive PDF</title><style>body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;color:#111} .page{box-sizing:border-box;min-height:277mm;padding:14mm;page-break-after:always}.page:last-child{page-break-after:auto}h1{font-size:20px;margin:0 0 10px}.top{display:grid;grid-template-columns:72mm 1fr;gap:10mm}.top img{width:72mm;max-height:92mm;object-fit:contain;background:#f4f4f4}.sec{margin:9px 0}.lab{font-size:9px;font-weight:800;letter-spacing:.08em;margin-bottom:3px}.txt{font-size:9.5px;line-height:1.5;white-space:normal;word-break:break-word}.meta{font-size:9px;color:#666;margin-bottom:7px}@media print{@page{size:A4;margin:0}}</style></head><body>');
-    for(let i=0;i<arr.length;i++){
-      const e=arr[i], data=await blobToDataUrl(e.imageBlob);
-      win.document.write(`<section class="page"><h1>${esc(displayTitle(e))}</h1><div class="meta">${esc(e.fileName||'')}</div><div class="top"><img src="${data}"><div>`);
-      if(fields.artists)win.document.write(`<div class="sec"><div class="lab">작가태그</div><div class="txt">${htmlText(e.artistsText||'')}</div></div>`);
-      if(fields.memo)win.document.write(`<div class="sec"><div class="lab">MEMO</div><div class="txt">${htmlText(e.memo||'')}</div></div>`);
-      win.document.write('</div></div>');
-      if(fields.prompt)win.document.write(`<div class="sec"><div class="lab">PROMPT</div><div class="txt">${htmlText(e.prompt||'')}</div></div>`);
-      if(fields.characters)win.document.write(`<div class="sec"><div class="lab">CHARACTER PROMPT</div><div class="txt">${htmlText((e.characterPrompts||[]).join('\n\n'))}</div></div>`);
-      if(fields.uc)win.document.write(`<div class="sec"><div class="lab">UC</div><div class="txt">${htmlText(e.uc||'')}</div></div>`);
-      win.document.write('</section>');
-    }
-    win.document.write('</body></html>');win.document.close();
-    setTimeout(()=>{win.focus();win.print();},500);
-    toast('인쇄 창에서 PDF로 저장해주세요.');
+    if(!arr?.length){toast('내보낼 항목이 없습니다.');return}
+    try{const pages=[];for(const e of arr){const canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.textBaseline='top';ctx.fillStyle='#111';ctx.font='700 42px Arial, sans-serif';ctx.fillText(displayTitle(e),70,60);ctx.fillStyle='#777';ctx.font='18px Arial, sans-serif';ctx.fillText([e.fileName||'',e.seed!=null?`Seed ${e.seed}`:''].filter(Boolean).join(' · '),70,116);const img=await loadBlobImage(e.imageBlob),bx=70,by=165,bw=480,bh=600,s=Math.min(bw/img.width,bh/img.height),iw=img.width*s,ih=img.height*s;ctx.fillStyle='#f4f4f4';ctx.fillRect(bx,by,bw,bh);ctx.drawImage(img,bx+(bw-iw)/2,by+(bh-ih)/2,iw,ih);let y=175,x=595,w=575,maxY=1650;if(fields.artists)y=drawPdfSection(ctx,'ARTIST TAGS',e.artistsText||'',x,y,w,maxY);if(fields.memo)y=drawPdfSection(ctx,'MEMO',e.memo||'',x,y,w,maxY);y=Math.max(y,800);x=70;w=1100;if(fields.prompt)y=drawPdfSection(ctx,'PROMPT',e.prompt||'',x,y,w,maxY);if(fields.characters)y=drawPdfSection(ctx,'CHARACTER PROMPT',(e.characterPrompts||[]).join('\n\n'),x,y,w,maxY);if(fields.uc)y=drawPdfSection(ctx,'UC',e.uc||'',x,y,w,maxY);pages.push({bytes:await canvasToJpegBytes(canvas,.9),width:canvas.width,height:canvas.height})}downloadBlob(makePdfFromJpegs(pages),`nai-archive-${String(label||'export').replace(/[^a-z0-9_-]+/gi,'-')}-${dateStamp()}.pdf`);toast(`${arr.length}개 이미지를 PDF로 저장했습니다.`)}catch(err){console.error(err);toast('PDF 생성에 실패했습니다.')}
   }
   function artistTagLine(e){
     if(e.artistsText) return e.artistsText;
     return (e.artists||[]).map(a=>`${a.weight??1}::artist:${a.name}::`).join(', ');
   }
-  async function exportArtistAtlasPdf(arr){
-    if(!arr?.length){toast('도감으로 내보낼 항목이 없습니다.');return;}
-    const win=window.open('','_blank');
-    if(!win){toast('팝업을 허용한 뒤 다시 시도해주세요.');return;}
-    win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>NAI Archive · Artist Atlas</title><style>body{font-family:Arial,"Noto Sans KR",sans-serif;margin:0;color:#111}.wrap{padding:10mm;display:grid;grid-template-columns:repeat(2,1fr);gap:9mm 6mm}.card{break-inside:avoid;page-break-inside:avoid}.card img{width:100%;height:108mm;object-fit:contain;background:#f5f5f5;display:block}.tag{font-size:8.5pt;line-height:1.5;word-break:break-word;padding-top:3mm}@media print{@page{size:A4;margin:0}.wrap{padding:10mm}}</style></head><body><main class="wrap">');
-    for(const e of arr){const data=await blobToDataUrl(e.imageBlob);win.document.write(`<article class="card"><img src="${data}"><div class="tag">${htmlText(artistTagLine(e))}</div></article>`)}
-    win.document.write('</main></body></html>');win.document.close();setTimeout(()=>{win.focus();win.print()},650);toast('작가태그 도감 PDF 인쇄 창을 열었습니다.');
-  }
-  async function exportArtistAtlasImage(arr){
-    if(!arr?.length){toast('도감으로 내보낼 항목이 없습니다.');return;}
-    const cols=2,cardW=760,imageH=900,tagH=180,gap=36,pad=48,rows=Math.ceil(arr.length/cols),cardH=imageH+tagH;
-    const canvas=document.createElement('canvas');canvas.width=pad*2+cols*cardW+(cols-1)*gap;canvas.height=pad*2+rows*cardH+Math.max(0,rows-1)*gap;
-    const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.textBaseline='top';
-    for(let i=0;i<arr.length;i++){
-      const e=arr[i],x=pad+(i%cols)*(cardW+gap),y=pad+Math.floor(i/cols)*(cardH+gap);ctx.fillStyle='#f5f5f5';ctx.fillRect(x,y,cardW,imageH);
-      const img=await loadBlobImage(e.imageBlob),s=Math.min(cardW/img.width,imageH/img.height),w=img.width*s,h=img.height*s;ctx.drawImage(img,x+(cardW-w)/2,y+(imageH-h)/2,w,h);
-      ctx.fillStyle='#111';ctx.font='22px Arial';drawCanvasText(ctx,artistTagLine(e),x,y+imageH+18,cardW,31);
-    }
-    canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-artist-atlas-${dateStamp()}.png`),'image/png');toast('작가태그 도감 이미지를 만들었습니다.');
-  }
+  async function buildArtistAtlasCanvas(arr){const cols=2,cardW=760,imageH=900,tagH=190,gap=36,pad=48,rows=Math.ceil(arr.length/cols),cardH=imageH+tagH,canvas=document.createElement('canvas');canvas.width=pad*2+cols*cardW+(cols-1)*gap;canvas.height=pad*2+rows*cardH+Math.max(0,rows-1)*gap;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.textBaseline='top';for(let i=0;i<arr.length;i++){const e=arr[i],x=pad+(i%cols)*(cardW+gap),y=pad+Math.floor(i/cols)*(cardH+gap);ctx.fillStyle='#f5f5f5';ctx.fillRect(x,y,cardW,imageH);const img=await loadBlobImage(e.imageBlob),s=Math.min(cardW/img.width,imageH/img.height),w=img.width*s,h=img.height*s;ctx.drawImage(img,x+(cardW-w)/2,y+(imageH-h)/2,w,h);ctx.fillStyle='#111';ctx.font='22px Arial, sans-serif';drawCanvasText(ctx,artistTagLine(e),x,y+imageH+18,cardW,31)}return canvas}
+  async function canvasToPdfDownload(canvas,filename){const ratio=841.89/595.28,sliceH=Math.max(1,Math.floor(canvas.width*ratio)),pages=[];for(let sy=0;sy<canvas.height;sy+=sliceH){const h=Math.min(sliceH,canvas.height-sy),page=document.createElement('canvas');page.width=canvas.width;page.height=sliceH;const pctx=page.getContext('2d');pctx.fillStyle='#fff';pctx.fillRect(0,0,page.width,page.height);pctx.drawImage(canvas,0,sy,canvas.width,h,0,0,canvas.width,h);pages.push({bytes:await canvasToJpegBytes(page,.9),width:page.width,height:page.height})}downloadBlob(makePdfFromJpegs(pages),filename)}
+  async function exportArtistAtlasPdf(arr){if(!arr?.length){toast('도감으로 내보낼 항목이 없습니다.');return}try{const canvas=await buildArtistAtlasCanvas(arr);await canvasToPdfDownload(canvas,`nai-archive-artist-atlas-${dateStamp()}.pdf`);toast('작가태그 도감 PDF를 저장했습니다.')}catch(err){console.error(err);toast('도감 PDF 생성에 실패했습니다.')}}
+  async function exportArtistAtlasImage(arr){if(!arr?.length){toast('도감으로 내보낼 항목이 없습니다.');return}try{const canvas=await buildArtistAtlasCanvas(arr);canvas.toBlob(blob=>downloadBlob(blob,`nai-archive-artist-atlas-${dateStamp()}.png`),'image/png');toast('작가태그 도감 이미지를 만들었습니다.')}catch(err){console.error(err);toast('도감 이미지 생성에 실패했습니다.')}}
   async function buildCompareCanvas(){
-    const entries=state.compareIds.map(id=>state.entries.find(e=>e.id===id)).filter(Boolean);
+    const entries=state.compareIds.map(resolveCompareRef).filter(Boolean);
     if(entries.length<2) throw new Error('COMPARE_NEEDS_TWO');
     const cols=Math.min(entries.length,2), cardW=700, cardH=900, gap=30, pad=40;
     const rows=Math.ceil(entries.length/cols), tableY=pad+rows*(cardH+gap);
