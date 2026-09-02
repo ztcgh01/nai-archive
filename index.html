@@ -87,6 +87,79 @@ body:not(.is-home) .menu-btn{display:grid}
 
 @media(max-width:760px){.atlas-shell{padding-top:6px}.atlas-head{align-items:flex-start;flex-direction:column;margin-bottom:16px}.atlas-head h1{font-size:48px}.atlas-head-actions{width:100%;justify-content:flex-start}.atlas-tools{padding:10px 0}.atlas-tool-row{gap:6px}.atlas-seg button{padding:0 9px}.atlas-count{width:100%;margin-left:0}.atlas-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 11px}.atlas-grid.gallery-mode{grid-template-columns:1fr;gap:24px}.atlas-card-name{font-size:12px}.atlas-artist-dialog .modal-shell,.atlas-image-detail-dialog .modal-shell{width:100vw;height:100dvh;max-height:none;border-radius:0}.atlas-artist-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}.atlas-image-detail-top{grid-template-columns:1fr;padding:10px}.atlas-image-detail-media img{max-height:none}.atlas-gallery-picker-grid{grid-template-columns:repeat(3,1fr)}.atlas-artist-head{padding-top:max(12px,env(safe-area-inset-top))}.atlas-tool-label.hide-mobile{display:none}}
 
+
+
+/* ===== v1.6.4 · Artist Atlas visual alignment ===== */
+/* Keep Atlas in the same compact, rounded visual language as Gallery/Bookmark. */
+.atlas-shell{max-width:1180px;padding-top:8px}
+.atlas-head{align-items:flex-end;gap:14px;margin:4px 0 18px;padding-bottom:0}
+.atlas-head h1{font-size:36px;line-height:1;margin:2px 0 7px;letter-spacing:-.04em}
+.atlas-head p{font-size:11px;line-height:1.5;color:#777}
+.atlas-head-actions{gap:6px}
+.atlas-head-actions .btn{border-radius:7px;padding:8px 10px;font-size:10px;min-height:34px}
+
+.atlas-tools{border:0;padding:0;margin-bottom:16px;gap:8px}
+.atlas-search input{height:38px;border:1px solid var(--line);border-radius:7px;padding:0 36px 0 11px;font-size:10.5px;outline:0}
+.atlas-search input:focus{border-color:#111}
+.atlas-search button{right:2px;top:2px;width:34px;height:34px;font-size:16px;border-radius:6px}
+.atlas-tool-row{gap:6px}
+.atlas-tool-label{font-size:8px;letter-spacing:.12em;margin-right:1px}
+.atlas-seg{border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.atlas-seg button{height:30px;padding:0 9px;font-size:9px;border-right:1px solid var(--hair)}
+.atlas-select{height:30px;border:1px solid var(--line);border-radius:7px;padding:0 25px 0 9px;font-size:9px}
+.atlas-count{font-size:9px}
+
+.atlas-card-visual{border-radius:8px;margin:0 5px 9px 0}
+.atlas-card.is-stack .atlas-card-visual:before,.atlas-card.is-stack .atlas-card-visual:after{border-radius:8px}
+.atlas-samples{border-radius:8px;border-color:var(--line)}
+.atlas-card-name{font-size:11px}
+.atlas-card-fav{font-size:16px}
+.atlas-card-meta{margin-top:4px;font-size:8px}
+.atlas-badge{height:18px;padding:0 6px;font-size:8px}
+.atlas-multi-tags,.atlas-artist-memo-preview{font-size:8.5px}
+.atlas-match-preview{border-radius:6px;font-size:8.5px}
+.atlas-empty{padding:64px 18px;border:1px dashed var(--line);border-radius:8px}
+.atlas-empty strong{font-size:24px;margin-bottom:6px}
+.atlas-empty span{font-size:10px;line-height:1.5}
+
+.atlas-artist-head{padding:11px 12px 9px}
+.atlas-artist-head .atlas-artist-title{font-size:28px}
+.atlas-artist-stats{font-size:9px}
+.atlas-artist-memo-box{padding:8px 12px 10px;border-radius:0}
+.atlas-artist-memo{min-height:58px;border-radius:7px;font-size:10px;padding:8px 9px}
+.atlas-artist-tools{padding:7px 12px;gap:5px}
+.atlas-artist-tools input{height:31px;border-radius:7px;font-size:9.5px;padding:0 9px}
+.atlas-artist-tools button{height:31px;border-radius:7px;font-size:8.5px;padding:0 8px}
+.atlas-image-thumb{border-radius:8px}
+.atlas-image-actions button{height:27px;border-radius:6px;font-size:8.5px}
+.atlas-quick-memo{border-radius:7px}
+.atlas-selection-bar{border-radius:9px}
+.atlas-selection-bar button{border-radius:7px}
+
+@media(max-width:760px){
+  .atlas-shell{padding-top:0;padding-bottom:60px}
+  .atlas-head{gap:11px;margin:0 0 15px}
+  .atlas-head h1{font-size:28px!important;line-height:1.02;margin:1px 0 6px}
+  .atlas-head p{font-size:10px;line-height:1.45;max-width:94%}
+  .atlas-head-actions{width:100%;gap:6px}
+  .atlas-head-actions .btn{padding:7px 9px;font-size:9.5px;min-height:32px}
+  .atlas-tools{gap:7px;margin-bottom:14px}
+  .atlas-search input{height:36px;font-size:10px;padding-left:10px}
+  .atlas-search button{width:32px;height:32px;font-size:15px}
+  .atlas-tool-row{gap:5px;row-gap:6px}
+  .atlas-tool-label{font-size:7.5px;letter-spacing:.1em}
+  .atlas-seg button{height:29px;padding:0 8px;font-size:8.5px}
+  .atlas-select{height:29px;font-size:8.5px;padding-left:8px}
+  .atlas-count{width:100%;margin:1px 0 0;font-size:8.5px}
+  .atlas-grid{gap:15px 9px}
+  .atlas-grid.gallery-mode{gap:18px}
+  .atlas-card-visual{margin-bottom:8px}
+  .atlas-card-name{font-size:10.5px}
+  .atlas-card-fav{font-size:15px}
+  .atlas-empty{padding:52px 16px;min-height:260px;display:flex;flex-direction:column;justify-content:center}
+  .atlas-empty strong{font-size:22px}
+  .atlas-artist-head .atlas-artist-title{font-size:25px}
+}
 </style>
 
 <style>
@@ -504,6 +577,146 @@ body.folder-lightbox-open{overflow:hidden}
 }
 </style>
 
+
+
+<style id="v165-internal-header-unification">
+/* v1.6.5 — Internal view hero/header alignment.
+   Artist Atlas / Library / Bookmark / Compare / Add New share one title scale,
+   subtitle scale, left edge, spacing and Young Serif treatment. */
+#atlasView .atlas-shell,
+#foldersView .library-hub{
+  width:100%;
+  max-width:none;
+  margin-left:0;
+  margin-right:0;
+}
+
+#atlasView .atlas-head{
+  width:100%;
+  align-items:flex-end;
+}
+#atlasView .atlas-head > div:first-child{
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:0;
+  text-align:left;
+  align-self:stretch;
+}
+#atlasView .atlas-head .portal-kicker,
+#atlasView .atlas-head h1,
+#atlasView .atlas-head p{
+  margin-left:0!important;
+  margin-right:0!important;
+  text-align:left!important;
+}
+
+#atlasView .atlas-head h1,
+#foldersView .library-head h1,
+#bookmarksView .section-head h1,
+#compareView .section-head h1,
+#addView .add-hero h1{
+  font-family:"Young Serif",serif!important;
+  font-size:36px!important;
+  line-height:1.02!important;
+  font-weight:400!important;
+  letter-spacing:-.035em!important;
+  margin-top:0!important;
+  margin-bottom:7px!important;
+}
+
+#atlasView .atlas-head p,
+#foldersView .library-head p,
+#bookmarksView .section-head p,
+#compareView .section-head p,
+#addView .add-hero p{
+  margin:0!important;
+  color:#777!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+  font-weight:400!important;
+}
+
+#atlasView .atlas-head .portal-kicker,
+#foldersView .library-head .portal-kicker,
+#addView .add-hero .portal-kicker{
+  margin:0 0 9px!important;
+  font-size:9px!important;
+  line-height:1!important;
+  letter-spacing:.16em!important;
+  color:#888!important;
+}
+
+/* Keep action placement consistent without changing functions. */
+#foldersView .library-head,
+#bookmarksView .section-head,
+#compareView .section-head{
+  align-items:flex-end;
+}
+#bookmarksView .section-head,
+#compareView .section-head{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+}
+
+/* Neutralize the old special Library kicker spacing. */
+#foldersView .library-head .portal-kicker{
+  margin-bottom:9px!important;
+}
+
+@media(max-width:760px){
+  #atlasView .atlas-head{
+    width:100%;
+    align-items:stretch!important;
+    flex-direction:column;
+  }
+  #atlasView .atlas-head > div:first-child{
+    width:100%!important;
+    align-self:stretch!important;
+  }
+
+  #atlasView .atlas-head h1,
+  #foldersView .library-head h1,
+  #bookmarksView .section-head h1,
+  #compareView .section-head h1,
+  #addView .add-hero h1{
+    font-size:30px!important;
+    line-height:1.03!important;
+    margin-bottom:7px!important;
+  }
+
+  #atlasView .atlas-head p,
+  #foldersView .library-head p,
+  #bookmarksView .section-head p,
+  #compareView .section-head p,
+  #addView .add-hero p{
+    font-size:10px!important;
+    line-height:1.5!important;
+    max-width:100%!important;
+  }
+
+  #atlasView .atlas-head .portal-kicker,
+  #foldersView .library-head .portal-kicker,
+  #addView .add-hero .portal-kicker{
+    font-size:8px!important;
+    letter-spacing:.15em!important;
+    margin-bottom:8px!important;
+  }
+
+  #foldersView .library-head,
+  #bookmarksView .section-head,
+  #compareView .section-head{
+    align-items:flex-start!important;
+    gap:10px!important;
+  }
+
+  #bookmarksView .section-head,
+  #compareView .section-head{
+    flex-wrap:wrap;
+  }
+}
+</style>
 
 </head>
 <body>
@@ -1284,6 +1497,8 @@ body.folder-lightbox-open{overflow:hidden}
     if(savedVisibleFields?.length) state.visibleFields=new Set(savedVisibleFields);
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
+    // v1.6.5: Internal view header unification — Atlas left alignment + Atlas/Library/Bookmark/Compare/Add New title/subtitle scale unified.
+    // v1.6.4: Artist Atlas UI compact/rounded alignment — Gallery/Bookmark visual scale and corner language.
     // v1.6.3: Seed 지원 확장 — Gallery/Atlas 상세 표시·복사, Gallery/Atlas 검색, List 표시 열/정렬.
     // v1.6.2: Gallery 다중 키워드 AND 검색 + Atlas 검색 매치 표시/결과 카운트 + Artist 내부 검색/Quick Memo/다중 선택.
     // v1.6.1: Artist Atlas 작가 메모 + 통합 검색(작가/메모/Prompt/Character Prompt/UC), 검색 일치 이미지 우선 표시.
