@@ -1081,6 +1081,80 @@ body.folder-lightbox-open{overflow:hidden}
 .export-preview-foot{display:flex;justify-content:space-between;gap:10px;margin-top:8px;color:#888;font-size:9px}.export-studio-foot{justify-content:flex-end}
 @media(max-width:760px){.export-studio{width:96vw}.export-studio-shell{height:92vh!important}.export-studio-body{grid-template-columns:1fr;overflow:auto}.export-panel{border-right:0;border-bottom:1px solid #e8e8e8;overflow:visible}.export-preview-panel{overflow:visible}.export-preview-frame{min-height:300px}}
 </style>
+
+<style id="v181-export-studio-scroll-fix">
+.export-studio-shell{
+  display:flex!important;
+  flex-direction:column!important;
+  height:min(94dvh,920px)!important;
+  max-height:94dvh!important;
+  overflow:hidden!important;
+}
+.export-studio-shell > .modal-head{
+  flex:0 0 auto!important;
+}
+.export-studio-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+}
+.export-studio-foot{
+  flex:0 0 auto!important;
+  position:relative!important;
+  z-index:8!important;
+  background:#fff!important;
+  border-top:1px solid #e8e8e8!important;
+  padding-bottom:max(12px,env(safe-area-inset-bottom))!important;
+}
+.export-studio-foot #runExportBtn{
+  min-width:170px!important;
+  height:42px!important;
+  font-weight:700!important;
+}
+@media(max-width:760px){
+  .export-studio-shell{
+    height:92dvh!important;
+    max-height:92dvh!important;
+  }
+  .export-studio-body{
+    display:block!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  .export-panel,.export-preview-panel{
+    overflow:visible!important;
+  }
+  .export-preview-frame{
+    min-height:0!important;
+  }
+  #exportPreviewCanvas{
+    max-height:48dvh!important;
+    object-fit:contain!important;
+  }
+  .export-studio-foot{
+    padding:10px 14px max(10px,env(safe-area-inset-bottom))!important;
+  }
+  .export-studio-foot #runExportBtn{
+    width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+    font-size:12px!important;
+  }
+}
+</style>
+
+<style id="v181-atlas-longpress">
+#atlasGrid .atlas-card,
+#atlasArtistGrid .atlas-image-card{
+  -webkit-touch-callout:none;
+}
+#atlasGrid.sweep-selecting,
+#atlasArtistGrid.sweep-selecting{
+  user-select:none;
+  -webkit-user-select:none;
+}
+</style>
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
@@ -1161,7 +1235,7 @@ body.folder-lightbox-open{overflow:hidden}
           <div class="export-preview-foot"><span id="exportItemCount">0 images</span><span>축소 미리보기</span></div>
         </section>
       </div>
-      <div class="modal-foot export-studio-foot"><button id="runExportBtn" class="btn primary">PDF 만들기</button></div>
+      <div class="modal-foot export-studio-foot"><button id="runExportBtn" class="btn primary">PDF 다운로드</button></div>
     </div>
   </dialog>
 
@@ -1964,6 +2038,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
+    // v1.8.1: Export Studio mobile scroll/footer fix + always-visible download button; Atlas long-press selection synthetic-click suppression.
     // v1.8.0: Export Studio — Style Atlas / Prompt Book / Full Archive / Custom, PDF+PNG, first-page preview, page-safe card layout, readable typography, unified Gallery/Atlas exports.
     // v1.7.7: Atlas Gallery picker root fix — picker cards changed from LABEL to DIV to avoid global label CSS; square geometry uses padding-bottom fallback.
     // v1.7.6: Fix Atlas <- Gallery picker using the actual .atlas-gallery-picker-grid selector; hard-lock square thumbnail geometry.
@@ -2807,6 +2882,7 @@ body.folder-lightbox-open{overflow:hidden}
     let touchId=null;
     let autoRAF=0;
     let mouseDown=false;
+    let suppressClickUntil=0;
 
     const clearHold=()=>{if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}};
 
@@ -2876,6 +2952,7 @@ body.folder-lightbox-open{overflow:hidden}
 
     const finish=()=>{
       clearHold();
+      if(active)suppressClickUntil=Date.now()+650;
       active=false;
       touchId=null;
       mouseDown=false;
@@ -2939,6 +3016,13 @@ body.folder-lightbox-open{overflow:hidden}
 
     const onMouseUp=()=>finish();
     const onContextMenu=(ev)=>{if(active||holdTimer)ev.preventDefault();};
+    const onClickCapture=(ev)=>{
+      if(Date.now()<suppressClickUntil){
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.stopImmediatePropagation?.();
+      }
+    };
 
     grid.addEventListener('touchstart',onTouchStart,{passive:true});
     grid.addEventListener('touchmove',onTouchMove,{passive:false});
@@ -2948,6 +3032,7 @@ body.folder-lightbox-open{overflow:hidden}
     window.addEventListener('mousemove',onMouseMove,{passive:false});
     window.addEventListener('mouseup',onMouseUp);
     grid.addEventListener('contextmenu',onContextMenu);
+    grid.addEventListener('click',onClickCapture,true);
 
     grid._genericSweepCleanup=()=>{
       finish();
@@ -2959,6 +3044,7 @@ body.folder-lightbox-open{overflow:hidden}
       window.removeEventListener('mousemove',onMouseMove);
       window.removeEventListener('mouseup',onMouseUp);
       grid.removeEventListener('contextmenu',onContextMenu);
+      grid.removeEventListener('click',onClickCapture,true);
     };
   }
 
@@ -4245,7 +4331,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.exportAtlasOptions.classList.toggle('hidden',exportStudioState.preset!=='atlas');
     els.exportCustomFields.classList.toggle('hidden',exportStudioState.preset!=='custom');
     const arr=exportStudioEntries();els.exportItemCount.textContent=`${arr.length} images`;
-    els.runExportBtn.textContent=exportStudioState.output==='pdf'?'PDF 만들기':'PNG 만들기';
+    els.runExportBtn.textContent=exportStudioState.output==='pdf'?'PDF 다운로드':'PNG 다운로드';
   }
   function exportTextLines(ctx,text,maxW,font,limit=999){
     ctx.font=font;const lines=[];
