@@ -1805,10 +1805,11 @@ body.folder-lightbox-open{overflow:hidden}
   'use strict';
 
   const DB_NAME = 'nai-archive'; // stable internal storage id; independent from visible site name
-  const DB_VERSION = 2;
+  const DB_VERSION = 3;
   const STORE_ENTRIES = 'entries';
   const STORE_ATLAS = 'atlasEntries';
   const STORE_META = 'meta';
+  const STORE_FOLDERS = 'foldersV2';
   const state = {
     entries: [],
     atlasEntries: [],
@@ -1890,6 +1891,7 @@ body.folder-lightbox-open{overflow:hidden}
   let atlasDetailUrl=null;
   let atlasMemoTimer=null;
   let atlasArtistMemoTimer=null;
+  let folderObjectUrls=[];
 
   function pushAppHistory(extra={}){
     const s={naiApp:true,view:state.view||'home',...extra};history.pushState(s,'');appHistoryState=s;return s;
@@ -2182,6 +2184,7 @@ body.folder-lightbox-open{overflow:hidden}
         if(!d.objectStoreNames.contains(STORE_ENTRIES)) d.createObjectStore(STORE_ENTRIES,{keyPath:'id'});
         if(!d.objectStoreNames.contains(STORE_ATLAS)) d.createObjectStore(STORE_ATLAS,{keyPath:'id'});
         if(!d.objectStoreNames.contains(STORE_META)) d.createObjectStore(STORE_META,{keyPath:'key'});
+        if(!d.objectStoreNames.contains(STORE_FOLDERS)) d.createObjectStore(STORE_FOLDERS,{keyPath:'id'});
       };
       req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
     });
@@ -2195,14 +2198,20 @@ body.folder-lightbox-open{overflow:hidden}
     state.atlasEntries = await txGetAll(STORE_ATLAS);
     const meta = await txGetAll(STORE_META);
     const map=Object.fromEntries(meta.map(x=>[x.key,x.value]));
-    state.artistBookmarks=map.artistBookmarks||[]; state.presets=map.presets||[]; state.folders=map.folders||[];
-    state.folders=(state.folders||[]).map(f=>({...f,kind:f.kind||'clipboard'}));
+    state.artistBookmarks=map.artistBookmarks||[]; state.presets=map.presets||[];
+    const storedFolders=await txGetAll(STORE_FOLDERS);
+    const legacyFolders=Array.isArray(map.folders)?map.folders:[];
+    state.folders=(storedFolders.length?storedFolders:legacyFolders).map(f=>({...f,kind:f.kind||'clipboard'}));
+    if(!storedFolders.length&&legacyFolders.length){
+      try{await persistFoldersToStore(state.folders)}catch(err){console.error('Folder migration failed',err)}
+    }
     state.atlasArtistFavorites=map.atlasArtistFavorites||[]; state.atlasArtistMemos=map.atlasArtistMemos||{}; state.atlasRepresentatives=map.atlasRepresentatives||{};
     const savedVisibleFields=Array.isArray(map.visibleFields)?map.visibleFields.filter(f=>['image','artists','memo','prompt','characters','uc','model','seed','created'].includes(f)):null;
     if(savedVisibleFields?.length) state.visibleFields=new Set(savedVisibleFields);
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
+    // v1.9.2: Folder persistence repair — dedicated IndexedDB foldersV2 store, transaction-complete saves, automatic legacy meta-folder migration, save failure rollback, Image Folder blob-URL pool fix.
     // v1.9.1: Library polish — straight/crisp Clipboard cards, smaller title typography, higher-contrast clipboard contents; Clipboard image selection/export/Gallery jump; in-folder Gallery/Atlas import for both folder types.
     // v1.9.0: Library 2.0 — Image Folder + Clipboard split, legacy folders migrate to Clipboard, collection gallery with long-press selection/export, type-aware folder picker, refreshed clean+kitsch Library cards.
     // v1.8.2: Style Atlas PDF route/layout correction — true 2x2 or 3x2 atlas pages, artist-only metadata, no IMG/Seed, whole-card page safety; remaining legacy Gallery export paths routed to Export Studio.
@@ -3593,7 +3602,20 @@ body.folder-lightbox-open{overflow:hidden}
     await saveMeta('artistBookmarks',state.artistBookmarks);renderBookmarks();toast(changed?`${changed}개 작가태그 북마크`:'이미 북마크되어 있습니다.');
   }
   async function savePreset(){const name=els.presetName.value.trim(),text=els.presetText.value.trim();if(!name||!text){toast('이름과 작가태그를 입력해주세요.');return;}state.presets.push({id:crypto.randomUUID(),name,text});await saveMeta('presets',state.presets);els.presetDialog.close();renderBookmarks();}
-  async function persistFolders(){await saveMeta('folders',state.folders)}
+  function persistFoldersToStore(folders){
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(STORE_FOLDERS,'readwrite');
+      const store=tx.objectStore(STORE_FOLDERS);
+      store.clear();
+      for(const f of (folders||[]))store.put(f);
+      tx.oncomplete=()=>resolve();
+      tx.onerror=()=>reject(tx.error||new Error('Folder transaction failed'));
+      tx.onabort=()=>reject(tx.error||new Error('Folder transaction aborted'));
+    });
+  }
+  async function persistFolders(){
+    await persistFoldersToStore(state.folders);
+  }
   function folderById(id){return state.folders.find(f=>f.id===id)}
   function folderKind(f){return f?.kind==='image'?'image':'clipboard'}
   function folderTypeCounts(f){const counts={image:0,artist:0,prompt:0,character:0,uc:0,note:0,attachment:0,imageGroup:0};for(const it of f.items||[])if(counts[it.type]!==undefined)counts[it.type]++;return counts}
@@ -3617,8 +3639,17 @@ body.folder-lightbox-open{overflow:hidden}
   }
   async function createFolder(){
     const name=els.folderNameInput.value.trim();if(!name){toast('이름을 입력해주세요.');return}
-    state.folders.push({id:crypto.randomUUID(),name,kind:state.newFolderType||'image',bookmarked:false,items:[],createdAt:Date.now(),updatedAt:Date.now()});
-    await persistFolders();els.folderCreateDialog.close();renderFolders();toast(state.newFolderType==='image'?'이미지 폴더를 만들었습니다.':'클립보드를 만들었습니다.');
+    const f={id:crypto.randomUUID(),name,kind:state.newFolderType||'image',bookmarked:false,items:[],createdAt:Date.now(),updatedAt:Date.now()};
+    state.folders.push(f);
+    try{
+      await persistFolders();
+      els.folderCreateDialog.close();renderFolders();toast(state.newFolderType==='image'?'이미지 폴더를 만들었습니다.':'클립보드를 만들었습니다.');
+    }catch(err){
+      console.error('Folder save failed',err);
+      state.folders=state.folders.filter(x=>x.id!==f.id);
+      renderFolders();
+      toast('폴더 저장에 실패했습니다. 다시 시도해주세요.');
+    }
   }
   function openFolder(id){
     const f=folderById(id);if(!f)return;state.currentFolderId=id;
@@ -3874,6 +3905,8 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function revokeFolderObjectUrls(){
+    for(const u of folderObjectUrls){try{URL.revokeObjectURL(u)}catch{}}
+    folderObjectUrls=[];
     if(!els.folderItems)return;
     els.folderItems.querySelectorAll('[data-url]').forEach(el=>{
       const u=el.dataset.url;if(u?.startsWith('blob:'))URL.revokeObjectURL(u);
@@ -4598,7 +4631,7 @@ body.folder-lightbox-open{overflow:hidden}
       if(it.type==='attachment'&&it.attachmentPath&&zip.file(it.attachmentPath)){it.blob=await zip.file(it.attachmentPath).async('blob');delete it.attachmentPath;}
       if(it.type==='imageGroup')for(const img of (it.images||[]))if(img.attachmentPath&&zip.file(img.attachmentPath)){img.blob=await zip.file(img.attachmentPath).async('blob');delete img.attachmentPath;}
     }
-    state.artistBookmarks=[...new Set([...(state.artistBookmarks||[]),...(manifest.artistBookmarks||[])])];state.presets=manifest.presets||state.presets;state.folders=restoredFolders;state.atlasArtistFavorites=[...new Set([...(state.atlasArtistFavorites||[]),...(manifest.atlasArtistFavorites||[])])];state.atlasArtistMemos={...(state.atlasArtistMemos||{}),...(manifest.atlasArtistMemos||{})};state.atlasRepresentatives={...(state.atlasRepresentatives||{}),...(manifest.atlasRepresentatives||{})};await saveMeta('folders',state.folders);await saveMeta('artistBookmarks',state.artistBookmarks);await saveMeta('presets',state.presets);await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);await saveMeta('atlasArtistMemos',state.atlasArtistMemos);await saveMeta('atlasRepresentatives',state.atlasRepresentatives);els.restoreInput.value='';render();toast('백업을 복원했습니다.');
+    state.artistBookmarks=[...new Set([...(state.artistBookmarks||[]),...(manifest.artistBookmarks||[])])];state.presets=manifest.presets||state.presets;state.folders=restoredFolders;state.atlasArtistFavorites=[...new Set([...(state.atlasArtistFavorites||[]),...(manifest.atlasArtistFavorites||[])])];state.atlasArtistMemos={...(state.atlasArtistMemos||{}),...(manifest.atlasArtistMemos||{})};state.atlasRepresentatives={...(state.atlasRepresentatives||{}),...(manifest.atlasRepresentatives||{})};await persistFolders();await saveMeta('artistBookmarks',state.artistBookmarks);await saveMeta('presets',state.presets);await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);await saveMeta('atlasArtistMemos',state.atlasArtistMemos);await saveMeta('atlasRepresentatives',state.atlasRepresentatives);els.restoreInput.value='';render();toast('백업을 복원했습니다.');
   }
 
   let exportStudioState={context:null,scope:'filtered',preset:'atlas',output:'pdf',cols:2,previewToken:0};
