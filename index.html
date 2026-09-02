@@ -1011,6 +1011,58 @@ body.folder-lightbox-open{overflow:hidden}
   outline-offset:-2px;
 }
 </style>
+
+<style id="v177-atlas-gallery-picker-root-fix">
+#atlasGalleryPickerGrid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+  align-items:start!important;
+  align-content:start!important;
+  padding:6px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  min-height:0!important;
+}
+#atlasGalleryPickerGrid > .atlas-pick-card{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:0!important;
+  padding:0 0 100% 0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  border:1px solid #e2e2e2!important;
+  border-radius:7px!important;
+  background:#f5f5f5!important;
+}
+#atlasGalleryPickerGrid > .atlas-pick-card > img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  display:block!important;
+  max-width:none!important;
+  max-height:none!important;
+}
+#atlasGalleryPickerGrid > .atlas-pick-card > input{
+  position:absolute!important;
+  z-index:5!important;
+  left:7px!important;
+  top:7px!important;
+  right:auto!important;
+  width:21px!important;
+  height:21px!important;
+  margin:0!important;
+  accent-color:#111;
+}
+#atlasGalleryPickerGrid > .atlas-pick-card.selected{
+  border-color:#111!important;
+  box-shadow:inset 0 0 0 1px #111;
+}
+</style>
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
@@ -1845,6 +1897,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
+    // v1.7.7: Atlas Gallery picker root fix — picker cards changed from LABEL to DIV to avoid global label CSS; square geometry uses padding-bottom fallback.
     // v1.7.6: Fix Atlas <- Gallery picker using the actual .atlas-gallery-picker-grid selector; hard-lock square thumbnail geometry.
     // v1.7.5: Atlas picker thumbnail geometry fix + clearer SINGLE/MULTI labels + explicit IMG count + artist/group delete actions.
     // v1.7.4: Atlas favorite usability — preserve v1.7.3 visual rhythm, 17px star with invisible 36px touch target and subtle active feedback.
@@ -2227,7 +2280,33 @@ body.folder-lightbox-open{overflow:hidden}
   }
   function filteredGalleryForAtlasPicker(){const q=(els.atlasGalleryPickerSearch?.value||'').trim().toLowerCase();return state.entries.filter(e=>!q||`${displayTitle(e)} ${e.artistsText||''} ${e.prompt||''}`.toLowerCase().includes(q));}
   function openAtlasGalleryPicker(){state.atlasGalleryPickerIds=[];els.atlasGalleryPickerSearch.value='';renderAtlasGalleryPicker();els.atlasGalleryPickerDialog.showModal();}
-  function renderAtlasGalleryPicker(){releaseUrlList(atlasPickerUrls);const arr=filteredGalleryForAtlasPicker();els.atlasGalleryPickerGrid.innerHTML='';for(const e of arr){const u=URL.createObjectURL(e.imageBlob);atlasPickerUrls.push(u);const d=document.createElement('label');d.className='atlas-pick-card '+(state.atlasGalleryPickerIds.includes(e.id)?'selected':'');d.innerHTML=`<img src="${u}" alt=""><input type="checkbox" ${state.atlasGalleryPickerIds.includes(e.id)?'checked':''}>`;d.querySelector('input').onchange=ev=>{if(ev.target.checked&&!state.atlasGalleryPickerIds.includes(e.id))state.atlasGalleryPickerIds.push(e.id);if(!ev.target.checked)state.atlasGalleryPickerIds=state.atlasGalleryPickerIds.filter(x=>x!==e.id);d.classList.toggle('selected',ev.target.checked);els.atlasGalleryPickerCount.textContent=`${state.atlasGalleryPickerIds.length}개 선택`};els.atlasGalleryPickerGrid.appendChild(d)}els.atlasGalleryPickerCount.textContent=`${state.atlasGalleryPickerIds.length}개 선택`;}
+  function renderAtlasGalleryPicker(){
+    releaseUrlList(atlasPickerUrls);
+    const arr=filteredGalleryForAtlasPicker();
+    els.atlasGalleryPickerGrid.innerHTML='';
+    for(const e of arr){
+      const u=URL.createObjectURL(e.imageBlob);
+      atlasPickerUrls.push(u);
+      const d=document.createElement('div');
+      d.className='atlas-pick-card '+(state.atlasGalleryPickerIds.includes(e.id)?'selected':'');
+      d.dataset.id=e.id;
+      d.innerHTML=`<img src="${u}" alt=""><input type="checkbox" aria-label="선택" ${state.atlasGalleryPickerIds.includes(e.id)?'checked':''}>`;
+      const cb=d.querySelector('input');
+      cb.onchange=ev=>{
+        if(ev.target.checked&&!state.atlasGalleryPickerIds.includes(e.id))state.atlasGalleryPickerIds.push(e.id);
+        if(!ev.target.checked)state.atlasGalleryPickerIds=state.atlasGalleryPickerIds.filter(x=>x!==e.id);
+        d.classList.toggle('selected',ev.target.checked);
+        els.atlasGalleryPickerCount.textContent=`${state.atlasGalleryPickerIds.length}개 선택`;
+      };
+      d.onclick=ev=>{
+        if(ev.target===cb)return;
+        cb.checked=!cb.checked;
+        cb.dispatchEvent(new Event('change',{bubbles:true}));
+      };
+      els.atlasGalleryPickerGrid.appendChild(d);
+    }
+    els.atlasGalleryPickerCount.textContent=`${state.atlasGalleryPickerIds.length}개 선택`;
+  }
   async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new Set(state.atlasEntries.map(e=>e.hash).filter(Boolean));for(const id of state.atlasGalleryPickerIds){const src=state.entries.find(e=>e.id===id);if(!src)continue;if(src.hash&&known.has(src.hash)){skipped++;continue}const now=Date.now(),e={...src,id:crypto.randomUUID(),imageBlob:src.imageBlob,createdAt:now,updatedAt:now,lastImportAt:now,favorite:false,atlasOnly:true};await txPut(STORE_ATLAS,e);state.atlasEntries.push(e);if(e.hash)known.add(e.hash);added++}els.atlasGalleryPickerDialog.close();renderAtlas();toast(`${added}개 Atlas에 추가${skipped?` · 중복 ${skipped}개 제외`:''}`);}
 
   async function importImages(fileList, options={}){
