@@ -86,7 +86,7 @@ body:not(.is-home) .menu-btn{display:grid}
 .atlas-selected-more-menu{position:absolute;right:10px;bottom:calc(100% + 8px);display:grid;min-width:190px;padding:6px;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.14);z-index:12}
 .atlas-selected-more-menu.hidden{display:none}.atlas-selected-more-menu button{height:34px;text-align:left;border:0!important;background:#fff!important;color:#111!important;border-radius:7px;padding:0 9px}.atlas-selected-more-menu button.danger{color:#a11!important}
 .atlas-group-selection-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:30;width:min(900px,calc(100vw - 28px));display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;background:rgba(17,17,17,.96);color:#fff;border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.2);backdrop-filter:blur(12px)}
-.atlas-group-selection-bar.hidden{display:none}.atlas-group-selection-bar .bulk-left,.atlas-group-selection-bar .bulk-actions{display:flex;align-items:center;gap:8px}.atlas-group-selection-bar .text-btn{color:#fff}.atlas-group-selection-bar .sweep-hint{color:#aaa}.atlas-group-selection-bar .btn{border-color:#555;background:#191919;color:#fff}
+.atlas-group-selection-bar.hidden{display:none}.atlas-group-selection-bar .bulk-left,.atlas-group-selection-bar .bulk-actions{display:flex;align-items:center;gap:8px}.atlas-group-selection-bar .text-btn{color:#fff}.atlas-group-selection-bar .sweep-hint{color:#aaa}.atlas-group-selection-bar .btn{border-color:#555;background:#191919;color:#fff}.atlas-group-selection-bar .btn.danger{border-color:#714040;color:#ffdede}
 .atlas-card{position:relative}.atlas-card.atlas-group-selected{outline:2px solid #111;outline-offset:2px}.atlas-card .atlas-group-check{display:none;position:absolute;left:8px;top:8px;z-index:5;width:21px;height:21px;accent-color:#111}#atlasView.atlas-group-selecting .atlas-card .atlas-group-check{display:block}
 @media(max-width:700px){.atlas-selection-bar{flex-wrap:wrap}.atlas-selection-bar .count{width:100%}.atlas-group-selection-bar{bottom:12px;flex-direction:column;align-items:stretch}.atlas-group-selection-bar .bulk-left,.atlas-group-selection-bar .bulk-actions{justify-content:space-between;flex-wrap:wrap}#atlasView.atlas-group-selecting{padding-bottom:118px}}
 
@@ -909,6 +909,53 @@ body.folder-lightbox-open{overflow:hidden}
   background:#f2f2f2!important;
 }
 </style>
+
+<style id="v175-atlas-picker-and-labels">
+/* Robust square thumbnails for Atlas <- Gallery picker */
+.atlas-pick-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  align-items:start;
+}
+.atlas-pick-card{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:1/1;
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #e5e5e5;
+  border-radius:7px;
+  background:#f7f7f7;
+}
+.atlas-pick-card > img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  display:block!important;
+}
+.atlas-pick-card > input{
+  position:absolute;
+  z-index:3;
+  left:7px;
+  top:7px;
+  width:21px;
+  height:21px;
+  accent-color:#111;
+}
+
+/* Clearer Atlas card type/count language */
+.atlas-card-meta{
+  gap:6px;
+}
+.atlas-card-meta .atlas-count-label{
+  color:#888;
+  white-space:nowrap;
+}
+</style>
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
@@ -1148,7 +1195,7 @@ body.folder-lightbox-open{overflow:hidden}
           <div id="atlasLoadSentinel" class="atlas-load-sentinel"></div>
           <div id="atlasGroupSelectionBar" class="atlas-group-selection-bar hidden">
             <div class="bulk-left"><span id="atlasGroupSelectedCount">0개 작가 선택</span><button id="atlasGroupSelectAllBtn" class="text-btn">전체 선택</button><span class="sweep-hint">꾹 눌러 쓸어 선택</span></div>
-            <div class="bulk-actions"><button id="atlasGroupRepPdfBtn" class="btn small">대표 PDF</button><button id="atlasGroupAllPdfBtn" class="btn small">전체 이미지 PDF</button><button id="atlasGroupCancelBtn" class="btn small">취소</button></div>
+            <div class="bulk-actions"><button id="atlasGroupRepPdfBtn" class="btn small">대표 PDF</button><button id="atlasGroupAllPdfBtn" class="btn small">전체 이미지 PDF</button><button id="atlasGroupDeleteBtn" class="btn small danger">선택 삭제</button><button id="atlasGroupCancelBtn" class="btn small">취소</button></div>
           </div>
         </div>
       </section>
@@ -1347,7 +1394,7 @@ body.folder-lightbox-open{overflow:hidden}
 
   <dialog id="atlasArtistDialog" class="modal atlas-artist-dialog">
     <div class="modal-shell">
-      <div class="atlas-artist-head"><button id="atlasArtistClose" type="button" class="folder-back-btn">←</button><div style="min-width:0;flex:1"><div id="atlasArtistType" class="atlas-group-type"></div><h2 id="atlasArtistTitle" class="atlas-artist-title"></h2><div id="atlasArtistStats" class="atlas-artist-stats"></div></div><button id="atlasArtistFavorite" type="button" class="folder-top-btn" aria-label="작가 즐겨찾기">☆</button></div>
+      <div class="atlas-artist-head"><button id="atlasArtistClose" type="button" class="folder-back-btn">←</button><div style="min-width:0;flex:1"><div id="atlasArtistType" class="atlas-group-type"></div><h2 id="atlasArtistTitle" class="atlas-artist-title"></h2><div id="atlasArtistStats" class="atlas-artist-stats"></div></div><button id="atlasArtistDelete" type="button" class="folder-top-btn danger" aria-label="작가 항목 삭제">삭제</button><button id="atlasArtistFavorite" type="button" class="folder-top-btn" aria-label="작가 즐겨찾기">☆</button></div>
       <div class="atlas-artist-memo-box"><div class="atlas-artist-memo-label"><span>ARTIST MEMO</span><span>자동 저장</span></div><textarea id="atlasArtistMemo" class="atlas-artist-memo" placeholder="예: 눈 크게 나옴, 얼굴 어려보이게 함, 근육형"></textarea></div>
       <div class="atlas-artist-tools"><input id="atlasArtistSearch" type="search" placeholder="이 작가 내에서 메모 · Prompt · Character Prompt · UC · Seed 검색"><button id="atlasArtistSearchClear" type="button">지우기</button><button id="atlasArtistSelectBtn" type="button">선택</button></div>
       <div id="atlasArtistGrid" class="atlas-artist-grid"></div>
@@ -1500,7 +1547,7 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function mapEls(){
-    ['compareCount','fileInput','atlasPhotoInput','atlasBulkInput','atlasView','atlasAddBtn','atlasFromGalleryBtn','atlasGroupSelectBtn','atlasSearch','atlasSearchClear','atlasFilterTabs','atlasSortTabs','atlasSortDir','atlasMinPosts','atlasViewMode','atlasRepCount','atlasPageSize','atlasCount','atlasGrid','atlasLoadSentinel','atlasGroupSelectionBar','atlasGroupSelectedCount','atlasGroupSelectAllBtn','atlasGroupRepPdfBtn','atlasGroupAllPdfBtn','atlasGroupCancelBtn','atlasImportDialog','atlasImportClose','atlasPhotoBtn','atlasBulkBtn','atlasImportGalleryBtn','atlasGalleryPickerDialog','atlasGalleryPickerClose','atlasGalleryPickerSearch','atlasGalleryPickerAll','atlasGalleryPickerClear','atlasGalleryPickerGrid','atlasGalleryPickerCount','atlasGalleryPickerConfirm','atlasArtistDialog','atlasArtistClose','atlasArtistType','atlasArtistTitle','atlasArtistStats','atlasArtistFavorite','atlasArtistMemo','atlasArtistSearch','atlasArtistSearchClear','atlasArtistSelectBtn','atlasArtistGrid','atlasSelectionBar','atlasSelectedCount','atlasSelectAllBtn','atlasSelectedFolderBtn','atlasSelectedCompareBtn','atlasSelectedOriginalBtn','atlasSelectedGalleryBtn','atlasSelectedMoreBtn','atlasSelectedMoreMenu','atlasSelectedFavBtn','atlasSelectedCleanBtn','atlasSelectedPdfBtn','atlasSelectedAtlasPdfBtn','atlasSelectedAtlasImageBtn','atlasSelectedBackupBtn','atlasSelectedDeleteBtn','atlasSelectCancelBtn','atlasImageDetailDialog','atlasImageDetailClose','atlasImageDetailTitle','atlasImageDetailImg','atlasImageDetailMeta','atlasImageDetailArtists','atlasImageDetailPrompt','atlasImageDetailCharacters','atlasImageDetailUc','atlasImageDetailMemo','atlasImageFavBtn','atlasImageRepBtn','atlasImageFolderBtn','atlasImageCompareBtn','atlasImageOriginalBtn','atlasImageCleanBtn','atlasImageToGalleryBtn','atlasImageDeleteBtn','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
+    ['compareCount','fileInput','atlasPhotoInput','atlasBulkInput','atlasView','atlasAddBtn','atlasFromGalleryBtn','atlasGroupSelectBtn','atlasSearch','atlasSearchClear','atlasFilterTabs','atlasSortTabs','atlasSortDir','atlasMinPosts','atlasViewMode','atlasRepCount','atlasPageSize','atlasCount','atlasGrid','atlasLoadSentinel','atlasGroupSelectionBar','atlasGroupSelectedCount','atlasGroupSelectAllBtn','atlasGroupRepPdfBtn','atlasGroupAllPdfBtn','atlasGroupDeleteBtn','atlasGroupCancelBtn','atlasImportDialog','atlasImportClose','atlasPhotoBtn','atlasBulkBtn','atlasImportGalleryBtn','atlasGalleryPickerDialog','atlasGalleryPickerClose','atlasGalleryPickerSearch','atlasGalleryPickerAll','atlasGalleryPickerClear','atlasGalleryPickerGrid','atlasGalleryPickerCount','atlasGalleryPickerConfirm','atlasArtistDialog','atlasArtistClose','atlasArtistType','atlasArtistTitle','atlasArtistStats','atlasArtistDelete','atlasArtistFavorite','atlasArtistMemo','atlasArtistSearch','atlasArtistSearchClear','atlasArtistSelectBtn','atlasArtistGrid','atlasSelectionBar','atlasSelectedCount','atlasSelectAllBtn','atlasSelectedFolderBtn','atlasSelectedCompareBtn','atlasSelectedOriginalBtn','atlasSelectedGalleryBtn','atlasSelectedMoreBtn','atlasSelectedMoreMenu','atlasSelectedFavBtn','atlasSelectedCleanBtn','atlasSelectedPdfBtn','atlasSelectedAtlasPdfBtn','atlasSelectedAtlasImageBtn','atlasSelectedBackupBtn','atlasSelectedDeleteBtn','atlasSelectCancelBtn','atlasImageDetailDialog','atlasImageDetailClose','atlasImageDetailTitle','atlasImageDetailImg','atlasImageDetailMeta','atlasImageDetailArtists','atlasImageDetailPrompt','atlasImageDetailCharacters','atlasImageDetailUc','atlasImageDetailMemo','atlasImageFavBtn','atlasImageRepBtn','atlasImageFolderBtn','atlasImageCompareBtn','atlasImageOriginalBtn','atlasImageCleanBtn','atlasImageToGalleryBtn','atlasImageDeleteBtn','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','folderBookmarks','folderCreateDialog','folderNameInput','createFolderBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
   }
 
   function bind(){
@@ -1528,12 +1575,14 @@ body.folder-lightbox-open{overflow:hidden}
     els.atlasGalleryPickerConfirm.onclick=confirmAtlasGalleryPicker;
     els.atlasArtistClose.onclick=closeAtlasArtistHistory;
     els.atlasArtistFavorite.onclick=()=>toggleAtlasArtistFavorite(state.atlasCurrentGroupKey);
+    els.atlasArtistDelete.onclick=()=>{const key=state.atlasCurrentGroupKey;if(!key)return;state.atlasGroupSelectedKeys=[key];deleteSelectedAtlasGroups().then(()=>{if(!state.atlasEntries.some(e=>atlasGroupInfo(e).key===key)&&els.atlasArtistDialog.open)els.atlasArtistDialog.close();});};
     els.atlasArtistMemo.oninput=()=>{clearTimeout(atlasArtistMemoTimer);atlasArtistMemoTimer=setTimeout(saveAtlasArtistMemo,300)};
     els.atlasGroupSelectBtn.onclick=()=>{state.atlasGroupSelectMode=!state.atlasGroupSelectMode;if(!state.atlasGroupSelectMode)state.atlasGroupSelectedKeys=[];updateAtlasGroupSelectionUi()};
     els.atlasGroupCancelBtn.onclick=()=>{state.atlasGroupSelectMode=false;state.atlasGroupSelectedKeys=[];updateAtlasGroupSelectionUi()};
     els.atlasGroupSelectAllBtn.onclick=()=>{const keys=filteredAtlasGroups().map(g=>g.key),all=keys.length&&keys.every(k=>state.atlasGroupSelectedKeys.includes(k));state.atlasGroupSelectMode=true;state.atlasGroupSelectedKeys=all?state.atlasGroupSelectedKeys.filter(k=>!keys.includes(k)):[...new Set([...state.atlasGroupSelectedKeys,...keys])];updateAtlasGroupSelectionUi()};
     els.atlasGroupRepPdfBtn.onclick=()=>exportArtistAtlasPdf(atlasGroupEntriesForSelection(true));
     els.atlasGroupAllPdfBtn.onclick=()=>exportEntriesPdf(atlasGroupEntriesForSelection(false),getExportFields(),'atlas-groups-selected');
+    els.atlasGroupDeleteBtn.onclick=deleteSelectedAtlasGroups;
 
     els.atlasArtistSearch.oninput=e=>{state.atlasArtistSearch=e.target.value;renderAtlasArtistDialog();};
     els.atlasArtistSearchClear.onclick=()=>{els.atlasArtistSearch.value='';state.atlasArtistSearch='';renderAtlasArtistDialog();};
@@ -1741,6 +1790,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
+    // v1.7.5: Atlas picker thumbnail geometry fix + clearer SINGLE/MULTI labels + explicit IMG count + artist/group delete actions.
     // v1.7.4: Atlas favorite usability — preserve v1.7.3 visual rhythm, 17px star with invisible 36px touch target and subtle active feedback.
     // v1.7.3: Artist Atlas index visual cleanup — unified Inter typography, fixed two-row card rhythm, compact COPY pill, quieter stack borders and spacing.
     // v1.7.2: Clipboard compatibility fix — safe Clipboard API + execCommand fallback across Atlas/Gallery/Seed/Bookmark/Folder copy actions.
@@ -1919,7 +1969,7 @@ body.folder-lightbox-open{overflow:hidden}
       const artistMemo=(state.atlasArtistMemos[g.key]||'').trim();
       const memoPreview=artistMemo?`<div class="atlas-artist-memo-preview">${esc(artistMemo)}</div>`:'';
       const matchPreview=atlasSearchTokens().length?`<div class="atlas-match-preview">${esc(atlasSearchMatchPreview(g))}</div>`:'';const quickCopy=g.names.length?`<span class="atlas-copy-tag" data-atlas-copy-tag role="button" tabindex="0" title="artist:작가명 복사">COPY</span>`:'';
-      card.innerHTML=`<input class="atlas-group-check" type="checkbox" ${state.atlasGroupSelectedKeys.includes(g.key)?'checked':''}><div class="atlas-card-visual"><div class="atlas-samples ${reps.length>1?'two':''}">${imgs}</div></div><div class="atlas-card-topline"><div class="atlas-card-name">${esc(g.label)}</div><span class="atlas-card-tools"><span class="atlas-card-fav" data-atlas-card-fav>${fav?'★':'☆'}</span></span></div><div class="atlas-card-meta"><span class="atlas-badge">${g.type==='multiple'?'MULTI':g.type==='unsorted'?'UNSORTED':'ARTIST'}</span><span>≈ ${g.entries.length}</span>${quickCopy}</div>${multi}${memoPreview}${matchPreview}`;
+      card.innerHTML=`<input class="atlas-group-check" type="checkbox" ${state.atlasGroupSelectedKeys.includes(g.key)?'checked':''}><div class="atlas-card-visual"><div class="atlas-samples ${reps.length>1?'two':''}">${imgs}</div></div><div class="atlas-card-topline"><div class="atlas-card-name">${esc(g.label)}</div><span class="atlas-card-tools"><span class="atlas-card-fav" data-atlas-card-fav>${fav?'★':'☆'}</span></span></div><div class="atlas-card-meta"><span class="atlas-badge">${g.type==='multiple'?'MULTI':g.type==='unsorted'?'UNSORTED':'SINGLE'}</span><span class="atlas-count-label">${g.entries.length} IMG</span>${quickCopy}</div>${multi}${memoPreview}${matchPreview}`;
       card.querySelector('.atlas-group-check').onchange=ev=>{ev.stopPropagation();state.atlasGroupSelectMode=true;setAtlasGroupSelected(g.key,ev.target.checked)};const copyEl=card.querySelector('[data-atlas-copy-tag]');if(copyEl){const run=ev=>{ev.stopPropagation();copyAtlasGroupTag(g)};copyEl.onclick=run;copyEl.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();run(ev)}}}card.onclick=e=>{if(e.target.closest('[data-atlas-card-fav]')){e.stopPropagation();toggleAtlasArtistFavorite(g.key);return}if(e.target.closest('[data-atlas-copy-tag]'))return;if(state.atlasGroupSelectMode){setAtlasGroupSelected(g.key,!state.atlasGroupSelectedKeys.includes(g.key));return}openAtlasArtist(g.key)};
       els.atlasGrid.appendChild(card);
     }
@@ -2041,6 +2091,31 @@ body.folder-lightbox-open{overflow:hidden}
   function toggleCompareRef(ref,force){const has=state.compareIds.includes(ref),next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(ref);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==ref);render()}
   async function addAtlasSelectedToCompare(){const entries=atlasSelectedEntries();if(!entries.length)return;let added=0;for(const e of entries){const ref=atlasCompareRef(e.id);if(!state.compareIds.includes(ref)){state.compareIds.push(ref);added++}}render();toast(added?`${added}개 이미지를 Compare에 추가했습니다.`:'선택한 이미지는 이미 Compare에 있습니다.')}
   function atlasGroupEntriesForSelection(representativesOnly=false){const groups=atlasGroups().filter(g=>state.atlasGroupSelectedKeys.includes(g.key));return representativesOnly?groups.map(g=>atlasRepresentativeEntries(g)[0]).filter(Boolean):groups.flatMap(g=>g.entries)}
+  async function deleteSelectedAtlasGroups(){
+    const keys=[...state.atlasGroupSelectedKeys];
+    if(!keys.length){toast('선택한 작가가 없습니다.');return;}
+    const groups=atlasGroups().filter(g=>keys.includes(g.key));
+    const entries=groups.flatMap(g=>g.entries);
+    if(!entries.length)return;
+    if(!confirm(`선택한 ${keys.length}개 작가 항목과 Atlas 이미지 ${entries.length}개를 삭제할까요?\nGallery 이미지는 삭제되지 않습니다.`))return;
+
+    const ids=new Set(entries.map(e=>e.id));
+    for(const id of ids)await txDel(STORE_ATLAS,id);
+    state.atlasEntries=state.atlasEntries.filter(e=>!ids.has(e.id));
+    state.compareIds=state.compareIds.filter(ref=>!(String(ref).startsWith('atlas:')&&ids.has(String(ref).slice(6))));
+    for(const key of keys){
+      delete state.atlasRepresentatives[key];
+      delete state.atlasArtistMemos[key];
+      state.atlasArtistFavorites=state.atlasArtistFavorites.filter(k=>k!==key);
+    }
+    await saveMeta('atlasRepresentatives',state.atlasRepresentatives);
+    await saveMeta('atlasArtistMemos',state.atlasArtistMemos);
+    await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);
+    state.atlasGroupSelectedKeys=[];
+    state.atlasGroupSelectMode=false;
+    render();
+    toast(`${keys.length}개 작가 항목을 삭제했습니다.`);
+  }
   function updateAtlasGroupSelectionUi(){const on=state.atlasGroupSelectMode;els.atlasView.classList.toggle('atlas-group-selecting',on);els.atlasGroupSelectionBar.classList.toggle('hidden',!on);els.atlasGroupSelectBtn.textContent=on?'선택 중':'선택';els.atlasGroupSelectedCount.textContent=`${state.atlasGroupSelectedKeys.length}개 작가 선택`;els.atlasGrid.querySelectorAll('.atlas-card[data-group-key]').forEach(card=>{const selected=state.atlasGroupSelectedKeys.includes(card.dataset.groupKey);card.classList.toggle('atlas-group-selected',selected);const cb=card.querySelector('.atlas-group-check');if(cb)cb.checked=selected})}
   function setAtlasGroupSelected(key,on){if(on&&!state.atlasGroupSelectedKeys.includes(key))state.atlasGroupSelectedKeys.push(key);if(!on)state.atlasGroupSelectedKeys=state.atlasGroupSelectedKeys.filter(x=>x!==key);updateAtlasGroupSelectionUi()}
   function bindAtlasGroupSweep(){if(!els.atlasGrid)return;bindSweepSelectionGrid({grid:els.atlasGrid,cardSelector:'.atlas-card',checkboxSelector:'.atlas-group-check',getKey:card=>card.dataset.groupKey,isSelected:key=>state.atlasGroupSelectedKeys.includes(key),setSelected:(key,on)=>{state.atlasGroupSelectMode=true;if(on&&!state.atlasGroupSelectedKeys.includes(key))state.atlasGroupSelectedKeys.push(key);if(!on)state.atlasGroupSelectedKeys=state.atlasGroupSelectedKeys.filter(x=>x!==key)},updateCount:updateAtlasGroupSelectionUi,enabled:()=>true})}
