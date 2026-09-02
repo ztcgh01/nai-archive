@@ -956,6 +956,61 @@ body.folder-lightbox-open{overflow:hidden}
   white-space:nowrap;
 }
 </style>
+
+<style id="v176-atlas-gallery-picker-geometry-fix">
+/* Actual Atlas <- Gallery picker geometry fix */
+.atlas-gallery-picker-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-auto-rows:auto!important;
+  gap:6px!important;
+  align-items:start!important;
+  align-content:start!important;
+  overflow:auto!important;
+  min-height:0!important;
+  padding:6px!important;
+}
+.atlas-gallery-picker-grid .atlas-pick-card{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  min-width:0!important;
+  min-height:0!important;
+  aspect-ratio:1/1!important;
+  overflow:hidden!important;
+  border:1px solid #e5e5e5!important;
+  border-radius:7px!important;
+  background:#f7f7f7!important;
+  align-self:start!important;
+}
+.atlas-gallery-picker-grid .atlas-pick-card > img{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+  display:block!important;
+}
+.atlas-gallery-picker-grid .atlas-pick-card > input{
+  position:absolute!important;
+  z-index:4!important;
+  left:7px!important;
+  right:auto!important;
+  top:7px!important;
+  width:21px!important;
+  height:21px!important;
+  margin:0!important;
+  accent-color:#111;
+}
+.atlas-gallery-picker-grid .atlas-pick-card.selected{
+  border-color:#111!important;
+  outline:1px solid #111;
+  outline-offset:-2px;
+}
+</style>
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
@@ -1790,6 +1845,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
+    // v1.7.6: Fix Atlas <- Gallery picker using the actual .atlas-gallery-picker-grid selector; hard-lock square thumbnail geometry.
     // v1.7.5: Atlas picker thumbnail geometry fix + clearer SINGLE/MULTI labels + explicit IMG count + artist/group delete actions.
     // v1.7.4: Atlas favorite usability — preserve v1.7.3 visual rhythm, 17px star with invisible 36px touch target and subtle active feedback.
     // v1.7.3: Artist Atlas index visual cleanup — unified Inter typography, fixed two-row card rhythm, compact COPY pill, quieter stack borders and spacing.
