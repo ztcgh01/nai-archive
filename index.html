@@ -1262,8 +1262,19 @@ body.folder-lightbox-open{overflow:hidden}
 <style id="v194-archive-search">
 .archive-search-row{display:flex;align-items:center;gap:10px;margin:11px 0 2px}.archive-search-row input{flex:1;min-width:0;height:36px;border:1px solid #d4d4d4;border-radius:9px;background:#fff;padding:0 11px;font:500 10px/1 Inter,sans-serif;color:#111;outline:none}.archive-search-row input:focus{border-color:#111}.archive-search-row span{flex:0 0 auto;font:600 8px/1 Inter,sans-serif;color:#777;white-space:nowrap}@media(max-width:600px){.archive-search-row{margin-top:9px}.archive-search-row input{height:34px}}
 </style>
+
+<style id="rescue-build-banner-style">
+#rescueBuildBanner{
+  position:fixed;left:50%;top:10px;transform:translateX(-50%);
+  z-index:99999;padding:7px 11px;border:1px solid #111;border-radius:999px;
+  background:#fff;color:#111;font:700 9px/1 Inter,sans-serif;
+  letter-spacing:.08em;box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+</style>
 </head>
 <body>
+<div id="rescueBuildBanner">LEGACY DB RESCUE · BACKUP ONLY</div>
+
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
   <input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden />
   <input id="folderImportInput" type="file" accept="image/png,image/jpeg" multiple webkitdirectory directory hidden />
@@ -1386,7 +1397,7 @@ body.folder-lightbox-open{overflow:hidden}
 
   <div class="shell">
     <aside id="sidebar" class="sidebar">
-      <div class="sidebar-brand">NAI STUDIO</div>
+      <div class="sidebar-brand">NAI STUDIO · RESCUE</div>
       <nav class="nav-group">
         <button class="nav-item" data-view="home"><span>Home</span><span class="nav-index">00</span></button>
         <button class="nav-item" data-view="library"><span>Gallery</span><span class="nav-index">01</span></button>
@@ -1828,8 +1839,7 @@ body.folder-lightbox-open{overflow:hidden}
 (() => {
   'use strict';
 
-  const DB_NAME = 'nai-studio';
-  const LEGACY_DB_NAME = ['nai','archive'].join('-'); // stable internal storage id; independent from visible site name
+  const DB_NAME = 'nai-archive'; // stable internal storage id; independent from visible site name
   const DB_VERSION = 3;
   const STORE_ENTRIES = 'entries';
   const STORE_ATLAS = 'atlasEntries';
@@ -1934,11 +1944,12 @@ body.folder-lightbox-open{overflow:hidden}
     els.folderImageLightbox.classList.add('hidden');els.folderImageLightbox.setAttribute('aria-hidden','true');els.folderImageLightboxImg.removeAttribute('src');els.folderImageLightboxDetails.innerHTML='';els.folderImageLightboxDetails.classList.add('hidden');document.body.classList.remove('folder-lightbox-open');
   }
 
+  console.info('NAI STUDIO RESCUE: reading legacy nai-archive IndexedDB. Export a full backup, then return to the normal NAI STUDIO build.');
   document.addEventListener('DOMContentLoaded', init);
 
   async function init(){
     mapEls(); bind();
-    db = await openDB();await migrateLegacyDatabaseIfNeeded();
+    db = await openDB();
     await loadAll();
     history.replaceState({naiApp:true,view:state.view||'home',root:true},'');appHistoryState=history.state;
     window.addEventListener('popstate',ev=>{
@@ -2222,98 +2233,7 @@ body.folder-lightbox-open{overflow:hidden}
     window.addEventListener('beforeunload',()=>{releaseUrlList(atlasGridUrls);releaseUrlList(atlasArtistUrls);releaseUrlList(atlasPickerUrls);if(atlasDetailUrl)URL.revokeObjectURL(atlasDetailUrl);revokeObjectUrls();});
   }
 
-  
-  function openNamedDB(name,version){
-    return new Promise((resolve,reject)=>{
-      const req=version?indexedDB.open(name,version):indexedDB.open(name);
-      req.onsuccess=()=>resolve(req.result);
-      req.onerror=()=>reject(req.error);
-      req.onblocked=()=>reject(new Error(`IndexedDB blocked: ${name}`));
-    });
-  }
-  function idbStoreNames(database){return Array.from(database.objectStoreNames||[])}
-  function idbReadAll(database,storeName){
-    return new Promise((resolve,reject)=>{
-      if(!database.objectStoreNames.contains(storeName)){resolve([]);return}
-      const tx=database.transaction(storeName,'readonly'),req=tx.objectStore(storeName).getAll();
-      req.onsuccess=()=>resolve(req.result||[]);
-      req.onerror=()=>reject(req.error);
-    });
-  }
-  function idbCount(database,storeName){
-    return new Promise((resolve,reject)=>{
-      if(!database.objectStoreNames.contains(storeName)){resolve(0);return}
-      const tx=database.transaction(storeName,'readonly'),req=tx.objectStore(storeName).count();
-      req.onsuccess=()=>resolve(req.result||0);
-      req.onerror=()=>reject(req.error);
-    });
-  }
-  function idbWriteAll(database,storeName,rows){
-    return new Promise((resolve,reject)=>{
-      if(!database.objectStoreNames.contains(storeName)){resolve();return}
-      const tx=database.transaction(storeName,'readwrite'),store=tx.objectStore(storeName);
-      for(const row of (rows||[]))store.put(row);
-      tx.oncomplete=()=>resolve();
-      tx.onerror=()=>reject(tx.error||new Error(`Write failed: ${storeName}`));
-      tx.onabort=()=>reject(tx.error||new Error(`Write aborted: ${storeName}`));
-    });
-  }
-  async function migrateLegacyDatabaseIfNeeded(){
-    const markerKey='dbMigration:naiStudio:v1';
-    const marker=await new Promise((resolve,reject)=>{
-      const tx=db.transaction(STORE_META,'readonly'),req=tx.objectStore(STORE_META).get(markerKey);
-      req.onsuccess=()=>resolve(req.result?.value||null);req.onerror=()=>reject(req.error);
-    }).catch(()=>null);
-    if(marker?.done)return;
-
-    let names=[];
-    if(indexedDB.databases){
-      try{names=(await indexedDB.databases()).map(x=>x.name).filter(Boolean)}catch{}
-    }
-    if(names.length&&!names.includes(LEGACY_DB_NAME)){
-      await saveMeta(markerKey,{done:true,sourceFound:false,at:Date.now()});return;
-    }
-
-    let legacy=null;
-    try{legacy=await openNamedDB(LEGACY_DB_NAME)}catch(err){
-      console.warn('Legacy DB open skipped',err);return;
-    }
-    try{
-      const sourceStores=idbStoreNames(legacy);
-      const wanted=[STORE_IMAGES,STORE_ATLAS,STORE_META,STORE_FOLDERS].filter(s=>sourceStores.includes(s)&&db.objectStoreNames.contains(s));
-      if(!wanted.length){await saveMeta(markerKey,{done:true,sourceFound:false,at:Date.now()});return}
-
-      // Never overwrite a Studio DB that already contains user content.
-      const targetContent=(await idbCount(db,STORE_IMAGES))+(await idbCount(db,STORE_ATLAS))+(await idbCount(db,STORE_FOLDERS));
-      if(targetContent>0){
-        await saveMeta(markerKey,{done:true,sourceFound:true,skipped:'target-not-empty',at:Date.now()});return;
-      }
-
-      const snapshot={};
-      for(const s of wanted)snapshot[s]=await idbReadAll(legacy,s);
-
-      // Copy content stores first, metadata last.
-      for(const s of [STORE_IMAGES,STORE_ATLAS,STORE_FOLDERS]){
-        if(snapshot[s]?.length)await idbWriteAll(db,s,snapshot[s]);
-      }
-      if(snapshot[STORE_META]?.length){
-        const filtered=snapshot[STORE_META].filter(r=>r?.key!==markerKey);
-        if(filtered.length)await idbWriteAll(db,STORE_META,filtered);
-      }
-      await saveMeta(markerKey,{
-        done:true,sourceFound:true,at:Date.now(),
-        copied:Object.fromEntries(Object.entries(snapshot).map(([k,v])=>[k,v.length]))
-      });
-      console.info('NAI STUDIO: legacy local data migrated.');
-    }catch(err){
-      console.error('NAI STUDIO migration failed; legacy database was left untouched.',err);
-      try{await saveMeta(markerKey,{done:false,error:String(err?.message||err),at:Date.now()})}catch{}
-    }finally{
-      try{legacy?.close()}catch{}
-    }
-  }
-
-function openDB(){
+  function openDB(){
     return new Promise((resolve,reject)=>{
       const req=indexedDB.open(DB_NAME,DB_VERSION);
       req.onupgradeneeded=()=>{
@@ -2348,8 +2268,7 @@ function openDB(){
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
-    // v1.9.5: IndexedDB rename migration — active DB is now nai-studio. First run safely copies legacy images, Atlas, metadata and folders into the new DB, never overwrites a non-empty Studio DB, and leaves the legacy DB untouched as recovery backup.
-    // v1.9.4: NAI STUDIO rename + Archive tab rename + Archive folder search foundation. IndexedDB now uses the NAI STUDIO database; legacy local data is migrated automatically on first run.
+    // v1.9.4: NAI STUDIO · RESCUE rename + Archive tab rename + Archive folder search foundation. Internal IndexedDB DB_NAME intentionally remains 'nai-archive' to preserve existing local data.
     // v1.9.3: Smart folder detail + Saved Hub folder drill-down. Folder cards open into internal items with checkbox/long-press sweep selection, back navigation, whole-folder select and partial import.
     // v1.9.2: Folder persistence repair — dedicated IndexedDB foldersV2 store, transaction-complete saves, automatic legacy meta-folder migration, save failure rollback, Image Folder blob-URL pool fix.
     // v1.9.1: Archive polish — straight/crisp Clipboard cards, smaller title typography, higher-contrast clipboard contents; Clipboard image selection/export/Gallery jump; in-folder Gallery/Atlas import for both folder types.
@@ -4902,7 +4821,7 @@ function openDB(){
       const slice=entries.slice(p,p+perPage);
       const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');
       ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);ctx.textBaseline='top';
-      ctx.fillStyle='#111';ctx.font='700 19px Inter, Arial, sans-serif';ctx.fillText('NAI STUDIO  /  STYLE ATLAS',margin,29);
+      ctx.fillStyle='#111';ctx.font='700 19px Inter, Arial, sans-serif';ctx.fillText('NAI STUDIO · RESCUE  /  STYLE ATLAS',margin,29);
       ctx.fillStyle='#888';ctx.font='14px Inter, Arial, sans-serif';ctx.textAlign='right';ctx.fillText(`${Math.floor(p/perPage)+1}`,W-margin,32);ctx.textAlign='left';
       for(let i=0;i<slice.length;i++){
         const e=slice[i],col=i%safeCols,row=Math.floor(i/safeCols);
