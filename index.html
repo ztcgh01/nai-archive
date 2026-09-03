@@ -1262,6 +1262,52 @@ body.folder-lightbox-open{overflow:hidden}
 <style id="v194-archive-search">
 .archive-search-row{display:flex;align-items:center;gap:10px;margin:11px 0 2px}.archive-search-row input{flex:1;min-width:0;height:36px;border:1px solid #d4d4d4;border-radius:9px;background:#fff;padding:0 11px;font:500 10px/1 Inter,sans-serif;color:#111;outline:none}.archive-search-row input:focus{border-color:#111}.archive-search-row span{flex:0 0 auto;font:600 8px/1 Inter,sans-serif;color:#777;white-space:nowrap}@media(max-width:600px){.archive-search-row{margin-top:9px}.archive-search-row input{height:34px}}
 </style>
+
+<style id="v196-detail-atlas">
+.detail-actions #detailToAtlas.is-added{
+  background:#f5f5f5;
+  border-style:solid;
+  color:#555;
+}
+</style>
+
+<style id="v198-image-folder-geometry">
+.image-folder-grid{
+  grid-auto-rows:auto;
+  align-items:start;
+}
+.image-folder-card{
+  align-self:start;
+  height:auto!important;
+  min-height:0;
+}
+.image-folder-thumb{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1 / 1;
+  padding-top:0!important;
+  overflow:hidden;
+  flex:none!important;
+}
+.image-folder-thumb img{
+  display:block;
+  position:absolute;
+  inset:0;
+  width:100%!important;
+  height:100%!important;
+  min-width:100%;
+  min-height:100%;
+  object-fit:cover;
+}
+.image-folder-card-label{
+  display:block!important;
+  min-height:27px;
+}
+@media(max-width:600px){
+  .image-folder-thumb{aspect-ratio:1 / 1;}
+}
+</style>
 </head>
 <body>
   <button id="menuBtn" class="menu-btn" aria-label="메뉴"><span></span></button>
@@ -1408,7 +1454,7 @@ body.folder-lightbox-open{overflow:hidden}
       </div>
       <div class="side-utility">
         <button id="backupBtn" class="utility-btn">Backup</button>
-        <button id="restoreBtn" class="utility-btn">Restore</button>
+        <button id="restoreBtn" class="utility-btn">Merge Import</button>
         <button id="pdfBtn" class="utility-btn">Export</button>
       </div>
     </aside>
@@ -1593,7 +1639,7 @@ body.folder-lightbox-open{overflow:hidden}
         <div class="detail-media">
           <img id="detailImage" alt="등록 이미지" />
           <div class="detail-meta" id="detailMeta"></div>
-          <div class="detail-actions"><button type="button" id="detailFav" class="btn">☆ 즐겨찾기</button><button type="button" id="detailToFolder" class="btn">＋ 폴더</button><button type="button" id="addCompare" class="btn">＋ 비교</button><button type="button" id="saveCleanImage" class="btn">↓ 메타 제거 저장</button><button type="button" id="deleteEntry" class="btn danger">삭제</button></div>
+          <div class="detail-actions"><button type="button" id="detailFav" class="btn">☆ 즐겨찾기</button><button type="button" id="detailToFolder" class="btn">＋ 폴더</button><button type="button" id="detailToAtlas" class="btn">＋ 도감</button><button type="button" id="addCompare" class="btn">＋ 비교</button><button type="button" id="saveCleanImage" class="btn">↓ 메타 제거 저장</button><button type="button" id="deleteEntry" class="btn danger">삭제</button></div>
         </div>
         <div class="detail-content">
           <section class="panel"><div class="panel-head"><h3>작가태그</h3><div><button type="button" id="bookmarkArtistsBtn" class="mini-btn">☆ 북마크</button><button type="button" class="mini-btn save-folder-btn" data-folder-source="artists">폴더 저장</button><button type="button" class="mini-btn copy-btn" data-copy="artists">복사</button></div></div><textarea id="detailArtists" rows="5"></textarea><div id="artistTokens" class="chip-wrap"></div></section>
@@ -1883,6 +1929,7 @@ body.folder-lightbox-open{overflow:hidden}
     folderPickType: 'image',
     imageFolderSelectMode: false,
     imageFolderSelected: [],
+    imageFolderRenderLimit: 45,
     clipboardSelectMode: false,
     clipboardSelected: [],
     pendingFolderItems: [],
@@ -1958,7 +2005,7 @@ body.folder-lightbox-open{overflow:hidden}
   }
 
   function mapEls(){
-    ['compareCount','fileInput','atlasPhotoInput','atlasBulkInput','atlasView','atlasAddBtn','atlasFromGalleryBtn','atlasGroupSelectBtn','atlasSearch','atlasSearchClear','atlasFilterTabs','atlasSortTabs','atlasSortDir','atlasMinPosts','atlasViewMode','atlasRepCount','atlasPageSize','atlasCount','atlasGrid','atlasLoadSentinel','atlasGroupSelectionBar','atlasGroupSelectedCount','atlasGroupSelectAllBtn','atlasGroupRepPdfBtn','atlasGroupAllPdfBtn','atlasGroupDeleteBtn','atlasGroupCancelBtn','atlasImportDialog','atlasImportClose','atlasPhotoBtn','atlasBulkBtn','atlasImportGalleryBtn','atlasGalleryPickerDialog','atlasGalleryPickerClose','atlasGalleryPickerSearch','atlasGalleryPickerAll','atlasGalleryPickerClear','atlasGalleryPickerGrid','atlasGalleryPickerCount','atlasGalleryPickerConfirm','atlasArtistDialog','atlasArtistClose','atlasArtistType','atlasArtistTitle','atlasArtistStats','atlasArtistDelete','atlasArtistFavorite','atlasArtistMemo','atlasArtistSearch','atlasArtistSearchClear','atlasArtistSelectBtn','atlasArtistGrid','atlasSelectionBar','atlasSelectedCount','atlasSelectAllBtn','atlasSelectedFolderBtn','atlasSelectedCompareBtn','atlasSelectedOriginalBtn','atlasSelectedGalleryBtn','atlasSelectedMoreBtn','atlasSelectedMoreMenu','atlasSelectedFavBtn','atlasSelectedCleanBtn','atlasSelectedPdfBtn','atlasSelectedAtlasPdfBtn','atlasSelectedAtlasImageBtn','atlasSelectedBackupBtn','atlasSelectedDeleteBtn','atlasSelectCancelBtn','atlasImageDetailDialog','atlasImageDetailClose','atlasImageDetailTitle','atlasImageDetailImg','atlasImageDetailMeta','atlasImageDetailArtists','atlasImageDetailPrompt','atlasImageDetailCharacters','atlasImageDetailUc','atlasImageDetailMemo','atlasImageFavBtn','atlasImageRepBtn','atlasImageFolderBtn','atlasImageCompareBtn','atlasImageOriginalBtn','atlasImageCleanBtn','atlasImageToGalleryBtn','atlasImageDeleteBtn','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','exportScopeSummary','exportScopeChoices','exportPresetGrid','exportOutputChoices','exportAtlasOptions','exportColumnChoices','exportCustomFields','exportPreviewCanvas','exportPreviewEmpty','exportPreviewMeta','exportItemCount','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','libraryTypeTabs','archiveFolderSearch','archiveFolderSearchCount','folderBookmarks','folderCreateDialog','folderNameInput','folderTypeChoices','createFolderBtn','imageFolderDialog','imageFolderBackBtn','imageFolderTitleInput','imageFolderBookmarkBtn','imageFolderMoreBtn','imageFolderMoreMenu','deleteImageFolderBtn','imageFolderCount','imageFolderImportBtn','imageFolderSelectBtn','imageFolderExportBtn','imageFolderGrid','imageFolderBulkBar','imageFolderSelectedCount','imageFolderSelectAllBtn','imageFolderCompareBtn','imageFolderExportSelectedBtn','imageFolderRemoveBtn','imageFolderCancelBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','clipboardFolderCount','clipboardImportBtn','clipboardSelectBtn','clipboardExportBtn','clipboardBulkBar','clipboardSelectedCount','clipboardSelectAllBtn','clipboardExportSelectedBtn','clipboardOpenGalleryBtn','clipboardRemoveSelectedBtn','clipboardCancelBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubFolderPath','savedHubFolderBackBtn','savedHubFolderPathTitle','savedHubFolderPathMeta','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickTypeRow','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
+    ['compareCount','fileInput','atlasPhotoInput','atlasBulkInput','atlasView','atlasAddBtn','atlasFromGalleryBtn','atlasGroupSelectBtn','atlasSearch','atlasSearchClear','atlasFilterTabs','atlasSortTabs','atlasSortDir','atlasMinPosts','atlasViewMode','atlasRepCount','atlasPageSize','atlasCount','atlasGrid','atlasLoadSentinel','atlasGroupSelectionBar','atlasGroupSelectedCount','atlasGroupSelectAllBtn','atlasGroupRepPdfBtn','atlasGroupAllPdfBtn','atlasGroupDeleteBtn','atlasGroupCancelBtn','atlasImportDialog','atlasImportClose','atlasPhotoBtn','atlasBulkBtn','atlasImportGalleryBtn','atlasGalleryPickerDialog','atlasGalleryPickerClose','atlasGalleryPickerSearch','atlasGalleryPickerAll','atlasGalleryPickerClear','atlasGalleryPickerGrid','atlasGalleryPickerCount','atlasGalleryPickerConfirm','atlasArtistDialog','atlasArtistClose','atlasArtistType','atlasArtistTitle','atlasArtistStats','atlasArtistDelete','atlasArtistFavorite','atlasArtistMemo','atlasArtistSearch','atlasArtistSearchClear','atlasArtistSelectBtn','atlasArtistGrid','atlasSelectionBar','atlasSelectedCount','atlasSelectAllBtn','atlasSelectedFolderBtn','atlasSelectedCompareBtn','atlasSelectedOriginalBtn','atlasSelectedGalleryBtn','atlasSelectedMoreBtn','atlasSelectedMoreMenu','atlasSelectedFavBtn','atlasSelectedCleanBtn','atlasSelectedPdfBtn','atlasSelectedAtlasPdfBtn','atlasSelectedAtlasImageBtn','atlasSelectedBackupBtn','atlasSelectedDeleteBtn','atlasSelectCancelBtn','atlasImageDetailDialog','atlasImageDetailClose','atlasImageDetailTitle','atlasImageDetailImg','atlasImageDetailMeta','atlasImageDetailArtists','atlasImageDetailPrompt','atlasImageDetailCharacters','atlasImageDetailUc','atlasImageDetailMemo','atlasImageFavBtn','atlasImageRepBtn','atlasImageFolderBtn','atlasImageCompareBtn','atlasImageOriginalBtn','atlasImageCleanBtn','atlasImageToGalleryBtn','atlasImageDeleteBtn','folderImportInput','backupBtn','restoreBtn','restoreInput','pdfBtn','sidebar','menuBtn','homeView','libraryView','addView','bookmarksView','foldersView','compareView','dropzone','addChooseBtn','addBulkChooseBtn','addStatus','searchInput','clearSearch','sortSelect','logicToggle','activeArtistFilters','clearArtistFilters','favOnly','memoOnly','displayTabs','galleryAddMenuBtn','galleryAddDialog','closeGalleryAddDialogBtn','galleryPhotoPickBtn','galleryZipPickBtn','galleryZipInput','fieldBtn','fieldPanel','gallery','listWrap','listHead','listBody','emptyState','emptyImportBtn','resultCount','importProgress','importProgressText','importProgressCount','importProgressBar','artistBookmarks','presetBookmarks','newPresetBtn','selectModeBtn','bulkBar','selectedCount','selectAllBtn','selectedToCompareBtn','saveSelectedOriginalBtn','saveSelectedCleanBtn','selectedPdfBtn','selectedAtlasPdfBtn','selectedAtlasImageBtn','selectedBackupBtn','deleteSelectedBtn','cancelSelectBtn','compareHint','compareGrid','compareDiff','openComparePickerBtn','compareImageExportBtn','comparePdfExportBtn','clearCompareBtn','backupDialog','closeBackupBtn','runBackupBtn','backupFolderChoices','exportDialog','closeExportBtn','runExportBtn','exportScopeSummary','exportScopeChoices','exportPresetGrid','exportOutputChoices','exportAtlasOptions','exportColumnChoices','exportCustomFields','exportPreviewCanvas','exportPreviewEmpty','exportPreviewMeta','exportItemCount','comparePickerDialog','closeComparePickerBtn','comparePickerSearch','comparePickerSelectAll','comparePickerClearAll','comparePickerGrid','comparePickerCount','confirmComparePickerBtn','detailDialog','detailBackBtn','detailTopFav','detailTitle','detailImage','detailMeta','detailFav','addCompare','deleteEntry','detailArtists','artistTokens','detailPrompt','characterPrompts','detailUc','detailMemo','bookmarkArtistsBtn','copyStylePrompt','copyAll','folderGrid','newFolderBtn','libraryTypeTabs','archiveFolderSearch','archiveFolderSearchCount','folderBookmarks','folderCreateDialog','folderNameInput','folderTypeChoices','createFolderBtn','imageFolderDialog','imageFolderBackBtn','imageFolderTitleInput','imageFolderBookmarkBtn','imageFolderMoreBtn','imageFolderMoreMenu','deleteImageFolderBtn','imageFolderCount','imageFolderImportBtn','imageFolderSelectBtn','imageFolderExportBtn','imageFolderGrid','imageFolderBulkBar','imageFolderSelectedCount','imageFolderSelectAllBtn','imageFolderCompareBtn','imageFolderExportSelectedBtn','imageFolderRemoveBtn','imageFolderCancelBtn','folderDialog','folderTitleInput','folderBookmarkBtn','deleteFolderBtn','closeFolderBtn','folderItems','folderBlankEditor','clipboardFolderCount','clipboardImportBtn','clipboardSelectBtn','clipboardExportBtn','clipboardBulkBar','clipboardSelectedCount','clipboardSelectAllBtn','clipboardExportSelectedBtn','clipboardOpenGalleryBtn','clipboardRemoveSelectedBtn','clipboardCancelBtn','folderAttachInput','attachFolderImageBtn','openSavedHubBtn','folderMoreBtn','folderMoreMenu','folderImageModeDialog','closeFolderImageModeBtn','folderImageModePreview','folderImageModeCount','folderImagesSeparateBtn','folderImagesGroupBtn','folderImageLightbox','folderImageLightboxClose','folderImageLightboxImg','folderImageLightboxDetails','savedHubDialog','closeSavedHubBtn','savedHubTabs','savedHubFolderPath','savedHubFolderBackBtn','savedHubFolderPathTitle','savedHubFolderPathMeta','savedHubSearch','savedHubGrid','savedHubCount','savedHubClearBtn','savedHubImportBtn','savedImageImportDialog','closeSavedImageImportBtn','savedImageGroupRow','savedImageGroup','savedImageIncludeDetails','savedImageDetailFields','confirmSavedImageImportBtn','folderPickDialog','folderPickSelect','folderPickNewName','folderPickTypeRow','folderPickSummary','confirmFolderPickBtn','selectedToFolderBtn','detailToFolder','detailToAtlas','saveCleanImage','presetDialog','presetName','presetText','savePreset','bulkMoreBtn','bulkMoreMenu','scrollTopBtn','toast'].forEach(id=>els[id]=$(`#${id}`));
   }
 
   function bind(){
@@ -2154,6 +2201,7 @@ body.folder-lightbox-open{overflow:hidden}
     els.confirmFolderPickBtn.onclick=confirmFolderPick;
     els.selectedToFolderBtn.onclick=()=>openFolderPicker(state.selectedIds.map(id=>({type:'image',entryId:id})));
     els.detailToFolder.onclick=()=>openFolderPicker([{type:'image',entryId:state.currentId}]);
+    els.detailToAtlas.onclick=addCurrentGalleryImageToAtlas;
     els.saveCleanImage.onclick=saveCurrentImageWithoutMetadata;
     els.detailBackBtn.onclick=()=>closeDetailDialog();
     els.detailTopFav.onclick=toggleCurrentFavorite;
@@ -2280,11 +2328,11 @@ body.folder-lightbox-open{overflow:hidden}
     }
     try{
       const sourceStores=idbStoreNames(legacy);
-      const wanted=[STORE_IMAGES,STORE_ATLAS,STORE_META,STORE_FOLDERS].filter(s=>sourceStores.includes(s)&&db.objectStoreNames.contains(s));
+      const wanted=[STORE_ENTRIES,STORE_ATLAS,STORE_META,STORE_FOLDERS].filter(s=>sourceStores.includes(s)&&db.objectStoreNames.contains(s));
       if(!wanted.length){await saveMeta(markerKey,{done:true,sourceFound:false,at:Date.now()});return}
 
       // Never overwrite a Studio DB that already contains user content.
-      const targetContent=(await idbCount(db,STORE_IMAGES))+(await idbCount(db,STORE_ATLAS))+(await idbCount(db,STORE_FOLDERS));
+      const targetContent=(await idbCount(db,STORE_ENTRIES))+(await idbCount(db,STORE_ATLAS))+(await idbCount(db,STORE_FOLDERS));
       if(targetContent>0){
         await saveMeta(markerKey,{done:true,sourceFound:true,skipped:'target-not-empty',at:Date.now()});return;
       }
@@ -2293,7 +2341,7 @@ body.folder-lightbox-open{overflow:hidden}
       for(const s of wanted)snapshot[s]=await idbReadAll(legacy,s);
 
       // Copy content stores first, metadata last.
-      for(const s of [STORE_IMAGES,STORE_ATLAS,STORE_FOLDERS]){
+      for(const s of [STORE_ENTRIES,STORE_ATLAS,STORE_FOLDERS]){
         if(snapshot[s]?.length)await idbWriteAll(db,s,snapshot[s]);
       }
       if(snapshot[STORE_META]?.length){
@@ -2348,6 +2396,10 @@ function openDB(){
     els.fieldPanel?.querySelectorAll('[data-field]').forEach(cb=>{cb.checked=state.visibleFields.has(cb.dataset.field);});
 
     // v1.7.1: Detail control visual unification + Artist Index artist:name quick copy + app/tab/Atlas/folder-lightbox browser-back history.
+    // v1.9.9: 브라우저 간 백업을 안전하게 왕복할 수 있도록 필드 단위 스마트 병합 + 폴더/북마크 union 복원을 추가.
+    // v1.9.8: Image Folder 썸네일 geometry 고정(1:1) + lazy decode + 45개 단위 점진 렌더링으로 이미지가 많아질 때 카드가 납작해지거나 작아지는 현상 방지.
+    // v1.9.7: 즐겨찾는 작가태그 카드에서 '갤러리 검색'과 '도감 검색'을 분리. 갤러리 검색은 기존 작가 필터로, 도감 검색은 Artist Atlas 검색어로 이동.
+    // v1.9.6: Gallery 상세에 '＋ 도감' 추가 — 현재 이미지를 Artist Atlas에 직접 등록, 중복 방지/등록 상태 표시. v1.9.5 DB migration 변수명 오류 수정.
     // v1.9.5: IndexedDB rename migration — active DB is now nai-studio. First run safely copies legacy images, Atlas, metadata and folders into the new DB, never overwrites a non-empty Studio DB, and leaves the legacy DB untouched as recovery backup.
     // v1.9.4: NAI STUDIO rename + Archive tab rename + Archive folder search foundation. IndexedDB now uses the NAI STUDIO database; legacy local data is migrated automatically on first run.
     // v1.9.3: Smart folder detail + Saved Hub folder drill-down. Folder cards open into internal items with checkbox/long-press sweep selection, back navigation, whole-folder select and partial import.
@@ -2714,8 +2766,8 @@ function openDB(){
     await saveMeta('atlasArtistMemos',state.atlasArtistMemos);
     renderAtlas();
   }
-  async function saveAtlasImageMemo(){const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(!e)return;e.memo=els.atlasImageDetailMemo.value;e.updatedAt=Date.now();await txPut(STORE_ATLAS,e)}
-  async function toggleAtlasImageFavorite(id){const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;e.favorite=!e.favorite;e.updatedAt=Date.now();await txPut(STORE_ATLAS,e);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id)els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;}
+  async function saveAtlasImageMemo(){const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(!e)return;const now=Date.now(),next=els.atlasImageDetailMemo.value;e.fieldUpdatedAt=e.fieldUpdatedAt||{};if(e.memo!==next)e.fieldUpdatedAt.memo=now;e.memo=next;e.updatedAt=now;await txPut(STORE_ATLAS,e)}
+  async function toggleAtlasImageFavorite(id){const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;const now=Date.now();e.favorite=!e.favorite;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;await txPut(STORE_ATLAS,e);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id)els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;}
   async function setAtlasRepresentative(key,id){if(!key)return;if(id)state.atlasRepresentatives[key]=id;else delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open)els.atlasImageRepBtn.textContent=id?'대표 이미지 해제':'대표 이미지 지정';}
   async function deleteAtlasImage(id){
     const e=state.atlasEntries.find(x=>x.id===id);if(!e||!confirm('Artist Atlas에서 이 이미지를 삭제할까요? Gallery 이미지는 삭제되지 않습니다.'))return;const key=atlasGroupInfo(e).key;await txDel(STORE_ATLAS,id);state.atlasEntries=state.atlasEntries.filter(x=>x.id!==id);state.compareIds=state.compareIds.filter(ref=>ref!==atlasCompareRef(id));if(state.atlasRepresentatives[key]===id){delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives)}if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id){if(atlasImageHistoryActive){history.back()}else els.atlasImageDetailDialog.close()}renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();toast('Atlas에서 삭제했습니다.');
@@ -2767,7 +2819,47 @@ function openDB(){
     }
     els.atlasGalleryPickerCount.textContent=`${state.atlasGalleryPickerIds.length}개 선택`;
   }
-  async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new Set(state.atlasEntries.map(e=>e.hash).filter(Boolean));for(const id of state.atlasGalleryPickerIds){const src=state.entries.find(e=>e.id===id);if(!src)continue;if(src.hash&&known.has(src.hash)){skipped++;continue}const now=Date.now(),e={...src,id:crypto.randomUUID(),imageBlob:src.imageBlob,createdAt:now,updatedAt:now,lastImportAt:now,favorite:false,atlasOnly:true};await txPut(STORE_ATLAS,e);state.atlasEntries.push(e);if(e.hash)known.add(e.hash);added++}els.atlasGalleryPickerDialog.close();renderAtlas();toast(`${added}개 Atlas에 추가${skipped?` · 중복 ${skipped}개 제외`:''}`);}
+  
+  function galleryEntryAlreadyInAtlas(src){
+    if(!src)return false;
+    if(src.hash)return state.atlasEntries.some(a=>a.hash&&a.hash===src.hash);
+    return state.atlasEntries.some(a=>a.gallerySourceId===src.id);
+  }
+  function syncDetailAtlasButton(src){
+    if(!els.detailToAtlas)return;
+    const exists=galleryEntryAlreadyInAtlas(src);
+    els.detailToAtlas.textContent=exists?'✓ 도감 등록됨':'＋ 도감';
+    els.detailToAtlas.classList.toggle('is-added',exists);
+    els.detailToAtlas.setAttribute('aria-pressed',exists?'true':'false');
+  }
+  async function addCurrentGalleryImageToAtlas(){
+    const src=state.entries.find(e=>e.id===state.currentId);
+    if(!src)return;
+    if(galleryEntryAlreadyInAtlas(src)){
+      toast('이미 Artist Atlas에 등록된 이미지입니다.');
+      syncDetailAtlasButton(src);
+      return;
+    }
+    const now=Date.now();
+    const entry={
+      ...src,
+      id:crypto.randomUUID(),
+      imageBlob:src.imageBlob,
+      createdAt:now,
+      updatedAt:now,
+      lastImportAt:now,
+      favorite:false,
+      atlasOnly:true,
+      gallerySourceId:src.id
+    };
+    await txPut(STORE_ATLAS,entry);
+    state.atlasEntries.push(entry);
+    syncDetailAtlasButton(src);
+    renderAtlas();
+    toast('Artist Atlas에 추가했습니다.');
+  }
+
+async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new Set(state.atlasEntries.map(e=>e.hash).filter(Boolean));for(const id of state.atlasGalleryPickerIds){const src=state.entries.find(e=>e.id===id);if(!src)continue;if(src.hash&&known.has(src.hash)){skipped++;continue}const now=Date.now(),e={...src,id:crypto.randomUUID(),imageBlob:src.imageBlob,createdAt:now,updatedAt:now,lastImportAt:now,favorite:false,atlasOnly:true};await txPut(STORE_ATLAS,e);state.atlasEntries.push(e);if(e.hash)known.add(e.hash);added++}els.atlasGalleryPickerDialog.close();renderAtlas();toast(`${added}개 Atlas에 추가${skipped?` · 중복 ${skipped}개 제외`:''}`);}
 
   async function importImages(fileList, options={}){
     const files=[...(fileList||[])].filter(file=>/^image\/(png|jpeg|webp)$/i.test(file.type)||/\.(png|jpe?g|webp)$/i.test(file.name||''));
@@ -3637,6 +3729,7 @@ function openDB(){
     els.detailFav.textContent=`${favMark} 즐겨찾기`;
     els.detailTopFav.textContent=favMark;
     els.addCompare.textContent=state.compareIds.includes(id)?'− 비교':'＋ 비교';
+    syncDetailAtlasButton(e);
     els.detailMeta.innerHTML=detailMetaHtml(e);bindSeedCopy(els.detailMeta);
     renderDetailArtists(e); renderCharacterInputs(e);
     if(!els.detailDialog.open){
@@ -3667,9 +3760,16 @@ function openDB(){
   }
 
   function debounceSaveDetail(){clearTimeout(saveTimer);saveTimer=setTimeout(saveDetail,350)}
+  function sameMergeValue(a,b){return JSON.stringify(a??null)===JSON.stringify(b??null)}
+  function stampChangedFields(e,next,fields,now=Date.now()){
+    e.fieldUpdatedAt=e.fieldUpdatedAt||{};
+    for(const key of fields)if(!sameMergeValue(e[key],next[key]))e.fieldUpdatedAt[key]=now;
+  }
   async function saveDetail(){
     const e=state.entries.find(x=>x.id===state.currentId); if(!e)return;
-    e.title=els.detailTitle.value.trim(); e.artistsText=els.detailArtists.value; e.artists=splitArtistTags(els.detailArtists.value).artists; e.prompt=els.detailPrompt.value; e.uc=els.detailUc.value; e.memo=els.detailMemo.value; e.characterPrompts=[...els.characterPrompts.querySelectorAll('textarea')].map(x=>x.value).filter((x,i,a)=>x.trim()||a.length===1); e.updatedAt=Date.now(); await txPut(STORE_ENTRIES,e); renderDetailArtists(e); render();
+    const next={title:els.detailTitle.value.trim(),artistsText:els.detailArtists.value,prompt:els.detailPrompt.value,uc:els.detailUc.value,memo:els.detailMemo.value,characterPrompts:[...els.characterPrompts.querySelectorAll('textarea')].map(x=>x.value).filter((x,i,a)=>x.trim()||a.length===1)};
+    const now=Date.now();stampChangedFields(e,next,['title','artistsText','prompt','uc','memo','characterPrompts'],now);
+    Object.assign(e,next);e.artists=splitArtistTags(e.artistsText).artists;e.updatedAt=now; await txPut(STORE_ENTRIES,e); renderDetailArtists(e); render();
   }
   async function toggleCurrentFavorite(){
     await toggleFavorite(state.currentId);
@@ -3678,7 +3778,7 @@ function openDB(){
     els.detailFav.textContent=`${mark} 즐겨찾기`;
     els.detailTopFav.textContent=mark;
   }
-  async function toggleFavorite(id){const e=state.entries.find(x=>x.id===id);if(!e)return;e.favorite=!e.favorite;await txPut(STORE_ENTRIES,e);render();}
+  async function toggleFavorite(id){const e=state.entries.find(x=>x.id===id);if(!e)return;const now=Date.now();e.favorite=!e.favorite;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;await txPut(STORE_ENTRIES,e);render();}
   function toggleCompare(id,force){const has=state.compareIds.includes(id);const next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(id);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==id);render();if(state.currentId===id)els.addCompare.textContent=state.compareIds.includes(id)?'− 비교':'＋ 비교';}
 
   function toggleSelected(id,force){
@@ -3822,8 +3922,22 @@ function openDB(){
   }
   function renderImageFolder(){
     const f=folderById(state.currentFolderId);if(!f)return;revokeFolderObjectUrls();
-    const items=folderImageItems(f);els.imageFolderDialog.classList.toggle('selecting',state.imageFolderSelectMode);els.imageFolderCount.textContent=`${items.length} IMG`;
-    els.imageFolderGrid.innerHTML=items.length?items.map(it=>{const e=imageFolderEntryFromItem(it);if(!e?.imageBlob)return'';const u=URL.createObjectURL(e.imageBlob);folderObjectUrls.push(u);const on=state.imageFolderSelected.includes(it.id);return `<div class="image-folder-card ${on?'selected':''}" data-item-id="${it.id}"><span class="image-folder-thumb"><img src="${u}" alt=""></span><input class="pick-check" type="checkbox" ${on?'checked':''}><div class="image-folder-card-label">${esc(displayTitle(e))}</div></div>`}).join(''):'<div class="image-folder-empty">아직 이미지가 없습니다.<br>Gallery나 Artist Atlas에서 이미지를 추가해보세요.</div>';
+    const allItems=folderImageItems(f);
+    const limit=Math.max(45,Number(state.imageFolderRenderLimit)||45);
+    const items=allItems.slice(0,limit);
+    els.imageFolderDialog.classList.toggle('selecting',state.imageFolderSelectMode);
+    els.imageFolderCount.textContent=`${allItems.length} IMG`;
+    els.imageFolderGrid.innerHTML=allItems.length?items.map(it=>{const e=imageFolderEntryFromItem(it);if(!e?.imageBlob)return'';const u=URL.createObjectURL(e.imageBlob);folderObjectUrls.push(u);const on=state.imageFolderSelected.includes(it.id);return `<div class="image-folder-card ${on?'selected':''}" data-item-id="${it.id}"><span class="image-folder-thumb"><img src="${u}" alt="" loading="lazy" decoding="async"></span><input class="pick-check" type="checkbox" ${on?'checked':''}><div class="image-folder-card-label">${esc(displayTitle(e))}</div></div>`}).join(''):'<div class="image-folder-empty">아직 이미지가 없습니다.<br>Gallery나 Artist Atlas에서 이미지를 추가해보세요.</div>';
+    if(items.length<allItems.length){
+      const more=document.createElement('button');
+      more.type='button';
+      more.className='mini-btn image-folder-load-more';
+      more.textContent=`＋ ${Math.min(45,allItems.length-items.length)}개 더 보기`;
+      more.style.gridColumn='1/-1';
+      more.style.margin='8px auto 14px';
+      more.onclick=()=>{state.imageFolderRenderLimit=limit+45;renderImageFolder()};
+      els.imageFolderGrid.appendChild(more);
+    }
     els.imageFolderBulkBar.classList.toggle('hidden',!state.imageFolderSelectMode);els.imageFolderSelectedCount.textContent=`${state.imageFolderSelected.length}개 선택`;
     els.imageFolderGrid.querySelectorAll('.image-folder-card').forEach(card=>{
       const cb=card.querySelector('.pick-check'),id=card.dataset.itemId;
@@ -4405,8 +4519,16 @@ function openDB(){
 
   function renderBookmarks(){
     if(els.folderBookmarks){const fs=state.folders.filter(f=>f.bookmarked);els.folderBookmarks.innerHTML=fs.length?fs.map(f=>`<div class="folder-card" data-folder="${f.id}"><span class="folder-mark"></span><span class="folder-name">${esc(f.name)}</span><span class="folder-meta">${folderKind(f)==='image'?`${folderImageItems(f).length} IMG`:`${(f.items||[]).length} ITEMS`} · ${folderKind(f)==='image'?'IMAGE FOLDER':'CLIPBOARD'}</span></div>`).join(''):'<div class="muted-note">북마크한 폴더가 없습니다.</div>';els.folderBookmarks.querySelectorAll('.folder-card').forEach(c=>c.onclick=()=>openFolder(c.dataset.folder));}
-    els.artistBookmarks.innerHTML=state.artistBookmarks.length?state.artistBookmarks.map(a=>`<div class="bookmark-card"><strong>☆ ${esc(a)}</strong><div class="bookmark-actions"><button class="mini-btn filter-artist" data-name="${escAttr(a)}">도감 검색</button><button class="mini-btn copy-artist" data-name="${escAttr(a)}">태그 복사</button><button class="mini-btn remove-artist" data-name="${escAttr(a)}">삭제</button></div></div>`).join(''):'<div class="muted-note">아직 즐겨찾는 작가태그가 없습니다.</div>';
-    els.artistBookmarks.querySelectorAll('.filter-artist').forEach(b=>b.onclick=()=>{state.artistFilters=[b.dataset.name];setView('library');render();});
+    els.artistBookmarks.innerHTML=state.artistBookmarks.length?state.artistBookmarks.map(a=>`<div class="bookmark-card"><strong>☆ ${esc(a)}</strong><div class="bookmark-actions"><button class="mini-btn gallery-search-artist" data-name="${escAttr(a)}">갤러리 검색</button><button class="mini-btn atlas-search-artist" data-name="${escAttr(a)}">도감 검색</button><button class="mini-btn copy-artist" data-name="${escAttr(a)}">태그 복사</button><button class="mini-btn remove-artist" data-name="${escAttr(a)}">삭제</button></div></div>`).join(''):'<div class="muted-note">아직 즐겨찾는 작가태그가 없습니다.</div>';
+    els.artistBookmarks.querySelectorAll('.gallery-search-artist').forEach(b=>b.onclick=()=>{state.artistFilters=[b.dataset.name];setView('library');render();});
+    els.artistBookmarks.querySelectorAll('.atlas-search-artist').forEach(b=>b.onclick=()=>{
+      const name=b.dataset.name||'';
+      state.atlasSearch=name.toLowerCase();
+      if(els.atlasSearch)els.atlasSearch.value=name;
+      resetAtlasPaging();
+      setView('atlas');
+      renderAtlas();
+    });
     els.artistBookmarks.querySelectorAll('.copy-artist').forEach(b=>b.onclick=async()=>toast(await copyTextSafe(`artist:${b.dataset.name}`)?'복사했습니다.':'복사하지 못했습니다.'));
     els.artistBookmarks.querySelectorAll('.remove-artist').forEach(b=>b.onclick=async()=>{state.artistBookmarks=state.artistBookmarks.filter(x=>x!==b.dataset.name);await saveMeta('artistBookmarks',state.artistBookmarks);renderBookmarks();});
     els.presetBookmarks.innerHTML=state.presets.length?state.presets.map(p=>`<div class="bookmark-card"><strong>${esc(p.name)}</strong><div class="bookmark-code">${esc(p.text)}</div><div class="bookmark-actions"><button class="mini-btn copy-preset" data-id="${p.id}">복사</button><button class="mini-btn remove-preset" data-id="${p.id}">삭제</button></div></div>`).join(''):'<div class="muted-note">저장한 작가태그 조합이 없습니다.</div>';
@@ -4737,7 +4859,7 @@ function openDB(){
       if(it.type==='imageGroup')return {...it,images:(it.images||[]).map(img=>img.blob?({...img,blob:undefined,attachmentPath:`folder-images/${f.id}/${it.id}/${img.id}.${mimeExt(img.mime||img.blob.type)}`}):({...img}))};
       return {...it};
     })}));
-    const manifest={version:6,scope,exportedAt:new Date().toISOString(),entries:entries.map(({imageBlob,rawMetadata,...e})=>({...e,rawMetadata})),atlasEntries:atlasEntries.map(({imageBlob,rawMetadata,...e})=>({...e,rawMetadata})),atlasArtistFavorites:scope==='all'?state.atlasArtistFavorites:[],atlasArtistMemos:scope==='all'?state.atlasArtistMemos:{},atlasRepresentatives:scope==='all'?state.atlasRepresentatives:{},artistBookmarks,presets,folders:backupFolders};
+    const manifest={version:7,mergeMode:'field-smart-v1',scope,exportedAt:new Date().toISOString(),entries:entries.map(({imageBlob,rawMetadata,...e})=>({...e,rawMetadata})),atlasEntries:atlasEntries.map(({imageBlob,rawMetadata,...e})=>({...e,rawMetadata})),atlasArtistFavorites:scope==='all'?state.atlasArtistFavorites:[],atlasArtistMemos:scope==='all'?state.atlasArtistMemos:{},atlasRepresentatives:scope==='all'?state.atlasRepresentatives:{},artistBookmarks,presets,folders:backupFolders};
     zip.file('catalog.json',JSON.stringify(manifest,null,2));
     const imageFolder=zip.folder('images'); entries.forEach(e=>imageFolder.file(`${e.id}.${extOf(e.fileName)}`,e.imageBlob));
     const atlasImageFolder=zip.folder('atlas-images'); atlasEntries.forEach(e=>atlasImageFolder.file(`${e.id}.${extOf(e.fileName)}`,e.imageBlob));
@@ -4819,17 +4941,100 @@ function openDB(){
     }
   }
 
-  async function restoreZip(file){
-    if(!file||!window.JSZip)return; if(state.entries.length&&!confirm('현재 도감에 백업 내용을 합칠까요? 같은 ID는 백업 항목으로 갱신됩니다.'))return;
-    const zip=await JSZip.loadAsync(file); const manifest=JSON.parse(await zip.file('catalog.json').async('string'));
-    for(const raw of manifest.entries||[]){const imgEntry=Object.keys(zip.files).find(n=>n.startsWith(`images/${raw.id}.`));if(!imgEntry)continue;const blob=await zip.file(imgEntry).async('blob');const e={...raw,imageBlob:blob};await txPut(STORE_ENTRIES,e);const idx=state.entries.findIndex(x=>x.id===e.id);idx>=0?state.entries[idx]=e:state.entries.push(e);}
-    for(const raw of manifest.atlasEntries||[]){const imgEntry=Object.keys(zip.files).find(n=>n.startsWith(`atlas-images/${raw.id}.`));if(!imgEntry)continue;const blob=await zip.file(imgEntry).async('blob');const e={...raw,imageBlob:blob};await txPut(STORE_ATLAS,e);const idx=state.atlasEntries.findIndex(x=>x.id===e.id);idx>=0?state.atlasEntries[idx]=e:state.atlasEntries.push(e);}
-    const restoredFolders=manifest.folders||state.folders;
-    for(const f of restoredFolders)for(const it of (f.items||[])){
-      if(it.type==='attachment'&&it.attachmentPath&&zip.file(it.attachmentPath)){it.blob=await zip.file(it.attachmentPath).async('blob');delete it.attachmentPath;}
-      if(it.type==='imageGroup')for(const img of (it.images||[]))if(img.attachmentPath&&zip.file(img.attachmentPath)){img.blob=await zip.file(img.attachmentPath).async('blob');delete img.attachmentPath;}
+  const SMART_MERGE_FIELDS=['title','artistsText','prompt','characterPrompts','uc','memo','favorite'];
+  function hasMergeValue(v){return Array.isArray(v)?v.some(x=>String(x??'').trim()):typeof v==='string'?v.trim()!=='' : v!==undefined&&v!==null}
+  function mergeStamp(obj,key){return Number(obj?.fieldUpdatedAt?.[key]||obj?.updatedAt||obj?.createdAt||0)}
+  function mergeConflictChoice(label,current,incoming,allowCombine=false){
+    const a=typeof current==='string'?current:JSON.stringify(current,null,2), b=typeof incoming==='string'?incoming:JSON.stringify(incoming,null,2);
+    const msg=`동일 항목의 ${label} 값이 양쪽에서 다릅니다.\n\n[현재 브라우저]\n${a||'(비어 있음)'}\n\n[가져온 백업]\n${b||'(비어 있음)'}\n\n1 = 현재값 유지\n2 = 백업값 사용${allowCombine?'\n3 = 둘 다 합치기':''}\n\n번호를 입력하세요.`;
+    const answer=prompt(msg,'1');
+    if(answer==='2')return 'incoming';if(allowCombine&&answer==='3')return 'combine';return 'current';
+  }
+  function mergeEntrySmart(current,incoming,stats){
+    const out={...current}, now=Math.max(Number(current.updatedAt||0),Number(incoming.updatedAt||0));
+    out.fieldUpdatedAt={...(current.fieldUpdatedAt||{})};
+    // Keep the local image blob. Metadata fields are merged independently.
+    for(const key of SMART_MERGE_FIELDS){
+      const a=current[key],b=incoming[key];
+      if(sameMergeValue(a,b))continue;
+      if(!hasMergeValue(a)&&hasMergeValue(b)){out[key]=b;out.fieldUpdatedAt[key]=mergeStamp(incoming,key);stats.autoMerged++;continue}
+      if(hasMergeValue(a)&&!hasMergeValue(b)){continue} // blank never deletes useful data
+      if(!hasMergeValue(a)&&!hasMergeValue(b))continue;
+      const ta=mergeStamp(current,key),tb=mergeStamp(incoming,key);
+      // Once both browsers use v1.9.9+, field timestamps can resolve independent edits safely.
+      if(current.fieldUpdatedAt?.[key]||incoming.fieldUpdatedAt?.[key]){
+        if(tb>ta){out[key]=b;out.fieldUpdatedAt[key]=tb;stats.autoMerged++}else out.fieldUpdatedAt[key]=ta;
+        continue;
+      }
+      stats.conflicts++;
+      const choice=mergeConflictChoice(key==='memo'?'메모':key,a,b,key==='memo');
+      if(choice==='incoming')out[key]=b;
+      else if(choice==='combine')out[key]=[String(a||'').trim(),String(b||'').trim()].filter(Boolean).join('\n\n──── MERGED ────\n\n');
+      out.fieldUpdatedAt[key]=Date.now();
     }
-    state.artistBookmarks=[...new Set([...(state.artistBookmarks||[]),...(manifest.artistBookmarks||[])])];state.presets=manifest.presets||state.presets;state.folders=restoredFolders;state.atlasArtistFavorites=[...new Set([...(state.atlasArtistFavorites||[]),...(manifest.atlasArtistFavorites||[])])];state.atlasArtistMemos={...(state.atlasArtistMemos||{}),...(manifest.atlasArtistMemos||{})};state.atlasRepresentatives={...(state.atlasRepresentatives||{}),...(manifest.atlasRepresentatives||{})};await persistFolders();await saveMeta('artistBookmarks',state.artistBookmarks);await saveMeta('presets',state.presets);await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);await saveMeta('atlasArtistMemos',state.atlasArtistMemos);await saveMeta('atlasRepresentatives',state.atlasRepresentatives);els.restoreInput.value='';render();toast('백업을 복원했습니다.');
+    // Preserve/import fields outside the editable set without allowing empty values to erase local data.
+    for(const [key,val] of Object.entries(incoming)){
+      if(key==='imageBlob'||key==='fieldUpdatedAt'||SMART_MERGE_FIELDS.includes(key))continue;
+      if((out[key]===undefined||out[key]===null||out[key]==='')&&hasMergeValue(val))out[key]=val;
+    }
+    out.updatedAt=Math.max(now,...Object.values(out.fieldUpdatedAt||{}).map(Number).filter(Number.isFinite));
+    if('artistsText' in out)out.artists=splitArtistTags(out.artistsText||'').artists;
+    return out;
+  }
+  function mergeById(currentList,incomingList){
+    const map=new Map((currentList||[]).map(x=>[x.id,x]));
+    for(const item of (incomingList||[])){
+      if(!item?.id)continue;
+      const old=map.get(item.id);
+      if(!old){map.set(item.id,item);continue}
+      map.set(item.id,(Number(item.updatedAt||0)>Number(old.updatedAt||0))?{...old,...item}:{...item,...old});
+    }
+    return [...map.values()];
+  }
+  function mergeFolderSmart(local,incoming){
+    if(!local)return incoming;
+    const newer=Number(incoming.updatedAt||0)>Number(local.updatedAt||0)?incoming:local;
+    const older=newer===incoming?local:incoming;
+    const items=mergeById(local.items||[],incoming.items||[]);
+    return {...older,...newer,items,createdAt:Math.min(Number(local.createdAt||Date.now()),Number(incoming.createdAt||Date.now()))};
+  }
+  async function restoreZip(file){
+    if(!file||!window.JSZip)return;
+    if((state.entries.length||state.atlasEntries.length||state.folders.length)&&!confirm('백업을 현재 데이터와 스마트 병합할까요?\n\n빈칸은 기존 값을 지우지 않고, 서로 다른 항목/폴더는 모두 유지합니다. 같은 필드가 충돌할 때만 선택을 요청합니다.')){els.restoreInput.value='';return;}
+    try{
+      const zip=await JSZip.loadAsync(file),catalog=zip.file('catalog.json');if(!catalog)throw new Error('catalog.json 없음');
+      const manifest=JSON.parse(await catalog.async('string')),stats={newEntries:0,newAtlas:0,autoMerged:0,conflicts:0,newFolders:0};
+      for(const raw of manifest.entries||[]){
+        const imgEntry=Object.keys(zip.files).find(n=>n.startsWith(`images/${raw.id}.`));const old=state.entries.find(x=>x.id===raw.id);
+        if(!old&&!imgEntry)continue;
+        const blob=imgEntry?await zip.file(imgEntry).async('blob'):old?.imageBlob;
+        if(old){const merged=mergeEntrySmart(old,{...raw,imageBlob:blob},stats);merged.imageBlob=old.imageBlob||blob;await txPut(STORE_ENTRIES,merged);state.entries[state.entries.findIndex(x=>x.id===raw.id)]=merged}
+        else{const e={...raw,imageBlob:blob};await txPut(STORE_ENTRIES,e);state.entries.push(e);stats.newEntries++}
+      }
+      for(const raw of manifest.atlasEntries||[]){
+        const imgEntry=Object.keys(zip.files).find(n=>n.startsWith(`atlas-images/${raw.id}.`));const old=state.atlasEntries.find(x=>x.id===raw.id);
+        if(!old&&!imgEntry)continue;
+        const blob=imgEntry?await zip.file(imgEntry).async('blob'):old?.imageBlob;
+        if(old){const merged=mergeEntrySmart(old,{...raw,imageBlob:blob},stats);merged.imageBlob=old.imageBlob||blob;await txPut(STORE_ATLAS,merged);state.atlasEntries[state.atlasEntries.findIndex(x=>x.id===raw.id)]=merged}
+        else{const e={...raw,imageBlob:blob};await txPut(STORE_ATLAS,e);state.atlasEntries.push(e);stats.newAtlas++}
+      }
+      const incomingFolders=manifest.folders||[];
+      for(const f of incomingFolders)for(const it of (f.items||[])){
+        if(it.type==='attachment'&&it.attachmentPath&&zip.file(it.attachmentPath)){it.blob=await zip.file(it.attachmentPath).async('blob');delete it.attachmentPath}
+        if(it.type==='imageGroup')for(const img of (it.images||[]))if(img.attachmentPath&&zip.file(img.attachmentPath)){img.blob=await zip.file(img.attachmentPath).async('blob');delete img.attachmentPath}
+      }
+      const folderMap=new Map(state.folders.map(f=>[f.id,f]));
+      for(const f of incomingFolders){if(folderMap.has(f.id))folderMap.set(f.id,mergeFolderSmart(folderMap.get(f.id),f));else{folderMap.set(f.id,f);stats.newFolders++}}
+      state.folders=[...folderMap.values()];
+      state.artistBookmarks=[...new Set([...(state.artistBookmarks||[]),...(manifest.artistBookmarks||[])])];
+      state.presets=mergeById(state.presets||[],manifest.presets||[]);
+      state.atlasArtistFavorites=[...new Set([...(state.atlasArtistFavorites||[]),...(manifest.atlasArtistFavorites||[])])];
+      // Artist memos are free text without per-field history yet: keep local non-empty text; import only missing keys.
+      for(const [k,v] of Object.entries(manifest.atlasArtistMemos||{}))if(!String(state.atlasArtistMemos?.[k]||'').trim())(state.atlasArtistMemos||(state.atlasArtistMemos={}))[k]=v;
+      state.atlasRepresentatives={...(manifest.atlasRepresentatives||{}),...(state.atlasRepresentatives||{})};
+      await persistFolders();await saveMeta('artistBookmarks',state.artistBookmarks);await saveMeta('presets',state.presets);await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);await saveMeta('atlasArtistMemos',state.atlasArtistMemos);await saveMeta('atlasRepresentatives',state.atlasRepresentatives);
+      els.restoreInput.value='';render();toast(`병합 완료 · Gallery +${stats.newEntries} · Atlas +${stats.newAtlas} · Folder +${stats.newFolders}${stats.autoMerged?` · 자동 병합 ${stats.autoMerged}`:''}${stats.conflicts?` · 충돌 확인 ${stats.conflicts}`:''}`);
+    }catch(err){console.error(err);els.restoreInput.value='';toast('백업 병합에 실패했습니다. ZIP 파일을 확인해주세요.');}
   }
 
   let exportStudioState={context:null,scope:'filtered',preset:'atlas',output:'pdf',cols:2,previewToken:0};
