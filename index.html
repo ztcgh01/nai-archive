@@ -1294,62 +1294,49 @@ body.folder-lightbox-open{overflow:hidden}
 }
 </style>
 
-<style id="v198-image-folder-geometry">
+<style id="v1918-image-folder-grid-reset">
+/* v1.9.18: Image Folder grid rebuilt from scratch.
+   No aspect-ratio sizing JS, no ResizeObserver, no inherited percentage-height tricks. */
 .image-folder-grid{
-  grid-auto-rows:auto;
-  align-items:start;
+  grid-auto-rows:max-content!important;
+  align-items:start!important;
+  align-content:start!important;
 }
 .image-folder-card{
-  align-self:start;
-  height:auto!important;
-  min-height:0;
-}
-.image-folder-thumb{
+  position:relative!important;
   display:block!important;
-  width:100%!important;
+  min-width:0!important;
   height:auto!important;
-  aspect-ratio:1 / 1;
-  padding-top:0!important;
-  overflow:hidden;
-  flex:none!important;
-}
-.image-folder-thumb img{
-  display:block;
-  position:absolute;
-  inset:0;
-  width:100%!important;
-  height:100%!important;
-  min-width:100%;
-  min-height:100%;
-  object-fit:cover;
-}
-.image-folder-card-label{
-  display:block!important;
-  min-height:27px;
-}
-@media(max-width:600px){
-  .image-folder-thumb{aspect-ratio:1 / 1;}
-}
-</style>
-
-<style id="v1912-image-folder-hard-square">
-/* v1.9.17: fix startup crash by attaching Image Folder ResizeObserver only after DOM mapping. */
-/* v1.9.14: Gallery 1~4열 수동 선택 추가. */
-/* v1.9.12: 모바일 Chrome에서 Image Folder 썸네일 높이가 0에 가깝게 계산되어
-   가로 띠처럼 눌리는 경우를 막기 위한 강제 정사각형 보정. */
-.image-folder-card{
-  display:flex!important;
-  flex-direction:column!important;
+  min-height:0!important;
+  align-self:start!important;
+  overflow:hidden!important;
 }
 .image-folder-thumb{
   position:relative!important;
   display:block!important;
   width:100%!important;
-  aspect-ratio:1 / 1!important;
-  height:auto;
-  min-height:0;
-  padding-top:0!important;
-  flex:0 0 auto!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:100% 0 0 0!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+.image-folder-thumb img{
+  position:absolute!important;
+  inset:0!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:cover!important;
+}
+.image-folder-card-label{
+  display:block!important;
+  min-height:0!important;
 }
 </style>
 
@@ -2105,12 +2092,6 @@ body.folder-lightbox-open{overflow:hidden}
 
   async function init(){
     mapEls();
-    if('ResizeObserver' in window && !window.__naiImageFolderSquareObserver && els.imageFolderGrid){
-      window.__naiImageFolderSquareObserver=new ResizeObserver(()=>{
-        if(els.imageFolderDialog?.open)requestAnimationFrame(()=>requestAnimationFrame(syncImageFolderThumbSizes));
-      });
-      window.__naiImageFolderSquareObserver.observe(els.imageFolderGrid);
-    }
     bind();
     db = await openDB();await migrateLegacyDatabaseIfNeeded();
     await loadAll();
@@ -4146,26 +4127,6 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     state.currentFolderId=f.id;state.imageFolderSelectMode=false;state.imageFolderSelected=[];state.imageFolderRenderLimit=45;
     els.imageFolderTitleInput.value=f.name;els.imageFolderBookmarkBtn.textContent=f.bookmarked?'★':'☆';renderImageFolder();
     if(!els.imageFolderDialog.open){pushAppHistory({naiFolder:true,folderId:f.id});folderHistoryActive=true;els.imageFolderDialog.showModal()}
-    requestAnimationFrame(()=>requestAnimationFrame(syncImageFolderThumbSizes));
-  }
-  function syncImageFolderThumbSizes(){
-    if(!els.imageFolderGrid)return;
-    els.imageFolderGrid.querySelectorAll('.image-folder-card').forEach(card=>{
-      const thumb=card.querySelector('.image-folder-thumb');
-      if(!thumb)return;
-      const w=Math.round(card.getBoundingClientRect().width);
-      if(w>20){
-        thumb.style.setProperty('height',`${w}px`,'important');
-        thumb.style.setProperty('min-height',`${w}px`,'important');
-        thumb.style.setProperty('max-height',`${w}px`,'important');
-      }
-    });
-  }
-  if(!window.__naiImageFolderSquareBound){
-    window.__naiImageFolderSquareBound=true;
-    window.addEventListener('resize',()=>{if(els.imageFolderDialog?.open)requestAnimationFrame(syncImageFolderThumbSizes)},{passive:true});
-    // ResizeObserver is attached after mapEls() in init; attaching here runs before DOM refs exist.
-
   }
   function renderImageFolder(){
     const f=folderById(state.currentFolderId);if(!f)return;revokeFolderObjectUrls();
@@ -4175,7 +4136,6 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     els.imageFolderDialog.classList.toggle('selecting',state.imageFolderSelectMode);
     els.imageFolderCount.textContent=`${allItems.length} IMG`;
     els.imageFolderGrid.innerHTML=allItems.length?items.map(it=>{const e=imageFolderEntryFromItem(it);if(!e?.imageBlob)return'';const u=URL.createObjectURL(e.imageBlob);folderObjectUrls.push(u);const on=state.imageFolderSelected.includes(it.id);return `<div class="image-folder-card ${on?'selected':''}" data-item-id="${it.id}"><span class="image-folder-thumb"><img src="${u}" alt="" loading="lazy" decoding="async"><button type="button" class="selection-expand-btn" aria-label="크게 보기">⛶</button></span><input class="pick-check" type="checkbox" ${on?'checked':''}><div class="image-folder-card-label">${esc(displayTitle(e))}</div></div>`}).join(''):'<div class="image-folder-empty">아직 이미지가 없습니다.<br>Gallery나 Artist Atlas에서 이미지를 추가해보세요.</div>';
-    requestAnimationFrame(syncImageFolderThumbSizes);
     if(items.length<allItems.length){
       const more=document.createElement('button');
       more.type='button';
