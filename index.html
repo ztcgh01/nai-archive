@@ -1333,7 +1333,7 @@ body.folder-lightbox-open{overflow:hidden}
 </style>
 
 <style id="v1912-image-folder-hard-square">
-/* v1.9.16: v1.9.15 UI fix retained; deployment worker origin restored to nai-studio. */
+/* v1.9.17: fix startup crash by attaching Image Folder ResizeObserver only after DOM mapping. */
 /* v1.9.14: Gallery 1~4열 수동 선택 추가. */
 /* v1.9.12: 모바일 Chrome에서 Image Folder 썸네일 높이가 0에 가깝게 계산되어
    가로 띠처럼 눌리는 경우를 막기 위한 강제 정사각형 보정. */
@@ -2104,7 +2104,14 @@ body.folder-lightbox-open{overflow:hidden}
   document.addEventListener('DOMContentLoaded', init);
 
   async function init(){
-    mapEls(); bind();
+    mapEls();
+    if('ResizeObserver' in window && !window.__naiImageFolderSquareObserver && els.imageFolderGrid){
+      window.__naiImageFolderSquareObserver=new ResizeObserver(()=>{
+        if(els.imageFolderDialog?.open)requestAnimationFrame(()=>requestAnimationFrame(syncImageFolderThumbSizes));
+      });
+      window.__naiImageFolderSquareObserver.observe(els.imageFolderGrid);
+    }
+    bind();
     db = await openDB();await migrateLegacyDatabaseIfNeeded();
     await loadAll();
     history.replaceState({naiApp:true,view:state.view||'home',root:true},'');appHistoryState=history.state;
@@ -4157,12 +4164,8 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
   if(!window.__naiImageFolderSquareBound){
     window.__naiImageFolderSquareBound=true;
     window.addEventListener('resize',()=>{if(els.imageFolderDialog?.open)requestAnimationFrame(syncImageFolderThumbSizes)},{passive:true});
-    if('ResizeObserver' in window){
-      window.__naiImageFolderSquareObserver=new ResizeObserver(()=>{
-        if(els.imageFolderDialog?.open)requestAnimationFrame(()=>requestAnimationFrame(syncImageFolderThumbSizes));
-      });
-      window.__naiImageFolderSquareObserver.observe(els.imageFolderGrid);
-    }
+    // ResizeObserver is attached after mapEls() in init; attaching here runs before DOM refs exist.
+
   }
   function renderImageFolder(){
     const f=folderById(state.currentFolderId);if(!f)return;revokeFolderObjectUrls();
