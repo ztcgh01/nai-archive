@@ -1333,18 +1333,23 @@ body.folder-lightbox-open{overflow:hidden}
 </style>
 
 <style id="v1912-image-folder-hard-square">
+/* v1.9.15: Image Folder 모바일 납작 썸네일 강제 정사각형 보정. */
 /* v1.9.14: Gallery 1~4열 수동 선택 추가. */
 /* v1.9.12: 모바일 Chrome에서 Image Folder 썸네일 높이가 0에 가깝게 계산되어
    가로 띠처럼 눌리는 경우를 막기 위한 강제 정사각형 보정. */
-.image-folder-thumb{
-  aspect-ratio:auto!important;
-  padding-top:0!important;
+.image-folder-card{
+  display:flex!important;
+  flex-direction:column!important;
 }
-@media(max-width:600px){
-  .image-folder-thumb{
-    height:calc((100vw - 16px)/3)!important;
-    min-height:calc((100vw - 16px)/3)!important;
-  }
+.image-folder-thumb{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  aspect-ratio:1 / 1!important;
+  height:auto;
+  min-height:0;
+  padding-top:0!important;
+  flex:0 0 auto!important;
 }
 </style>
 
@@ -4131,9 +4136,10 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
   }
   function imageFolderEntries(f=folderById(state.currentFolderId)){return folderImageItems(f).map(imageFolderEntryFromItem).filter(Boolean)}
   function openImageFolder(f){
-    state.currentFolderId=f.id;state.imageFolderSelectMode=false;state.imageFolderSelected=[];
+    state.currentFolderId=f.id;state.imageFolderSelectMode=false;state.imageFolderSelected=[];state.imageFolderRenderLimit=45;
     els.imageFolderTitleInput.value=f.name;els.imageFolderBookmarkBtn.textContent=f.bookmarked?'★':'☆';renderImageFolder();
     if(!els.imageFolderDialog.open){pushAppHistory({naiFolder:true,folderId:f.id});folderHistoryActive=true;els.imageFolderDialog.showModal()}
+    requestAnimationFrame(()=>requestAnimationFrame(syncImageFolderThumbSizes));
   }
   function syncImageFolderThumbSizes(){
     if(!els.imageFolderGrid)return;
@@ -4141,12 +4147,22 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
       const thumb=card.querySelector('.image-folder-thumb');
       if(!thumb)return;
       const w=Math.round(card.getBoundingClientRect().width);
-      if(w>20){thumb.style.height=`${w}px`;thumb.style.minHeight=`${w}px`;}
+      if(w>20){
+        thumb.style.setProperty('height',`${w}px`,'important');
+        thumb.style.setProperty('min-height',`${w}px`,'important');
+        thumb.style.setProperty('max-height',`${w}px`,'important');
+      }
     });
   }
   if(!window.__naiImageFolderSquareBound){
     window.__naiImageFolderSquareBound=true;
     window.addEventListener('resize',()=>{if(els.imageFolderDialog?.open)requestAnimationFrame(syncImageFolderThumbSizes)},{passive:true});
+    if('ResizeObserver' in window){
+      window.__naiImageFolderSquareObserver=new ResizeObserver(()=>{
+        if(els.imageFolderDialog?.open)requestAnimationFrame(()=>requestAnimationFrame(syncImageFolderThumbSizes));
+      });
+      window.__naiImageFolderSquareObserver.observe(els.imageFolderGrid);
+    }
   }
   function renderImageFolder(){
     const f=folderById(state.currentFolderId);if(!f)return;revokeFolderObjectUrls();
