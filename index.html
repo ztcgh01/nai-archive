@@ -1295,7 +1295,8 @@ body.folder-lightbox-open{overflow:hidden}
 </style>
 
 <style id="v1918-image-folder-grid-reset">
-/* v1.9.18: Image Folder grid rebuilt from scratch.
+/* v1.9.19: Favourite/bookmark actions use in-place DOM updates to prevent white flash.
+   v1.9.18: Image Folder grid rebuilt from scratch.
    No aspect-ratio sizing JS, no ResizeObserver, no inherited percentage-height tricks. */
 .image-folder-grid{
   grid-auto-rows:max-content!important;
@@ -2771,8 +2772,16 @@ function openDB(){
     const ok=await copyTextSafe(txt);
     toast(ok?(names.length>1?'작가태그 조합을 복사했습니다.':'작가태그를 복사했습니다.'):'복사하지 못했습니다.');
   }
+  function syncAtlasArtistFavoriteDom(key){
+    const on=state.atlasArtistFavorites.includes(key);
+    const card=els.atlasGrid?.querySelector(`.atlas-card[data-group-key="${CSS.escape(key)}"]`);
+    const star=card?.querySelector('[data-atlas-card-fav]');if(star)star.textContent=on?'★':'☆';
+    if(els.atlasArtistDialog?.open&&state.atlasCurrentGroupKey===key)els.atlasArtistFavorite.textContent=on?'★':'☆';
+    if(state.atlasFilter==='favorite'&&!on&&card){card.remove();const all=filteredAtlasGroups();const matchingImages=atlasMatchingImageCount(all);els.atlasCount.textContent=atlasSearchTokens().length?`${all.length} artists · ${matchingImages} matching images`:`${all.length} artists · ${state.atlasEntries.length} images`;}
+  }
   async function toggleAtlasArtistFavorite(key){
-    if(!key)return;const has=state.atlasArtistFavorites.includes(key);state.atlasArtistFavorites=has?state.atlasArtistFavorites.filter(x=>x!==key):[...state.atlasArtistFavorites,key];await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();
+    if(!key)return;const before=[...state.atlasArtistFavorites],has=before.includes(key);state.atlasArtistFavorites=has?before.filter(x=>x!==key):[...before,key];syncAtlasArtistFavoriteDom(key);
+    try{await saveMeta('atlasArtistFavorites',state.atlasArtistFavorites)}catch(err){console.error(err);state.atlasArtistFavorites=before;syncAtlasArtistFavoriteDom(key);toast('즐겨찾기 저장에 실패했습니다.');}
   }
   function openAtlasArtist(key){state.atlasCurrentGroupKey=key;state.atlasArtistSearch='';state.atlasSelectedIds=[];state.atlasSelectMode=false;if(els.atlasArtistSearch)els.atlasArtistSearch.value='';renderAtlasArtistDialog();if(!els.atlasArtistDialog.open){pushAppHistory({atlasArtist:true,atlasGroupKey:key});atlasArtistHistoryActive=true;els.atlasArtistDialog.showModal();}}
   function atlasArtistLocalTokens(){return String(state.atlasArtistSearch||'').toLowerCase().split(/\s+/).map(x=>x.trim()).filter(Boolean)}
@@ -2879,8 +2888,9 @@ function openDB(){
   function bindAtlasGroupSweep(){if(!els.atlasGrid)return;bindSweepSelectionGrid({grid:els.atlasGrid,cardSelector:'.atlas-card',checkboxSelector:'.atlas-group-check',getKey:card=>card.dataset.groupKey,isSelected:key=>state.atlasGroupSelectedKeys.includes(key),setSelected:(key,on)=>{state.atlasGroupSelectMode=true;if(on&&!state.atlasGroupSelectedKeys.includes(key))state.atlasGroupSelectedKeys.push(key);if(!on)state.atlasGroupSelectedKeys=state.atlasGroupSelectedKeys.filter(x=>x!==key)},updateCount:updateAtlasGroupSelectionUi,enabled:()=>true})}
   async function atlasBulkFavorite(){
     const ids=[...state.atlasSelectedIds];if(!ids.length)return;
-    for(const id of ids){const e=state.atlasEntries.find(x=>x.id===id);if(e&&!e.favorite){e.favorite=true;e.updatedAt=Date.now();await txPut(STORE_ATLAS,e)}}
-    renderAtlas();renderAtlasArtistDialog();toast(`${ids.length}개를 즐겨찾기했습니다.`);
+    let changed=0;
+    for(const id of ids){const e=state.atlasEntries.find(x=>x.id===id);if(e&&!e.favorite){const now=Date.now();e.favorite=true;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;syncAtlasImageFavoriteDom(id);await txPut(STORE_ATLAS,e);changed++}}
+    toast(`${changed||ids.length}개를 즐겨찾기했습니다.`);
   }
   async function atlasBulkToGallery(){
     const ids=[...state.atlasSelectedIds];if(!ids.length)return;
@@ -2904,7 +2914,16 @@ function openDB(){
     renderAtlas();
   }
   async function saveAtlasImageMemo(){const e=state.atlasEntries.find(x=>x.id===state.atlasCurrentImageId);if(!e)return;const now=Date.now(),next=els.atlasImageDetailMemo.value;e.fieldUpdatedAt=e.fieldUpdatedAt||{};if(e.memo!==next)e.fieldUpdatedAt.memo=now;e.memo=next;e.updatedAt=now;await txPut(STORE_ATLAS,e)}
-  async function toggleAtlasImageFavorite(id){const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;const now=Date.now();e.favorite=!e.favorite;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;await txPut(STORE_ATLAS,e);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id)els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;}
+  function syncAtlasImageFavoriteDom(id){
+    const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;
+    const card=els.atlasArtistGrid?.querySelector(`.atlas-image-card[data-id="${CSS.escape(id)}"]`);
+    const btn=card?.querySelector('[data-act="fav"]');if(btn)btn.textContent=`${e.favorite?'★':'☆'} Image`;
+    if(els.atlasImageDetailDialog?.open&&state.atlasCurrentImageId===id)els.atlasImageFavBtn.textContent=`${e.favorite?'★':'☆'} 이미지 즐겨찾기`;
+  }
+  async function toggleAtlasImageFavorite(id){
+    const e=state.atlasEntries.find(x=>x.id===id);if(!e)return;const before=e.favorite,now=Date.now();e.favorite=!before;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;syncAtlasImageFavoriteDom(id);
+    try{await txPut(STORE_ATLAS,e)}catch(err){console.error(err);e.favorite=before;syncAtlasImageFavoriteDom(id);toast('즐겨찾기 저장에 실패했습니다.');}
+  }
   async function setAtlasRepresentative(key,id){if(!key)return;if(id)state.atlasRepresentatives[key]=id;else delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives);renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();if(els.atlasImageDetailDialog.open)els.atlasImageRepBtn.textContent=id?'대표 이미지 해제':'대표 이미지 지정';}
   async function deleteAtlasImage(id){
     const e=state.atlasEntries.find(x=>x.id===id);if(!e||!confirm('Artist Atlas에서 이 이미지를 삭제할까요? Gallery 이미지는 삭제되지 않습니다.'))return;const key=atlasGroupInfo(e).key;await txDel(STORE_ATLAS,id);state.atlasEntries=state.atlasEntries.filter(x=>x.id!==id);state.compareIds=state.compareIds.filter(ref=>ref!==atlasCompareRef(id));if(state.atlasRepresentatives[key]===id){delete state.atlasRepresentatives[key];await saveMeta('atlasRepresentatives',state.atlasRepresentatives)}if(els.atlasImageDetailDialog.open&&state.atlasCurrentImageId===id){if(atlasImageHistoryActive){history.back()}else els.atlasImageDetailDialog.close()}renderAtlas();if(els.atlasArtistDialog.open)renderAtlasArtistDialog();toast('Atlas에서 삭제했습니다.');
@@ -3979,14 +3998,18 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     const now=Date.now();stampChangedFields(e,next,['title','artistsText','prompt','uc','memo','characterPrompts'],now);
     Object.assign(e,next);e.artists=splitArtistTags(e.artistsText).artists;e.updatedAt=now; await txPut(STORE_ENTRIES,e); renderDetailArtists(e); render();
   }
-  async function toggleCurrentFavorite(){
-    await toggleFavorite(state.currentId);
-    const e=state.entries.find(x=>x.id===state.currentId); if(!e)return;
-    const mark=e.favorite?'★':'☆';
-    els.detailFav.textContent=`${mark} 즐겨찾기`;
-    els.detailTopFav.textContent=mark;
+  function syncGalleryFavoriteDom(id){
+    const e=state.entries.find(x=>x.id===id);if(!e)return;
+    const card=els.gallery?.querySelector(`.card[data-id="${CSS.escape(id)}"]`);const star=card?.querySelector('.fav');if(star)star.textContent=e.favorite?'★':'☆';
+    if(state.currentId===id&&els.detailDialog?.open){const mark=e.favorite?'★':'☆';els.detailFav.textContent=`${mark} 즐겨찾기`;els.detailTopFav.textContent=mark;}
   }
-  async function toggleFavorite(id){const e=state.entries.find(x=>x.id===id);if(!e)return;const now=Date.now();e.favorite=!e.favorite;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;await txPut(STORE_ENTRIES,e);render();}
+  async function toggleCurrentFavorite(){await toggleFavorite(state.currentId);}
+  async function toggleFavorite(id){
+    const e=state.entries.find(x=>x.id===id);if(!e)return;const before=e.favorite,now=Date.now();e.favorite=!before;e.fieldUpdatedAt=e.fieldUpdatedAt||{};e.fieldUpdatedAt.favorite=now;e.updatedAt=now;syncGalleryFavoriteDom(id);
+    try{await txPut(STORE_ENTRIES,e)}catch(err){console.error(err);e.favorite=before;syncGalleryFavoriteDom(id);toast('즐겨찾기 저장에 실패했습니다.');return;}
+    // Only rebuild when the current result set/order actually depends on favorite state.
+    if(state.view==='library'&&(state.favOnly||state.sort==='favorite'))renderLibrary();
+  }
   function toggleCompare(id,force){const has=state.compareIds.includes(id);const next=force!==undefined?force:!has;if(next&&!has)state.compareIds.push(id);else if(!next&&has)state.compareIds=state.compareIds.filter(x=>x!==id);render();if(state.currentId===id)els.addCompare.textContent=state.compareIds.includes(id)?'− 비교':'＋ 비교';}
 
   function toggleSelected(id,force){
@@ -4078,6 +4101,21 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     }
     return `<div class="library-card-cover image-cover">${cells.length?cells.join(''):'<span class="cover-placeholder">▦</span>'}</div>`;
   }
+  function syncFolderBookmarkDom(id){
+    const f=folderById(id);if(!f)return;
+    els.folderGrid?.querySelectorAll(`.folder-star[data-star="${CSS.escape(id)}"]`).forEach(b=>b.textContent=f.bookmarked?'★':'☆');
+    if(state.currentFolderId===id){if(els.folderDialog?.open)els.folderBookmarkBtn.textContent=f.bookmarked?'★':'☆';if(els.imageFolderDialog?.open)els.imageFolderBookmarkBtn.textContent=f.bookmarked?'★':'☆';}
+  }
+  function reorderFolderCardsInPlace(){
+    if(!els.folderGrid)return;
+    const q=norm(state.archiveFolderSearch||'').trim();
+    const ordered=[...state.folders].filter(f=>state.libraryType==='all'||folderKind(f)===state.libraryType).filter(f=>!q||norm(`${f.name||''} ${folderKind(f)==='image'?'image folder':'clipboard'} ${folderSummary(f)}`).includes(q)).sort((a,b)=>(b.bookmarked?1:0)-(a.bookmarked?1:0)||(b.updatedAt||0)-(a.updatedAt||0));
+    for(const f of ordered){const card=els.folderGrid.querySelector(`.folder-card[data-folder="${CSS.escape(f.id)}"]`);if(card)els.folderGrid.appendChild(card)}
+  }
+  async function setFolderBookmark(id,next){
+    const f=folderById(id);if(!f)return;const before=f.bookmarked;f.bookmarked=next===undefined?!before:!!next;f.updatedAt=Date.now();syncFolderBookmarkDom(id);reorderFolderCardsInPlace();
+    try{await persistFolders();renderBookmarks()}catch(err){console.error(err);f.bookmarked=before;syncFolderBookmarkDom(id);reorderFolderCardsInPlace();toast('북마크 저장에 실패했습니다.');}
+  }
   function renderFolders(){
     if(!els.folderGrid)return;revokeFolderObjectUrls();
     const q=norm(state.archiveFolderSearch||'').trim();
@@ -4088,7 +4126,7 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     if(els.archiveFolderSearchCount)els.archiveFolderSearchCount.textContent=q?`${folders.length}개 결과`:'';
     els.folderGrid.innerHTML=folders.length?folders.map(f=>`<div class="folder-card" data-folder="${f.id}" role="button" tabindex="0"><button class="folder-star" data-star="${f.id}" aria-label="폴더 북마크">${f.bookmarked?'★':'☆'}</button>${libraryCardCover(f)}<div class="library-card-info"><span class="library-card-type">${folderKind(f)==='image'?'IMAGE FOLDER':'CLIPBOARD'}</span><span class="folder-name">${esc(f.name)}</span><span class="folder-meta">${folderKind(f)==='image'?`${folderImageItems(f).length} IMG`:`${(f.items||[]).length} ITEMS`}</span></div></div>`).join(''):'<div class="folder-empty">아직 여기에 저장된 항목이 없습니다.</div>';
     els.folderGrid.querySelectorAll('.folder-card').forEach(c=>{c.onclick=e=>{if(e.target.closest('.folder-star'))return;openFolder(c.dataset.folder)};c.onkeydown=e=>{if(e.key==='Enter')openFolder(c.dataset.folder)}});
-    els.folderGrid.querySelectorAll('.folder-star').forEach(b=>b.onclick=async e=>{e.stopPropagation();const f=folderById(b.dataset.star);f.bookmarked=!f.bookmarked;f.updatedAt=Date.now();await persistFolders();renderFolders();renderBookmarks()});
+    els.folderGrid.querySelectorAll('.folder-star').forEach(b=>b.onclick=async e=>{e.stopPropagation();await setFolderBookmark(b.dataset.star)});
   }
   async function createFolder(){
     const name=els.folderNameInput.value.trim();if(!name){toast('이름을 입력해주세요.');return}
@@ -4159,7 +4197,7 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     const f=folderById(state.currentFolderId);return folderImageItems(f).filter(it=>state.imageFolderSelected.includes(it.id)).map(imageFolderEntryFromItem).filter(Boolean)
   }
   async function saveImageFolderTitle(){const f=folderById(state.currentFolderId);if(!f)return;f.name=els.imageFolderTitleInput.value.trim()||'Untitled';f.updatedAt=Date.now();await persistFolders();renderFolders();renderBookmarks()}
-  async function toggleImageFolderBookmark(){const f=folderById(state.currentFolderId);if(!f)return;f.bookmarked=!f.bookmarked;f.updatedAt=Date.now();await persistFolders();els.imageFolderBookmarkBtn.textContent=f.bookmarked?'★':'☆';renderFolders();renderBookmarks()}
+  async function toggleImageFolderBookmark(){if(!state.currentFolderId)return;await setFolderBookmark(state.currentFolderId)}
   async function removeSelectedFromImageFolder(){const f=folderById(state.currentFolderId);if(!f||!state.imageFolderSelected.length)return;f.items=f.items.filter(it=>!state.imageFolderSelected.includes(it.id));f.updatedAt=Date.now();state.imageFolderSelected=[];await persistFolders();renderImageFolder();renderFolders();toast('폴더에서 제거했습니다. 원본은 그대로입니다.')}
   async function deleteCurrentImageFolder(){const f=folderById(state.currentFolderId);if(!f||!confirm(`“${f.name}” 이미지 폴더를 삭제할까요?\n원본 이미지는 삭제되지 않습니다.`))return;state.folders=state.folders.filter(x=>x.id!==f.id);await persistFolders();els.imageFolderDialog.close();renderFolders();renderBookmarks();toast('폴더를 삭제했습니다.')}
   function compactEntryDetails(entry,fields=[]){
@@ -4384,7 +4422,7 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
 
   function folderTypeLabel(type){return ({artist:'TAG',prompt:'PROMPT',character:'CHAR',uc:'UC',note:'NOTE',image:'IMAGE',imageGroup:'COLLAGE'})[type]||String(type||'ITEM').toUpperCase()}
   async function saveFolderTitle(){const f=folderById(state.currentFolderId);if(!f)return;f.name=els.folderTitleInput.value.trim()||'Untitled';f.updatedAt=Date.now();await persistFolders();renderFolders();renderBookmarks();}
-  async function toggleFolderBookmark(){const f=folderById(state.currentFolderId);if(!f)return;f.bookmarked=!f.bookmarked;f.updatedAt=Date.now();await persistFolders();els.folderBookmarkBtn.textContent=f.bookmarked?'★':'☆';renderFolders();renderBookmarks();}
+  async function toggleFolderBookmark(){if(!state.currentFolderId)return;await setFolderBookmark(state.currentFolderId)}
   async function deleteCurrentFolder(){const f=folderById(state.currentFolderId);if(!f||!confirm(`“${f.name}” 폴더를 삭제할까요?\n원본 이미지와 Gallery 데이터는 삭제되지 않습니다.`))return;state.folders=state.folders.filter(x=>x.id!==f.id);await persistFolders();closeFolderDialog();renderFolders();renderBookmarks();toast('폴더를 삭제했습니다.');}
   function scheduleFolderNoteSave(){
     clearTimeout(folderNoteTimer);
