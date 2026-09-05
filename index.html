@@ -1268,6 +1268,14 @@ body.folder-lightbox-open{overflow:hidden}
  .library-card-type{font-size:6.5px!important;padding:4px 6px!important}
  .clipboard-folder-tools{padding:9px 11px}
 }
+
+/* v1.9.21: keep model info off artwork; compact labels live beside card titles. */
+.card-title-row,.atlas-image-title-row{display:flex;align-items:center;gap:7px;min-width:0}
+.card-title-row .card-title,.atlas-image-title-row .atlas-image-title{flex:1;min-width:0}
+.card-model-label,.atlas-image-model-label{flex:0 0 auto;font-size:8px;font-weight:750;letter-spacing:.04em;color:#777;white-space:nowrap}
+.atlas-image-title-row{margin-top:6px;padding:0 1px}
+.atlas-image-title{font-size:9px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#222}
+@media(max-width:700px){.card-model-label,.atlas-image-model-label{font-size:7.5px}.atlas-image-title{font-size:8.5px}}
 </style>
 
 <style id="v193-saved-folder-browser">
@@ -1295,13 +1303,11 @@ body.folder-lightbox-open{overflow:hidden}
 </style>
 
 <style id="v1918-image-folder-grid-reset">
-/* v1.9.20: NovelAI model badges/filters + persistent Gallery/Atlas view preferences. */
+/* v1.9.21: compact off-image model labels. v1.9.20: model filters + persistent Gallery/Atlas view preferences. */
 .model-badge{display:inline-flex;align-items:center;justify-content:center;min-height:20px;padding:0 7px;border:1px solid rgba(17,17,17,.22);border-radius:999px;background:rgba(255,255,255,.94);font-size:8px;font-weight:800;letter-spacing:.045em;line-height:1;white-space:nowrap;color:#222}
-.thumb>.model-badge{position:absolute;left:8px;bottom:8px;z-index:2;pointer-events:none}
-.atlas-image-thumb>.model-badge{position:absolute;right:6px;bottom:6px;z-index:2;pointer-events:none}
 .atlas-model-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border:1px solid #dedede;border-radius:999px;background:#fff;font-size:8px;font-weight:750;color:#555;white-space:nowrap}
 .model-filter-select{height:38px;border:1px solid var(--line);background:#fff;padding:0 28px 0 10px;font-size:10px;color:#333;border-radius:6px}
-@media(max-width:700px){.model-filter-select{height:34px;font-size:9px}.thumb>.model-badge{left:6px;bottom:6px;min-height:18px;padding:0 6px;font-size:7.5px}}
+@media(max-width:700px){.model-filter-select{height:34px;font-size:9px}}
 /* v1.9.19: Favourite/bookmark actions use in-place DOM updates to prevent white flash.
    v1.9.18: Image Folder grid rebuilt from scratch.
    No aspect-ratio sizing JS, no ResizeObserver, no inherited percentage-height tricks. */
@@ -2777,7 +2783,7 @@ function openDB(){
       const artistMemo=(state.atlasArtistMemos[g.key]||'').trim();
       const memoPreview=artistMemo?`<div class="atlas-artist-memo-preview">${esc(artistMemo)}</div>`:'';
       const matchPreview=atlasSearchTokens().length?`<div class="atlas-match-preview">${esc(atlasSearchMatchPreview(g))}</div>`:'';const quickCopy=g.names.length?`<span class="atlas-copy-tag" data-atlas-copy-tag role="button" tabindex="0" title="artist:작가명 복사">COPY</span>`:'';
-      card.innerHTML=`<input class="atlas-group-check" type="checkbox" ${state.atlasGroupSelectedKeys.includes(g.key)?'checked':''}><div class="atlas-card-visual"><div class="atlas-samples ${reps.length>1?'two':''}">${imgs}</div></div><div class="atlas-card-topline"><div class="atlas-card-name">${esc(g.label)}</div><span class="atlas-card-tools"><span class="atlas-card-fav" data-atlas-card-fav>${fav?'★':'☆'}</span></span></div><div class="atlas-card-meta"><span class="atlas-badge">${g.type==='multiple'?'MULTI':g.type==='unsorted'?'UNSORTED':'SINGLE'}</span><span class="atlas-count-label">${g.entries.length} IMG</span><span class="atlas-model-badge">${esc((()=>{const labels=[...new Set(g.entries.map(modelLabel))];return labels.length===1?labels[0]:'MIXED'})())}</span>${quickCopy}</div>${multi}${memoPreview}${matchPreview}`;
+      card.innerHTML=`<input class="atlas-group-check" type="checkbox" ${state.atlasGroupSelectedKeys.includes(g.key)?'checked':''}><div class="atlas-card-visual"><div class="atlas-samples ${reps.length>1?'two':''}">${imgs}</div></div><div class="atlas-card-topline"><div class="atlas-card-name">${esc(g.label)}</div><span class="atlas-card-tools"><span class="atlas-card-fav" data-atlas-card-fav>${fav?'★':'☆'}</span></span></div><div class="atlas-card-meta"><span class="atlas-badge">${g.type==='multiple'?'MULTI':g.type==='unsorted'?'UNSORTED':'SINGLE'}</span><span class="atlas-count-label">${g.entries.length} IMG</span><span class="atlas-model-badge">${esc((()=>{const labels=[...new Set(g.entries.map(modelShortLabel))];return labels.length===1?labels[0]:'MIXED'})())}</span>${quickCopy}</div>${multi}${memoPreview}${matchPreview}`;
       card.querySelector('.atlas-group-check').onchange=ev=>{ev.stopPropagation();state.atlasGroupSelectMode=true;setAtlasGroupSelected(g.key,ev.target.checked)};const copyEl=card.querySelector('[data-atlas-copy-tag]');if(copyEl){const run=ev=>{ev.stopPropagation();copyAtlasGroupTag(g)};copyEl.onclick=run;copyEl.onkeydown=ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();run(ev)}}}card.onclick=e=>{if(e.target.closest('[data-atlas-card-fav]')){e.stopPropagation();toggleAtlasArtistFavorite(g.key);return}if(e.target.closest('[data-atlas-copy-tag]'))return;if(state.atlasGroupSelectMode){setAtlasGroupSelected(g.key,!state.atlasGroupSelectedKeys.includes(g.key));return}openAtlasArtist(g.key)};
       els.atlasGrid.appendChild(card);
     }
@@ -2874,7 +2880,7 @@ function openDB(){
     for(const e of visible){
       const hit=globalTokens.length&&atlasEntryMatchesSearch(e,globalTokens), u=URL.createObjectURL(e.imageBlob);atlasArtistUrls.push(u);
       const card=document.createElement('article');card.dataset.id=e.id;card.className=`atlas-image-card ${hit?'atlas-search-hit':''} ${state.atlasSelectedIds.includes(e.id)?'atlas-selected':''}`;
-      card.innerHTML=`<input class="atlas-image-check" type="checkbox" ${state.atlasSelectedIds.includes(e.id)?'checked':''}><div class="atlas-image-thumb"><img src="${u}" alt="">${modelBadgeHtml(e)}<button type="button" class="selection-expand-btn" aria-label="크게 보기">⛶</button>${repId===e.id?'<span class="atlas-rep-mark">REP</span>':''}</div><div class="atlas-image-actions"><button data-act="fav">${e.favorite?'★':'☆'} Image</button><button data-act="rep" class="${repId===e.id?'primary':''}">${repId===e.id?'대표 해제':'대표 지정'}</button><button data-act="memo">메모</button><button data-act="gallery">→ Gallery</button></div><textarea class="atlas-quick-memo" placeholder="빠른 메모 · 자동 저장">${esc(e.memo||'')}</textarea>`;
+      card.innerHTML=`<input class="atlas-image-check" type="checkbox" ${state.atlasSelectedIds.includes(e.id)?'checked':''}><div class="atlas-image-thumb"><img src="${u}" alt=""><button type="button" class="selection-expand-btn" aria-label="크게 보기">⛶</button>${repId===e.id?'<span class="atlas-rep-mark">REP</span>':''}</div><div class="atlas-image-title-row"><div class="atlas-image-title">${esc(displayTitle(e))}</div><span class="atlas-image-model-label">${esc(modelShortLabel(e))}</span></div><div class="atlas-image-actions"><button data-act="fav">${e.favorite?'★':'☆'} Image</button><button data-act="rep" class="${repId===e.id?'primary':''}">${repId===e.id?'대표 해제':'대표 지정'}</button><button data-act="memo">메모</button><button data-act="gallery">→ Gallery</button></div><textarea class="atlas-quick-memo" placeholder="빠른 메모 · 자동 저장">${esc(e.memo||'')}</textarea>`;
       card.querySelector('.atlas-image-check').onchange=ev=>setAtlasSelected(e.id,ev.target.checked);
       card.querySelector('.selection-expand-btn').onclick=ev=>{ev.stopPropagation();openSelectionPreview('atlas',e.id)};
       card.querySelector('.atlas-image-thumb').onclick=()=>{if(state.atlasSelectMode){setAtlasSelected(e.id,!state.atlasSelectedIds.includes(e.id));return}openAtlasImageDetail(e.id)};
@@ -3276,6 +3282,7 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
     return changed;
   }
   function modelLabel(e){return e?.modelLabel||novelAIModelInfo(e?.modelSource||e?.model||e?.rawMetadata?.Source||'').modelLabel}
+  function modelShortLabel(e){const k=modelKey(e);return k==='v4.5-full'?'4.5 F':k==='v4.5-curated'?'4.5 C':k==='v5-full'?'5 F':k==='v5-curated'?'5 C':'UNKNOWN'}
   function modelKey(e){return e?.modelKey||novelAIModelInfo(e?.modelSource||e?.model||e?.rawMetadata?.Source||'').modelKey}
   function modelMatches(e,key){return key==='all'||(key==='unknown'?modelKey(e)==='unknown':modelKey(e)===key)}
   function modelBadgeHtml(e,cls='model-badge'){const label=modelLabel(e);return label?`<span class="${cls}">${esc(label)}</span>`:''}
@@ -3902,7 +3909,7 @@ async function confirmAtlasGalleryPicker(){let added=0,skipped=0;const known=new
       const url=URL.createObjectURL(e.imageBlob); card.dataset.url=url;
       const checked=state.selectedIds.includes(e.id);
       card.classList.toggle('selection-mode',state.selectMode);
-      card.innerHTML=`<div class="thumb"><img src="${url}" alt="">${modelBadgeHtml(e)}<label class="check-badge"><input class="card-check" type="checkbox" ${checked?'checked':''}><span>선택</span></label><button type="button" class="selection-expand-btn" aria-label="크게 보기">⛶</button><div class="card-controls"><button class="round fav">${e.favorite?'★':'☆'}</button></div></div><div class="card-body"><div class="card-title">${esc(displayTitle(e))}</div><div class="card-sub">${esc(artistSummary(e))}</div></div>`;
+      card.innerHTML=`<div class="thumb"><img src="${url}" alt=""><label class="check-badge"><input class="card-check" type="checkbox" ${checked?'checked':''}><span>선택</span></label><button type="button" class="selection-expand-btn" aria-label="크게 보기">⛶</button><div class="card-controls"><button class="round fav">${e.favorite?'★':'☆'}</button></div></div><div class="card-body"><div class="card-title-row"><div class="card-title">${esc(displayTitle(e))}</div><span class="card-model-label">${esc(modelShortLabel(e))}</span></div><div class="card-sub">${esc(artistSummary(e))}</div></div>`;
       card.querySelector('img').onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id); card.querySelector('.card-body').onclick=()=>state.selectMode?toggleSelected(e.id):openDetail(e.id);
       card.querySelector('.selection-expand-btn').onclick=ev=>{ev.stopPropagation();openSelectionPreview('gallery',e.id)};
       card.querySelector('.fav').onclick=ev=>{ev.stopPropagation(); toggleFavorite(e.id)};
